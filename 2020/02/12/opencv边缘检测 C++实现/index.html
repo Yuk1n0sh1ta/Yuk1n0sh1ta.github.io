@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">opencv边缘检测 C++实现 | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      opencv边缘检测 C++实现</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2020-2-12<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <h1 id="1-opencv-C-环境配置"><a href="#1-opencv-C-环境配置" class="headerlink" title="1 opencv C++ 环境配置"></a>1 opencv C++ 环境配置</h1><h2 id="1-1-C-环境安装"><a href="#1-1-C-环境安装" class="headerlink" title="1.1 C++环境安装"></a>1.1 C++环境安装</h2><p>visual studio 2019 community version 下载地址： <a href="https://visualstudio.microsoft.com/zh-hans/vs/community/" target="_blank" rel="noopener">https://visualstudio.microsoft.com/zh-hans/vs/community/</a></p>
+<p>双击安装包进入安装界面，选择C++开发包之后点击安装，等待程序安装完成。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1Hjlh6.png" data-fancybox="images" data-caption="visual" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1Hjlh6.png"></a></center>
+
+<h2 id="1-2-opencv环境配置"><a href="#1-2-opencv环境配置" class="headerlink" title="1.2 opencv环境配置"></a>1.2 opencv环境配置</h2><h3 id="1-2-1-opencv-下载"><a href="#1-2-1-opencv-下载" class="headerlink" title="1.2.1 opencv 下载"></a>1.2.1 opencv 下载</h3><p>安装包 下载地址：<a href="https://sourceforge.net/projects/opencvlibrary/files/4.2.0/opencv-4.2.0-vc14_vc15.exe/download" target="_blank" rel="noopener">https://sourceforge.net/projects/opencvlibrary/files/4.2.0/opencv-4.2.0-vc14_vc15.exe/download</a></p>
+<p>双击安装包进入安装界面，并将其安装到一个方便你找到的文件夹中。比如：<strong>C:\opencv</strong>，之后的opencv目录将以该目录作为安装根目录为例。</p>
+<h3 id="1-2-2-环境变量配置"><a href="#1-2-2-环境变量配置" class="headerlink" title="1.2.2 环境变量配置"></a>1.2.2 环境变量配置</h3><p>1 打开控制面板 - 所有控制面板项 - 系统。</p>
+<p>2 点击左侧的高级系统设置。</p>
+<p>3 选择右下的环境变量。</p>
+<p>4 双击下方系统变量的Path。</p>
+<p>5 在Path中新建一个环境变量，地址是<strong>C:\opencv\build\x64\vc15\bin</strong>。</p>
+<p>6 连点应用确认完成配置</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1HjE1U.png" data-fancybox="images" data-caption="环境变量" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1HjE1U.png"></a></center>
+
+<h3 id="1-2-3-VS2019环境配置"><a href="#1-2-3-VS2019环境配置" class="headerlink" title="1.2.3 VS2019环境配置"></a>1.2.3 VS2019环境配置</h3><p>1 打开VS2019，create new project - 选择C++ - 选择empty project。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1Hjr38.png" data-fancybox="images" data-caption="emptyproject" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1Hjr38.png"></a></center>
+
+<p>2 进入主界面之后，点击左上角view - other windows - property manager，调出属性管理器。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1Hj2Hs.png" data-fancybox="images" data-caption="propertymanager" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1Hj2Hs.png"></a></center>
+
+<p>3 在属性管理器的Debug | 64选项右键选择Properties。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1HvnxS.png" data-fancybox="images" data-caption="debug" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1HvnxS.png"></a></center>
+
+<p>4 在Debug Property Pages界面左侧选择VC++ Directories，将右侧的Include Directories添加<strong>C:\opencv\build\include</strong>，<br>将Library Directories添加<strong>C:\opencv\build\x64\vc15\lib</strong>。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1Hv3an.png" data-fancybox="images" data-caption="includelib" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1Hv3an.png"></a></center>
+
+<p>5 在Debug Property Pages界面左侧选择Linker，将右侧的Additional Dependencies添加opencv_world420.lib。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1Hvt2T.png" data-fancybox="images" data-caption="linker" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1Hvt2T.png"></a></center>
+
+<p><strong>*若你装的版本不是4.2.0，则将420换为你安装的版本的版本号。</strong></p>
+<p>6 之后关闭Debug Property Pages界面，确认VS主界面上方的Debug使用的是x64版本，若不是则选择x64。</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1HvTit.png" data-fancybox="images" data-caption="x64" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1HvTit.png"></a></center>
+
+<p>至此，整个C++ opencv 的VS环境配置完毕。<br>顺便，该配置只针对当前创建的Project有效，若创建新的Project后，需重新进行以上配置。</p>
+<h1 id="2-opencv的基本输入输出以及指针调用"><a href="#2-opencv的基本输入输出以及指针调用" class="headerlink" title="2 opencv的基本输入输出以及指针调用"></a>2 opencv的基本输入输出以及指针调用</h1><h2 id="2-1-头文件"><a href="#2-1-头文件" class="headerlink" title="2.1 头文件"></a>2.1 头文件</h2><pre><code class="C++">#include &lt;opencv2/opencv.hpp&gt;   //opencv头文件
+#include &lt;iostream&gt; //C++基本输入输出
+
+//名空间声明
+using namespace cv;
+using namespace std;
+</code></pre>
+<h2 id="2-2-图像IO"><a href="#2-2-图像IO" class="headerlink" title="2.2 图像IO"></a>2.2 图像IO</h2><h3 id="2-2-1-图像输入"><a href="#2-2-1-图像输入" class="headerlink" title="2.2.1 图像输入"></a>2.2.1 图像输入</h3><pre><code class="C++">Mat In = imread(&quot;C:\\test.png&quot;, IMREAD_GRAYSCALE);
+</code></pre>
+<p>imread函数是opencv库中的基本输入函数，可以将.png.jpg.bmp等格式的图片读入，并转化为opencv的图片矩阵类型Mat。<br>imread的第一个输入变量为文件的具体位置，第二个变量IMREAD_GRAYSCALE表示读入灰度图，若不加这条则会读入RGB图。</p>
+<h3 id="2-2-2-图像复制"><a href="#2-2-2-图像复制" class="headerlink" title="2.2.2 图像复制"></a>2.2.2 图像复制</h3><p>在opencv中，如果使用赋值手法进行图像的复制，如下所示：</p>
+<pre><code class="C++">Mat Out = In;
+</code></pre>
+<p>则会将In的每个像素位置的指针赋给Out，不论对In还是Out进行修改时，另外一个变量也会跟着进行变化。<br>因此，想要进行图像复制要用Mat类型的clone()方法：</p>
+<pre><code class="C++">Mat Out = In.clone;
+</code></pre>
+<h3 id="2-2-3-图像显示输出"><a href="#2-2-3-图像显示输出" class="headerlink" title="2.2.3 图像显示输出"></a>2.2.3 图像显示输出</h3><pre><code class="C++">imshow(&quot;Output&quot;, Out);
+</code></pre>
+<p>imshow函数是opencv库中的基本输出函数，可以将Mat类型的图像显示在屏幕上。<br>imshow的第一个变量是图像显示在屏幕上的文本内容，第二个变量是选择输出的Mat类型变量。</p>
+<center><img src="https://s2.ax1x.com/2020/02/12/1HxGeH.png" width="400"></center>
+
+<p><strong>*注意：如果两个输出图像的文本相同则只会输出先输出的一个图像，因此不要将输出图像的文本定义为一样的文本。</strong></p>
+<h3 id="2-2-4-图像保存输出"><a href="#2-2-4-图像保存输出" class="headerlink" title="2.2.4 图像保存输出"></a>2.2.4 图像保存输出</h3><pre><code class="C++">imwrite(&quot;C:\\Out.png&quot;, Output);
+</code></pre>
+<p>imwrite函数是opencv库的基本输出函数，可以进行指定目录的图片写入功能。<br>imwrite的第一个变量是保存输出图片的具体位置，第二个变量是选择输出的Mat类型的变量。</p>
+<h2 id="2-3-图片的特定像素提取"><a href="#2-3-图片的特定像素提取" class="headerlink" title="2.3 图片的特定像素提取"></a>2.3 图片的特定像素提取</h2><p>下面以一个阈值法进行边缘检测为例说明像素提取的方法：</p>
+<pre><code class="C++">    Mat Output = Input.clone();
+    for (int x = 1; x &lt; Input.rows - 1; x++)
+    {
+        uchar* out = Output.ptr&lt;uchar&gt;(x);
+        uchar* current = Input.ptr&lt;uchar&gt;(x);
+        uchar* last = Input.ptr&lt;uchar&gt;(x - 1);
+        for (int y = 1; y &lt; Input.cols - 1; y++)
+        {
+            if (abs(current[y] - current[y - 1]) &gt; K || abs(current[y] - last[y]) &gt; K)  //Threshold K
+            {
+                out[y] = 255;
+                continue;
+            }
+            else
+            {
+                out[y] = 0;
+            }
+        }
+    }
+</code></pre>
+<p>其中，</p>
+<pre><code class="C++">uchar* out = Output.ptr&lt;uchar&gt;(x);
+</code></pre>
+<p>表示将第 x 行的第一个像素指针赋给out。</p>
+<pre><code class="C++">out[y] = 255;
+</code></pre>
+<p>表示将第 x 行的第 y 个像素值赋值255。</p>
+<p>另外，上述像素操作建立在灰度图的基础上。若对于RGB彩色图，官方的Mat类型将以下图形式存储像素值数据 <strong>[1]</strong>：</p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1HxfpV.png" data-fancybox="images" data-caption="out" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1HxfpV.png"></a><br></center>
+
+<p><strong>[1]<a href="https://docs.opencv.org/master/db/da5/tutorial_how_to_scan_images.html" target="_blank" rel="noopener">https://docs.opencv.org/master/db/da5/tutorial_how_to_scan_images.html</a></strong></p>
+<h1 id="3-边缘检测算法"><a href="#3-边缘检测算法" class="headerlink" title="3 边缘检测算法"></a>3 边缘检测算法</h1><h2 id="3-1-阈值法"><a href="#3-1-阈值法" class="headerlink" title="3.1 阈值法"></a>3.1 阈值法</h2><p><strong>流程图:</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1HzOEj.jpg" data-fancybox="images" data-caption="Threshold_flow" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1HzOEj.jpg"></a></center>
+
+<p><strong>代码:</strong></p>
+<pre><code class="C++">void Threshold_Method(Mat Input, int K)
+{
+    Mat Output = Input.clone();
+    for (int x = 1; x &lt; Input.rows - 1; x++)
+    {
+        uchar* sum = Output.ptr&lt;uchar&gt;(x);
+        uchar* current = Input.ptr&lt;uchar&gt;(x);
+        uchar* last = Input.ptr&lt;uchar&gt;(x - 1);
+        for (int y = 1; y &lt; Input.cols - 1; y++)
+        {
+            if (abs(current[y] - current[y - 1]) &gt; K || abs(current[y] - last[y]) &gt; K)  //Threshold K
+            {
+                //sum[y] = 255;
+                continue;
+            }
+            else
+            {
+                sum[y] = 0;
+            }
+        }
+    }
+    imshow(&quot;Threshold_Method&quot;, Output);
+}
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/12/1bSAa9.png" width="300px"></div>
+
+<h2 id="3-2-差分法"><a href="#3-2-差分法" class="headerlink" title="3.2 差分法"></a>3.2 差分法</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1bSOsO.jpg" data-fancybox="images" data-caption="Difference_flow" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1bSOsO.jpg"></a></center>
+
+<p><strong>代码：</strong></p>
+<pre><code class="C++">void Difference_Method(Mat Input)
+{
+    Mat Output = Input.clone();
+    for (int x = 1; x &lt; Input.rows - 1; x++)
+    {
+        uchar* sum = Output.ptr&lt;uchar&gt;(x);
+        uchar* current = Input.ptr&lt;uchar&gt;(x);
+        uchar* last = Input.ptr&lt;uchar&gt;(x - 1);
+        for (int y = 1; y &lt; Input.cols - 1; y++)
+        {
+            float horizontal = pow(current[y] - current[y - 1], 2);
+            float vertical = pow(current[y] - last[y], 2);
+            sum[y] = saturate_cast&lt;uchar&gt;(sqrt(horizontal + vertical));   //output = sqrt(delta_x ^ 2 + delta_y ^ 2)
+        }
+    }
+    imshow(&quot;Difference_Method&quot;, Output);
+}
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/12/1bpky8.png" width="300px"></div>
+
+<h2 id="3-3-Sobel方法"><a href="#3-3-Sobel方法" class="headerlink" title="3.3 Sobel方法"></a>3.3 Sobel方法</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1bpQS0.jpg" data-fancybox="images" data-caption="Sobel" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1bpQS0.jpg"></a></center>
+
+<p><strong>代码：</strong></p>
+<pre><code class="C++">void Sobel_Method(Mat Input, const char* Str)
+{
+    Mat Output = Input.clone();
+    for (int x = 1; x &lt; Input.rows - 1; x++)
+    {
+        uchar* sum = Output.ptr&lt;uchar&gt;(x);
+        uchar* current = Input.ptr&lt;uchar&gt;(x);
+        uchar* next = Input.ptr&lt;uchar&gt;(x + 1);
+        uchar* last = Input.ptr&lt;uchar&gt;(x - 1);
+        for (int y = 1; y &lt; Input.cols - 1; y++)
+        {
+            /*
+            horizontal
+            [ -1  0  1
+              -2  0  2
+              -1  0  1 ]
+            */
+            float horizontal = pow(-last[y - 1] + last[y + 1]
+                - 2 * current[y - 1] + 2 * current[y + 1]
+                - next[y - 1] + next[y + 1]
+                , 2);
+
+            /*
+            vertical
+            [ -1 -2 -1
+               0  0  0
+               1  2  1 ]
+            */
+            float vertical = pow(-last[y - 1] - 2 * last[y] - last[y + 1]
+                + next[y - 1] + 2 * next[y] + next[y + 1]
+                , 2);
+            sum[y] = saturate_cast&lt;uchar&gt;(sqrt(horizontal + vertical));
+
+        }
+    }
+    imshow(Str, Output);
+}
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/12/1bpB6K.png" width="300px"></div>
+
+<h2 id="3-4-拉普拉斯方法"><a href="#3-4-拉普拉斯方法" class="headerlink" title="3.4 拉普拉斯方法"></a>3.4 拉普拉斯方法</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/12/1bph1P.jpg" data-fancybox="images" data-caption="Laplacian_flow" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/12/1bph1P.jpg"></a></center>
+
+<p><strong>代码:</strong></p>
+<pre><code class="C++">void Laplacian_Method(Mat Input, const char* Str)
+{
+    Mat Output = Input.clone();
+    for (int x = 1; x &lt; Input.rows - 1; x++)
+    {
+        uchar* sum = Output.ptr&lt;uchar&gt;(x);
+        uchar* current = Input.ptr&lt;uchar&gt;(x);
+        uchar* next = Input.ptr&lt;uchar&gt;(x + 1);
+        uchar* last = Input.ptr&lt;uchar&gt;(x - 1);
+        for (int y = 1; y &lt; Input.cols - 1; y++)
+        {
+            /*
+            [ 0  1  0
+              1 -4  1
+              0  1  1 ]
+            */
+            sum[y] = saturate_cast&lt;uchar&gt;(last[y]
+                + current[y - 1] - 4 * current[y] + current[y + 1]
+                + next[y]) * 20;
+
+        }
+    }
+    imshow(Str, Output);
+}
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/12/1bpLhn.png" width="300px"></div>
+
+<h2 id="3-5-高斯滤波"><a href="#3-5-高斯滤波" class="headerlink" title="3.5 高斯滤波"></a>3.5 高斯滤波</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/14/1XbG6O.jpg" data-fancybox="images" data-caption="Gaussian_flow" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/14/1XbG6O.jpg"></a></center>
+
+<p><strong>代码：</strong></p>
+<pre><code class="C++">Mat Gaussian_Filter_5(Mat Input, int K)
+{
+    Mat Output = Input.clone();
+    for (int k = 1; k &lt; K + 1; k++)
+    {
+        Mat Output_buff = Output.clone();
+        for (int x = 2; x &lt; Input.rows - 2; x++)
+        {
+            uchar* sum = Output.ptr&lt;uchar&gt;(x);
+            uchar* current = Output_buff.ptr&lt;uchar&gt;(x);
+            uchar* next = Output_buff.ptr&lt;uchar&gt;(x + 1);
+            uchar* next_ = Output_buff.ptr&lt;uchar&gt;(x + 2);
+            uchar* last = Output_buff.ptr&lt;uchar&gt;(x - 1);
+            uchar* last_ = Output_buff.ptr&lt;uchar&gt;(x - 2);
+            for (int y = 2; y &lt; Input.cols - 2; y++)
+            {
+                /*
+                [ 1  4  6  4  1
+                  4 16 24 16  4
+                  6 24 36 24  6
+                  4 16 24 16  4
+                  1  4  6  4  1 ]
+                */
+                sum[y] = saturate_cast&lt;uchar&gt;((+1 * last_[y - 2] + 4 * last_[y - 1] + 6 * last_[y] + 4 * last_[y + 1] + 1 * last_[y + 2]
+                    + 4 * last[y - 2] + 16 * last[y - 1] + 24 * last[y] + 16 * last[y + 1] + 4 * last[y + 2]
+                    + 6 * current[y - 2] + 24 * current[y - 1] + 36 * current[y] + 24 * current[y + 1] + 6 * current[y + 2]
+                    + 4 * next[y - 2] + 16 * next[y - 1] + 24 * next[y] + 16 * next[y + 1] + 4 * next[y + 2]
+                    + 1 * next_[y - 2] + 4 * next_[y - 1] + 6 * next_[y] + 4 * next_[y + 1] + 1 * next_[y + 2]) * 0.00390625);
+
+            }
+        }
+    }
+    return Output;
+}
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/14/1XbocT.png" width="300px"></div>
+
+
+<h2 id="3-6-高斯滤波后的Sobel"><a href="#3-6-高斯滤波后的Sobel" class="headerlink" title="3.6 高斯滤波后的Sobel"></a>3.6 高斯滤波后的Sobel</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/14/1XqpjO.jpg" data-fancybox="images" data-caption="Gaussian_based_Sobel" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/14/1XqpjO.jpg"></a></center>
+
+<p><strong>代码：</strong></p>
+<pre><code class="C++">Sobel_Method(Gaussian_Filter_5(In, 2), &quot;Sobel_Method_with_Gaussian_Filter&quot;);
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/14/1Xqr5R.png" width="300px"></div>
+
+
+<h2 id="3-7-高斯滤波后的拉普拉斯方法"><a href="#3-7-高斯滤波后的拉普拉斯方法" class="headerlink" title="3.7 高斯滤波后的拉普拉斯方法"></a>3.7 高斯滤波后的拉普拉斯方法</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/14/1Xqfqe.jpg" data-fancybox="images" data-caption="Gaussian_based_Laplacian" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/14/1Xqfqe.jpg"></a></center>
+
+<p><strong>代码：</strong></p>
+<pre><code class="C++">Laplacian_Method(Gaussian_Filter_5(In, 2), &quot;Laplacian_Method_with_Gaussian_Filter&quot;);
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/14/1XqIIA.png" width="300px"></div>
+
+<h2 id="3-8-基于拉普拉斯方法的锐化算法"><a href="#3-8-基于拉普拉斯方法的锐化算法" class="headerlink" title="3.8 基于拉普拉斯方法的锐化算法"></a>3.8 基于拉普拉斯方法的锐化算法</h2><p><strong>流程图：</strong></p>
+<center><a href="https://s2.ax1x.com/2020/02/14/1XxNx1.jpg" data-fancybox="images" data-caption="Sharpening_flow" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2020/02/14/1XxNx1.jpg"></a></center>
+
+<p><strong>代码：</strong></p>
+<pre><code class="C++">void Sharpening_based_on_Laplacian(Mat Input, int K)
+{
+    Mat Output = Input.clone();
+    for (int x = 1; x &lt; Input.rows - 1; x++)
+    {
+        uchar* sum = Output.ptr&lt;uchar&gt;(x);
+        uchar* current = Input.ptr&lt;uchar&gt;(x);
+        uchar* next = Input.ptr&lt;uchar&gt;(x + 1);
+        uchar* last = Input.ptr&lt;uchar&gt;(x - 1);
+        for (int y = 1; y &lt; Input.cols - 1; y++)
+        {
+            /*
+            [   0         - K    0
+              - K  (1 + 4 * K)  - K
+                0         - K    0 ]
+            */
+            sum[y] = saturate_cast&lt;uchar&gt;(
+                -K * last[y]
+                - K * current[y - 1] + (1 + 4 * K) * current[y] - K * current[y + 1]
+                - K * next[y]);
+        }
+    }
+    imshow(&quot;Sharpening_based_on_Laplacian&quot;, Output);
+}
+</code></pre>
+<p><strong>结果：</strong></p>
+<div align="center"><img src="https://s2.ax1x.com/2020/02/12/1bSyin.png" width="300px"><img src="https://s2.ax1x.com/2020/02/14/1j9y0P.png" width="300px"></div>
+
+<h1 id="4-边缘检测方法的性能对比（主观）"><a href="#4-边缘检测方法的性能对比（主观）" class="headerlink" title="4 边缘检测方法的性能对比（主观）"></a>4 边缘检测方法的性能对比（主观）</h1>
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2020/02/14/github.io+Hexo实现博客托管/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                github.io+Hexo实现博客托管</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2019/12/11/如何选购一台笔记本 测试用文本/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                如何选购一台笔记本 测试用文本</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

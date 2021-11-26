@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">旧文搬运 关于python jieba库的应用 | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      旧文搬运 关于python jieba库的应用</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2020-3-19<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <h1 id="关于python-jieba库的应用"><a href="#关于python-jieba库的应用" class="headerlink" title="关于python jieba库的应用"></a>关于python jieba库的应用</h1><p>作者：Yuk1n0<br>链接：<a href="https://www.lofter.com/lpost/1e94581f_d566a55" target="_blank" rel="noopener">https://www.lofter.com/lpost/1e94581f_d566a55</a><br>来源：LOFTER<br>时间：2016-12-16</p>
+<blockquote>
+<p>近期在做python的一些题目，其中有一道是用jieba库对《三国演义》进行分词，并统计其中人名的词频。</p>
+</blockquote>
+<ul>
+<li><p>题目：<br>《三国演义》是一本鸿篇巨著，里面出现了几百个各具特色的人物。每次读这本经典作品都会想一个问题，全书这些人物谁出场最多呢？一起来用Python回答这个问题吧。<br>人物出场统计涉及对词汇的统计。中文文章需要分词才能进行词频统计，请使用jieba库。《三国演义》文本保存为：三国演义.txt。</p>
+</li>
+<li><p>输入：<br>三国演义.txt，请使用input()函数方式获得文件名输入。</p>
+</li>
+<li><p>输出：<br>打印输出全书出现次数最多的5个人物名字，名字采用逗号（,）分隔，每个名字后面用中括号标注改名字出现次数。例如：曹操[123], 刘备[110]。</p>
+</li>
+</ul>
+<h2 id="1-1-打开文件的问题"><a href="#1-1-打开文件的问题" class="headerlink" title="1.1 打开文件的问题"></a>1.1 打开文件的问题</h2><p>上来第一步，打开文件就出了问题，由于题目要求打开文件必须为中文名“三国演义.txt”，在编码上不符合python的默认编码模式。</p>
+<center><a href="https://s1.ax1x.com/2020/03/19/8yKU6U.png" data-fancybox="images" data-caption="txt打开" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/03/19/8yKU6U.png"></a></center>
+
+<center><a href="https://s1.ax1x.com/2020/03/19/8yKyfx.png" data-fancybox="images" data-caption="打开报错" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/03/19/8yKyfx.png"></a></center>
+
+<p>之前就遇到过这样的问题，中文的“gbk”编码出了问题，用codecs库转码成utf-8就行了。</p>
+<center><a href="https://s1.ax1x.com/2020/03/19/8yKLjS.png" data-fancybox="images" data-caption="编码修改" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/03/19/8yKLjS.png"></a></center>
+
+<h2 id="1-2-分词"><a href="#1-2-分词" class="headerlink" title="1.2 分词"></a>1.2 分词</h2><p>根据官方文档的说法，用jieba中的posseg函数就能实现将文本分词并给每个词智能识别词性。分词后的每个词x = x.word + / + x.flag，会有x.word = 原单词 以及 x.flag = 词性 两个属性</p>
+<pre><code class="python">words = jieba.posseg.cut(t) #分词并识别词性
+num = {} #建立一个字典用来对应key（词语）和value（出现次数）
+for word in words: #开始遍历所有的分词结果
+    if word.flag == &quot;nr&quot;: #判断词性是否为“nr”（人名）
+        num[word.word] = num.get(word.word,0) + 1 #num.get(word.word,0)表示如果字典num中word的对应value值为空，则返回一个默认值0
+</code></pre>
+<h2 id="1-3-排序-打印"><a href="#1-3-排序-打印" class="headerlink" title="1.3 排序 打印"></a>1.3 排序 打印</h2><p>分词后我们已经有了“人名：次数”的一个字典，接下来我们需要根据key值降序排列这个字典</p>
+<pre><code>order = list(num.items()) #list(num.items)返回一个每个元素为（key，value）元组的列表
+order.sort(key = lambda x:x[1], reverse = True) #以列表中的第一列即value的一列为key进行reverse排序
+for i in range(5):
+    print(str(order[i][0])+&quot;[%d]&quot;%int(order[i][1]),end = &quot;&quot;)
+    if i == 4:
+        break
+    print(&quot;,&quot;,end = &quot;&quot;)
+</code></pre><h2 id="1-4-打印后的结果"><a href="#1-4-打印后的结果" class="headerlink" title="1.4 打印后的结果"></a>1.4 打印后的结果</h2><center><a href="https://s1.ax1x.com/2020/03/19/8yMP3V.png" data-fancybox="images" data-caption="打印结果初" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/03/19/8yMP3V.png"></a></center>
+
+<p>蜜汁尴尬，jieba库直接把孔明曰当成了人名，当然还有很多的曹操曰，玄德曰也会被当成人名处理，因此我们需要改进一下算法或者利用jieba库自身的功能来避免这个现象。</p>
+<p>我先看了一下讨论群里大家的反应，有些人说可以通过增加“孔明”“曹操”等词的词频来让系统只识别孔明和曹操，不识别曰，有人说可以直接把孔明曰加到孔明里，是系统自己识别不够智能，我们也没办法。可是我总觉得这两种方法都太low了，我想要从根本上解决这个问题。</p>
+<h2 id="1-5-试图解决“孔明曰”"><a href="#1-5-试图解决“孔明曰”" class="headerlink" title="1.5 试图解决“孔明曰”"></a>1.5 试图解决“孔明曰”</h2><p>出现这种情况的根本原因是系统本身不够智能，将“孔明曰”识别成了人名。讨论群里有个人说可以用jieba.cut(t, cut_all = True)的方式来避免这个bug。我为此查看了官方文档对这个函数的解释。</p>
+<pre><code class="python">import jieba
+seg_list = jieba.cut(&quot;我来到北京清华大学&quot;, cut_all=True)
+print(&quot;Full Mode:&quot;, &quot;/ &quot;.join(seg_list))  # 全模式
+seg_list = jieba.cut(&quot;我来到北京清华大学&quot;, cut_all=False)
+print(&quot;Default Mode:&quot;, &quot;/ &quot;.join(seg_list))  # 精确模式
+seg_list = jieba.cut(&quot;他来到了网易杭研大厦&quot;)  # 默认是精确模式
+print(&quot;, &quot;.join(seg_list))
+#output
+【全模式】: 我/ 来到/ 北京/ 清华/ 清华大学/ 华大/ 大学
+【精确模式】: 我/ 来到/ 北京/ 清华大学
+【新词识别】：他, 来到, 了, 网易, 杭研, 大厦    (此处，“杭研”并没有在词典中，但是也被Viterbi算法识别出来了)
+</code></pre>
+<p>也就是说用jieba.cut(t, cut_all = True)的时候，系统会把可以识别的所有词汇都列出来，那么“孔明曰”就不会直接被识别为“孔明曰”而会被识别为“孔明”和“孔明曰”，这样一来就给了我们统计所有孔明出现次数的机会。</p>
+<p>但是，与此同时，另一个问题困扰了我，上文中用到的posseg函数能够实现词性识别，而这个jieba.cut函数却不能识别词性，那么我们怎么统计人名呢？<br>我首先想到的设计一个cut，posseg函数并行的算法，然后通过将cut后的结果遍历posseg的结果来判断词性，但是显然的，这样做需要双重循环，十分复杂。</p>
+<pre><code class="python">import codecs
+import jieba
+import jieba.posseg as pseg
+t = input()
+t = codecs.open(t,&quot;r&quot;,&quot;utf-8&quot;).read()
+words = list(jieba.cut(t, cut_all = True))
+ws = pseg.cut(t)
+num = {}
+for word in words:
+    for w in ws:
+        if word == w.word and w.flag == &quot;nr&quot;:
+            num[word] = num.get(word,0) + 1
+order = list(num.items())
+order.sort(key = lambda x:x[1], reverse = True)
+for i in range(10):
+    print(str(order[i][0])+&quot;[%d]&quot;%int(order[i][1]),end = &quot;&quot;)
+    if i == 9:
+        break
+    print(&quot;,&quot;,end = &quot;&quot;)
+</code></pre>
+<p>十分尴尬的是，我运行了20分钟也没出结果，看来这双重循环确实不实用。</p>
+<p>那就换个方法呗，之后我想的方法是先跑一遍cut，然后再把cut后的每个词跑一遍posseg判断一下词性，再排序。<br>于是就有了：</p>
+<pre><code class="python">import codecs
+import jieba
+import jieba.posseg as pseg
+t = input()
+t = codecs.open(t,&quot;r&quot;,&quot;utf-8&quot;).read()
+words = jieba.cut(t, cut_all = True)
+num = {}
+for word in words:
+    if len(word) &lt; 2: #发现系统会把单字识别为任命我就加了长度限制
+        continue
+    else:
+        num[word] = num.get(word,0) + 1
+x = list(num.keys())
+for i in x:
+    ws = pseg.cut(str(i))
+    for w in ws:
+        if w.flag != &quot;nr&quot;:
+            num[w] = 0
+order = list(num.items())
+order.sort(key = lambda x:x[1], reverse = True)
+for i in range(10):
+    print(str(order[i][0])+&quot;[%d]&quot;%int(order[i][1]),end = &quot;&quot;)
+    if i == 9:
+        break
+    print(&quot;,&quot;,end = &quot;&quot;)
+</code></pre>
+<p>结果让我快崩溃了,因为不用全文posseg所以跑得很快，几秒出结果。</p>
+<center><a href="https://s1.ax1x.com/2020/03/19/8yMAuF.png" data-fancybox="images" data-caption="打印结果改" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/03/19/8yMAuF.png"></a></center>
+
+<p>真的快哭了好吗。。。</p>
+<h2 id="1-6-关于试图解决“孔明曰”的反思"><a href="#1-6-关于试图解决“孔明曰”的反思" class="headerlink" title="1.6 关于试图解决“孔明曰”的反思"></a>1.6 关于试图解决“孔明曰”的反思</h2><p>在两次失败后我仔细思考了一下从根本上解决这一问题的可行性，发现这似乎不能够从根本上解决。如果我们开启全分词，系统不但会把”孔明曰“分为“孔明”和”孔明曰“，同时还会智障的把“司马懿”分为“司马”和”司马懿“，然后再名字判断的时候还会将这两个都判断为“nr”，即名字。但一旦我们不开启全分词，那么系统就会智障地把“孔明曰”当成一个名字，也不行。所以怎么着都不能直接从根本上解决这一问题。最好的方式就是建立一个包含三国各个人名的字典，然后让系统在文章中找这些词的出现次数，这样才能准确无误地统计。但是由于我们的题目的输入项只是一个”三国演义.txt“,所以想要这样解决显然是不行的。</p>
+<h2 id="1-7-向AI的智障低头"><a href="#1-7-向AI的智障低头" class="headerlink" title="1.7 向AI的智障低头"></a>1.7 向AI的智障低头</h2><p>在打了一晚上无用码之后，身心俱疲，为了更好的输出效果，我最终采取了讨论组中那个增加”孔明“、”曹操“等词的词频的方法，虽然我当时并不像采用这个很low的方法，但是迫于现实的残酷性，我只有向AI低头了。</p>
+<pre><code class="python">import codecs
+import jieba.posseg as pseg
+import jieba
+t = input()
+t = codecs.open(t,&quot;r&quot;,&quot;utf-8&quot;).read()
+jieba.add_word(&#39;孔明&#39;,100000,&quot;nr&quot;)
+jieba.add_word(&#39;玄德&#39;,100000,&quot;nr&quot;)
+jieba.add_word(&#39;曹操&#39;,100000,&quot;nr&quot;)
+jieba.add_word(&#39;刘备&#39;,100000,&quot;nr&quot;)
+jieba.add_word(&#39;关羽&#39;,100000,&quot;nr&quot;)
+jieba.add_word(&#39;关公&#39;,100000,&quot;nr&quot;)
+jieba.add_word(&#39;张飞&#39;,100000,&quot;nr&quot;)
+words = pseg.cut(t)
+num = {}
+for word in words:
+    if word.flag == &quot;nr&quot;:
+        num[word] = num.get(word,0) + 1
+order = list(num.items())
+order.sort(key = lambda x:x[1], reverse = True)
+for i in range(5):
+    print(str(order[i][0])[:-3]+&quot;[%d]&quot;%int(order[i][1]),end = &quot;&quot;)
+    if i == 4:
+        break
+    print(&quot;,&quot;,end = &quot;&quot;)
+</code></pre>
+<center><a href="https://s1.ax1x.com/2020/03/19/8yM3uD.png" data-fancybox="images" data-caption="打印结果终" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2020/03/19/8yM3uD.png"></a></center>
+
+<p>这种暴力增加词频的方法让系统在识别”孔明曰“的时候直接将其识别为”孔明“和”曰“。虽然我依然觉得很low，但在解决这一问题时，这确实不失为一种实用的方法。</p>
+
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2020/03/21/日语语法 4.1 敬语和动词词根/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                日语语法 4.1 敬语和动词词根</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2020/03/16/语音和语言处理第三版 2.3 语料库/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                语音和语言处理第三版 2.3 语料库</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

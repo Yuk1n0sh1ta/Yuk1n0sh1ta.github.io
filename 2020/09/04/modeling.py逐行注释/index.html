@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">modeling.py逐行注释 | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      modeling.py逐行注释</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2020-9-4<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <ul>
+<li>本文为BERT的modeling.py模块，即建模模块，进行逐行注释。</li>
+</ul>
+<h1 id="modeling-py"><a href="#modeling-py" class="headerlink" title="modeling.py"></a>modeling.py</h1><h2 id="头文件"><a href="#头文件" class="headerlink" title="头文件"></a>头文件</h2><pre><code class="python">&quot;&quot;&quot;BERT finetuning runner.&quot;&quot;&quot;
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+import collections
+import csv
+import os
+import modeling
+import optimization
+import tokenization
+import tensorflow as tf
+</code></pre>
+<h2 id="BertConfig"><a href="#BertConfig" class="headerlink" title="BertConfig"></a>BertConfig</h2><pre><code class="python">class BertConfig(object):
+  &quot;&quot;&quot;Configuration for `BertModel`.&quot;&quot;&quot;
+  def __init__(self,
+               vocab_size,
+               hidden_size=768,
+               num_hidden_layers=12,
+               num_attention_heads=12,
+               intermediate_size=3072,
+               hidden_act=&quot;gelu&quot;,
+               hidden_dropout_prob=0.1,
+               attention_probs_dropout_prob=0.1,
+               max_position_embeddings=512,
+               type_vocab_size=16,
+               initializer_range=0.02):
+    &quot;&quot;&quot;Constructs BertConfig.
+    Args:
+      vocab_size: Vocabulary size of `inputs_ids` in `BertModel`.
+      hidden_size: Size of the encoder layers and the pooler layer.
+      num_hidden_layers: Number of hidden layers in the Transformer encoder.
+      num_attention_heads: Number of attention heads for each attention layer in
+        the Transformer encoder.
+      intermediate_size: The size of the &quot;intermediate&quot; (i.e., feed-forward)
+        layer in the Transformer encoder.
+      hidden_act: The non-linear activation function (function or string) in the
+        encoder and pooler.
+      hidden_dropout_prob: The dropout probability for all fully connected
+        layers in the embeddings, encoder, and pooler.
+      attention_probs_dropout_prob: The dropout ratio for the attention
+        probabilities.
+      max_position_embeddings: The maximum sequence length that this model might
+        ever be used with. Typically set this to something large just in case
+        (e.g., 512 or 1024 or 2048).
+      type_vocab_size: The vocabulary size of the `token_type_ids` passed into
+        `BertModel`.
+      initializer_range: The stdev of the truncated_normal_initializer for
+        initializing all weight matrices.
+    &quot;&quot;&quot;
+    # 将参数init为该类的属性
+    self.vocab_size = vocab_size
+    self.hidden_size = hidden_size
+    self.num_hidden_layers = num_hidden_layers
+    self.num_attention_heads = num_attention_heads
+    self.hidden_act = hidden_act
+    self.intermediate_size = intermediate_size
+    self.hidden_dropout_prob = hidden_dropout_prob
+    self.attention_probs_dropout_prob = attention_probs_dropout_prob
+    self.max_position_embeddings = max_position_embeddings
+    self.type_vocab_size = type_vocab_size
+    self.initializer_range = initializer_range
+
+  # 从python字典中读取BERT的配置参数
+  @classmethod
+  def from_dict(cls, json_object):
+    &quot;&quot;&quot;Constructs a `BertConfig` from a Python dictionary of parameters.&quot;&quot;&quot;
+    config = BertConfig(vocab_size=None)
+    for (key, value) in six.iteritems(json_object):
+      config.__dict__[key] = value
+    return config
+
+  # 从json文件中读取BERT的配置参数
+  @classmethod
+  def from_json_file(cls, json_file):
+    &quot;&quot;&quot;Constructs a `BertConfig` from a json file of parameters.&quot;&quot;&quot;
+    with tf.gfile.GFile(json_file, &quot;r&quot;) as reader:
+      text = reader.read()
+    return cls.from_dict(json.loads(text))
+
+  # 将实体序列化为python字典
+  def to_dict(self):
+    &quot;&quot;&quot;Serializes this instance to a Python dictionary.&quot;&quot;&quot;
+    output = copy.deepcopy(self.__dict__)
+    return output
+
+  # 将实体序列化为json字符串
+  def to_json_string(self):
+    &quot;&quot;&quot;Serializes this instance to a JSON string.&quot;&quot;&quot;
+    return json.dumps(self.to_dict(), indent=2, sort_keys=True) + &quot;\n&quot;
+</code></pre>
+<p>该类用于存储BERT参数。<br>各参数意义：</p>
+<ol>
+<li>vocab_size：inputs_ids的Vocabulary的大小</li>
+<li>hidden_size：隐藏层（编码层/pooler层）的大小</li>
+<li>num_hidden_layers：Transformer编码器的hidden层个数</li>
+<li>num_attention_heads：Transformer编码器的注意力头个数</li>
+<li>intermediate_size：中间层（FFN）大小</li>
+<li>hidden_act：隐藏层（编码层/pooler层）激活函数</li>
+<li>hidden_dropout_prob：隐藏层（embedding层/编码层/pooler层）dropout概率</li>
+<li>attention_probs_dropout_prob：注意力概率的dropout概率</li>
+<li>max_position_embeddings：最大序列长度（512/1024/2048）</li>
+<li>type_vocab_size：token_type_ids的Vocabulary的大小（*有篇文章说这个是segement_id???）</li>
+<li>initializer_range：设置个参数矩阵初始值时truncated_normal_initializer的标准差</li>
+</ol>
+<p>默认值：<br>vocab_size,<br>hidden_size=768,<br>num_hidden_layers=12,<br>num_attention_heads=12,<br>intermediate_size=3072,<br>hidden_act=”gelu”,<br>hidden_dropout_prob=0.1,<br>attention_probs_dropout_prob=0.1,<br>max_position_embeddings=512,<br>type_vocab_size=16,<br>initializer_range=0.02</p>
+<h2 id="BertModel"><a href="#BertModel" class="headerlink" title="BertModel"></a>BertModel</h2><pre><code class="python">class BertModel(object):
+  &quot;&quot;&quot;BERT model (&quot;Bidirectional Encoder Representations from Transformers&quot;).
+  Example usage:
+  \\\python
+  # Already been converted into WordPiece token ids
+  input_ids = tf.constant([[31, 51, 99], [15, 5, 0]])
+  input_mask = tf.constant([[1, 1, 1], [1, 1, 0]])
+  token_type_ids = tf.constant([[0, 0, 1], [0, 2, 0]])
+  config = modeling.BertConfig(vocab_size=32000, hidden_size=512,
+    num_hidden_layers=8, num_attention_heads=6, intermediate_size=1024)
+  model = modeling.BertModel(config=config, is_training=True,
+    input_ids=input_ids, input_mask=input_mask, token_type_ids=token_type_ids)
+  label_embeddings = tf.get_variable(...)
+  pooled_output = model.get_pooled_output()
+  logits = tf.matmul(pooled_output, label_embeddings)
+  ...
+  \\\
+  &quot;&quot;&quot;
+  def __init__(self,
+               config,
+               is_training,
+               input_ids,
+               input_mask=None,
+               token_type_ids=None,
+               use_one_hot_embeddings=False,
+               scope=None):
+    &quot;&quot;&quot;Constructor for BertModel.
+    Args:
+      config: `BertConfig` instance.
+      is_training: bool. true for training model, false for eval model. Controls
+        whether dropout will be applied.
+      input_ids: int32 Tensor of shape [batch_size, seq_length].
+      input_mask: (optional) int32 Tensor of shape [batch_size, seq_length].
+      token_type_ids: (optional) int32 Tensor of shape [batch_size, seq_length].
+      use_one_hot_embeddings: (optional) bool. Whether to use one-hot word
+        embeddings or tf.embedding_lookup() for the word embeddings.
+      scope: (optional) variable scope. Defaults to &quot;bert&quot;.
+    Raises:
+      ValueError: The config is invalid or one of the input tensor shapes
+        is invalid.
+    &quot;&quot;&quot;
+    config = copy.deepcopy(config)
+
+    # 若不是训练，则将隐藏层以及注意力概率的dropout设置为0
+    if not is_training:
+      config.hidden_dropout_prob = 0.0
+      config.attention_probs_dropout_prob = 0.0
+
+    # 获取input_id的形状列表
+    # 期待的rank为2，若实际值不是2，则报错
+    # 猜测input_ids的格式为
+    # [[10, 200, 3000, 40000], 
+    #  [20, 300, 4000, 50000],]
+    # 例子中的batch_size为2，seq_length为4。
+    input_shape = get_shape_list(input_ids, expected_rank=2)
+    batch_size = input_shape[0]
+    seq_length = input_shape[1]
+
+    # 若input_mask为None，
+    # 则为其创立一个与input_ids同shape的矩阵。
+    if input_mask is None:
+      input_mask = tf.ones(shape=[batch_size, seq_length], dtype=tf.int32)
+
+    # 若token_type_ids为None，
+    # 则为其创立一个与input_ids同shape的矩阵。
+    if token_type_ids is None:
+      token_type_ids = tf.zeros(shape=[batch_size, seq_length], dtype=tf.int32)
+
+    # BERT模型主体
+    with tf.variable_scope(scope, default_name=&quot;bert&quot;):
+
+      # embedding部分
+      with tf.variable_scope(&quot;embeddings&quot;):
+        # Perform embedding lookup on the word ids.
+        # 得到word_embedding输出 以及
+        # input_ids到word_embedding输出的变换矩阵embedding_table
+        # 旨在将vocab_size的one-hot编码的输入转化为hidden_size的tensor
+        (self.embedding_output, self.embedding_table) = embedding_lookup(
+            # 输入id
+            input_ids=input_ids,
+            # vocabulary大小
+            vocab_size=config.vocab_size,
+            # embedding大小（隐藏层大小）
+            embedding_size=config.hidden_size,
+            # 初始化参数矩阵的标准差
+            initializer_range=config.initializer_range,
+            #  word_embedding命名
+            word_embedding_name=&quot;word_embeddings&quot;,
+            # 是否使用one-hot编码
+            use_one_hot_embeddings=use_one_hot_embeddings)
+        # Add positional embeddings and token type embeddings, then layer
+        # normalize and perform dropout.
+        # 得到positional_embedding以及
+        # token_type_embedding（segment_embedding）
+        self.embedding_output = embedding_postprocessor(
+            # 输入张量为上一轮输出的包含word_embedding的embedding_output
+            input_tensor=self.embedding_output,
+            # 是否使用segment_embedding
+            use_token_type=True,
+            # segment_embedding赋值
+            token_type_ids=token_type_ids,
+            # token_type_ids的vocabulary大小
+            token_type_vocab_size=config.type_vocab_size,
+            # token_type_embedding命名
+            token_type_embedding_name=&quot;token_type_embeddings&quot;,
+            # 是否使用positional_embedding
+            use_position_embeddings=True,
+            # position_embedding命名
+            position_embedding_name=&quot;position_embeddings&quot;,
+            # 参数矩阵初始化的正态分布标准差
+            initializer_range=config.initializer_range,
+            # 最长序列长度
+            max_position_embeddings=config.max_position_embeddings,
+            # 隐藏层dropout概率
+            dropout_prob=config.hidden_dropout_prob)
+
+      # encoder部分
+      with tf.variable_scope(&quot;encoder&quot;):
+        # This converts a 2D mask of shape [batch_size, seq_length] to a 3D
+        # mask of shape [batch_size, seq_length, seq_length] which is used
+        # for the attention scores.
+        # 将[batch_size, seq_length]转化为[batch_size, seq_length, seq_length]
+        # 用于计算attention scores
+        attention_mask = create_attention_mask_from_input_mask(
+            input_ids, input_mask)
+        # Run the stacked transformer.
+        # `sequence_output` shape = [batch_size, seq_length, hidden_size].
+        # 多层Transformer模型
+        self.all_encoder_layers = transformer_model(
+            # 输入相加后的word_embedding、segment_embedding、positioanl embedding
+            input_tensor=self.embedding_output,
+            # attention掩码[batch_size, seq_length, seq_length]
+            attention_mask=attention_mask,
+            # 隐藏层大小
+            hidden_size=config.hidden_size,
+            # 隐藏层层数
+            num_hidden_layers=config.num_hidden_layers,
+            # attention头个数
+            num_attention_heads=config.num_attention_heads,
+            # 中间层大小
+            intermediate_size=config.intermediate_size,
+            # 中间层激活函数
+            intermediate_act_fn=get_activation(config.hidden_act),
+            # 隐藏层dropout概率
+            hidden_dropout_prob=config.hidden_dropout_prob,
+            # attention概率的dropout概率
+            attention_probs_dropout_prob=config.attention_probs_dropout_prob,
+            # 参数初始化正态分布的标准差
+            initializer_range=config.initializer_range,
+            # 是否返回所有层输出
+            do_return_all_layers=True)    
+      # 选择最终的Transformer输出为最后一层
+      self.sequence_output = self.all_encoder_layers[-1]
+
+      # pooler部分
+      # The &quot;pooler&quot; converts the encoded sequence tensor of shape
+      # [batch_size, seq_length, hidden_size] to a tensor of shape
+      # [batch_size, hidden_size]. This is necessary for segment-level
+      # (or segment-pair-level) classification tasks where we need a fixed
+      # dimensional representation of the segment.
+      with tf.variable_scope(&quot;pooler&quot;):
+        # We &quot;pool&quot; the model by simply taking the hidden state corresponding
+        # to the first token. We assume that this has been pre-trained
+        # 取序列中的第一个token（[CLS]）jingguo Transformer的output
+        first_token_tensor = tf.squeeze(self.sequence_output[:, 0:1, :], axis=1)
+        # 建立一个输出为hidden_size的全连接网络
+        # 将Transformer的输出维度pooling为固定长度
+        self.pooled_output = tf.layers.dense(
+            # 输入张量
+            first_token_tensor,
+            # 输出维度
+            config.hidden_size,
+            # 激活函数
+            activation=tf.tanh,
+            # 参数初始化
+            kernel_initializer=create_initializer(config.initializer_range))
+
+  # 获取pooled输出（返回pooling的[CLS]输出）
+  def get_pooled_output(self):
+    return self.pooled_output
+
+  # 获取序列输出（返回Transfomer最后一层的全部输出）
+  def get_sequence_output(self):
+    &quot;&quot;&quot;Gets final hidden layer of encoder.
+    Returns:
+      float Tensor of shape [batch_size, seq_length, hidden_size] corresponding
+      to the final hidden of the transformer encoder.
+    &quot;&quot;&quot;
+    return self.sequence_output
+
+  # 获取Transformer中所有encoder层的输出
+  def get_all_encoder_layers(self):
+    return self.all_encoder_layers
+
+  # 获取normalization之后的
+  # word_embedding、segment_embedding、positioinal_embedding的和
+  def get_embedding_output(self):
+    &quot;&quot;&quot;Gets output of the embedding lookup (i.e., input to the transformer).
+    Returns:
+      float Tensor of shape [batch_size, seq_length, hidden_size] corresponding
+      to the output of the embedding layer, after summing the word
+      embeddings with the positional embeddings and the token type embeddings,
+      then performing layer normalization. This is the input to the transformer.
+    &quot;&quot;&quot;
+    return self.embedding_output
+
+  # 获取input_ids到word_embedding输出的变换矩阵
+  def get_embedding_table(self):
+    return self.embedding_table
+</code></pre>
+<p>该类是BERT模型的主体部分，包含了从 <strong>input_ids -&gt; embedding -&gt; Transfomer输出张量</strong> 的所需方法。</p>
+<h2 id="gelu"><a href="#gelu" class="headerlink" title="gelu"></a>gelu</h2><pre><code class="python">def gelu(x):
+  &quot;&quot;&quot;Gaussian Error Linear Unit.
+  This is a smoother version of the RELU.
+  Original paper: https://arxiv.org/abs/1606.08415
+  Args:
+    x: float Tensor to perform activation.
+  Returns:
+    `x` with the GELU activation applied.
+  &quot;&quot;&quot;
+  cdf = 0.5 * (1.0 + tf.tanh(
+      (np.sqrt(2 / np.pi) * (x + 0.044715 * tf.pow(x, 3)))))
+  return x * cdf
+</code></pre>
+<p>定义gelu函数。</p>
+<h2 id="get-activation"><a href="#get-activation" class="headerlink" title="get_activation"></a>get_activation</h2><pre><code class="python">def get_activation(activation_string):
+  &quot;&quot;&quot;Maps a string to a Python function, e.g., &quot;relu&quot; =&gt; `tf.nn.relu`.
+  Args:
+    activation_string: String name of the activation function.
+  Returns:
+    A Python function corresponding to the activation function. If
+    `activation_string` is None, empty, or &quot;linear&quot;, this will return None.
+    If `activation_string` is not a string, it will return `activation_string`.
+  Raises:
+    ValueError: The `activation_string` does not correspond to a known
+      activation.
+  &quot;&quot;&quot;
+  # We assume that anything that&quot;s not a string is already an activation
+  # function, so we just return it.
+  # 判断activation_string是否为six.string_types字符串
+  # 若非字符串，则视为已经是定义好的激活函数，直接返回activation_string。
+  if not isinstance(activation_string, six.string_types):
+    return activation_string
+
+  # 若是字符串，但字符串为空，则返回None。
+  if not activation_string:
+    return None
+
+  # 若是字符串，且不为空，则将该字符串强制小写。
+  act = activation_string.lower()
+
+  # 判断激活函数类型
+  if act == &quot;linear&quot;:
+    return None
+  elif act == &quot;relu&quot;:
+    return tf.nn.relu
+  elif act == &quot;gelu&quot;:
+    return gelu
+  elif act == &quot;tanh&quot;:
+    return tf.tanh
+  else:
+    # 若非linear、relu、gelu、tanh，则报错不支持的激活函数。
+    raise ValueError(&quot;Unsupported activation: %s&quot; % act)
+</code></pre>
+<p>该函数用于通过输入字符串调用不同的激活函数。</p>
+<h2 id="get-assignment-map-from-checkpoint"><a href="#get-assignment-map-from-checkpoint" class="headerlink" title="get_assignment_map_from_checkpoint"></a>get_assignment_map_from_checkpoint</h2><pre><code class="python">def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
+  &quot;&quot;&quot;Compute the union of the current variables and checkpoint variables.&quot;&quot;&quot;
+  assignment_map = {}
+  initialized_variable_names = {}
+  name_to_variable = collections.OrderedDict()
+  for var in tvars:
+    name = var.name
+    m = re.match(&quot;^(.*):\\d+$&quot;, name)
+    if m is not None:
+      name = m.group(1)
+    name_to_variable[name] = var
+  init_vars = tf.train.list_variables(init_checkpoint)
+  assignment_map = collections.OrderedDict()
+  for x in init_vars:
+    (name, var) = (x[0], x[1])
+    if name not in name_to_variable:
+      continue
+    assignment_map[name] = name
+    initialized_variable_names[name] = 1
+    initialized_variable_names[name + &quot;:0&quot;] = 1
+  return (assignment_map, initialized_variable_names)
+</code></pre>
+<p>* 没看明白，需要结合run_classifier一起看。</p>
+<h2 id="dropout"><a href="#dropout" class="headerlink" title="dropout"></a>dropout</h2><pre><code class="python">def dropout(input_tensor, dropout_prob):
+  &quot;&quot;&quot;Perform dropout.
+  Args:
+    input_tensor: float Tensor.
+    dropout_prob: Python float. The probability of dropping out a value (NOT of
+      *keeping* a dimension as in `tf.nn.dropout`).
+  Returns:
+    A version of `input_tensor` with dropout applied.
+  &quot;&quot;&quot;
+  # 若dropout_prob为空或为0，则不对张量进行dropout，直接返回原张量。
+  if dropout_prob is None or dropout_prob == 0.0:
+    return input_tensor
+
+  # 否则，使用tf.nn.dropout对张量进行概率dropout。
+  output = tf.nn.dropout(input_tensor, 1.0 - dropout_prob)
+  return output
+</code></pre>
+<p>定义输入张量的dropout规则。</p>
+<h2 id="layer-norm"><a href="#layer-norm" class="headerlink" title="layer_norm"></a>layer_norm</h2><pre><code class="python">def layer_norm(input_tensor, name=None):
+  &quot;&quot;&quot;Run layer normalization on the last dimension of the tensor.&quot;&quot;&quot;
+  return tf.contrib.layers.layer_norm(
+      inputs=input_tensor, begin_norm_axis=-1, begin_params_axis=-1, scope=name)
+</code></pre>
+<p>该函数用于对张量的最后一个维度进行层级的normalization。<br>* 具体参数意义需进一步查看源码，位置：<br><code>C:\Users\你的用户名\AppData\Local\Programs\Python\Python37\Lib\site-packages\tensorflow_core\contrib\layers\python\layers.py</code></p>
+<h2 id="layer-norm-and-dropout"><a href="#layer-norm-and-dropout" class="headerlink" title="layer_norm_and_dropout"></a>layer_norm_and_dropout</h2><pre><code class="python">def layer_norm_and_dropout(input_tensor, dropout_prob, name=None):
+  &quot;&quot;&quot;Runs layer normalization followed by dropout.&quot;&quot;&quot;
+  output_tensor = layer_norm(input_tensor, name)
+  output_tensor = dropout(output_tensor, dropout_prob)
+  return output_tensor
+</code></pre>
+<p>该函数用于层级的normalization以及dropout。</p>
+<h2 id="create-initializer"><a href="#create-initializer" class="headerlink" title="create_initializer"></a>create_initializer</h2><pre><code>def create_initializer(initializer_range=0.02):
+  &quot;&quot;&quot;Creates a `truncated_normal_initializer` with the given range.&quot;&quot;&quot;
+  return tf.truncated_normal_initializer(stddev=initializer_range)
+</code></pre><p>该函数用于生成一个指定标准差的参数矩阵initializer。</p>
+<h2 id="embedding-lookup"><a href="#embedding-lookup" class="headerlink" title="embedding_lookup"></a>embedding_lookup</h2><pre><code class="python">def embedding_lookup(input_ids,
+                     vocab_size,
+                     embedding_size=128,
+                     initializer_range=0.02,
+                     word_embedding_name=&quot;word_embeddings&quot;,
+                     use_one_hot_embeddings=False):
+  &quot;&quot;&quot;Looks up words embeddings for id tensor.
+  Args:
+    input_ids: int32 Tensor of shape [batch_size, seq_length] containing word
+      ids.
+    vocab_size: int. Size of the embedding vocabulary.
+    embedding_size: int. Width of the word embeddings.
+    initializer_range: float. Embedding initialization range.
+    word_embedding_name: string. Name of the embedding table.
+    use_one_hot_embeddings: bool. If True, use one-hot method for word
+      embeddings. If False, use `tf.gather()`.
+  Returns:
+    float Tensor of shape [batch_size, seq_length, embedding_size].
+  &quot;&quot;&quot;
+  # This function assumes that the input is of shape [batch_size, seq_length,
+  # num_inputs].
+  #
+  # If the input is a 2D tensor of shape [batch_size, seq_length], we
+  # reshape to [batch_size, seq_length, 1].
+  # 如果张量的维度为2（[batch_size, seq_length]），
+  # 则将其扩张为[batch_size, seq_length, 1]。
+  if input_ids.shape.ndims == 2:
+    input_ids = tf.expand_dims(input_ids, axis=[-1])
+
+  # 使用create_initializer创建一个shape为[vocab_size, embedding_size]的参数矩阵
+  embedding_table = tf.get_variable(
+      name=word_embedding_name,
+      shape=[vocab_size, embedding_size],
+      initializer=create_initializer(initializer_range))
+
+  # 将多维度的input_ids扁平化reshape为1维向量
+  flat_input_ids = tf.reshape(input_ids, [-1])
+
+  # 如果使用one hot编码，则将扁平化后的input_ids转化为vocab_size深度的one hot向量。
+  if use_one_hot_embeddings:
+    one_hot_input_ids = tf.one_hot(flat_input_ids, depth=vocab_size)
+    # 将编码后的input_ids与参数矩阵相乘得到输出
+    output = tf.matmul(one_hot_input_ids, embedding_table)
+  # 否则根据扁平化后的flat_input_ids从embedding_table中抽出与ids对应的向量作为输出
+  else:
+    output = tf.gather(embedding_table, flat_input_ids)
+
+  # 获取input_ids的shape
+  input_shape = get_shape_list(input_ids)
+
+  # 将扁平化的output重新reshape为[batch_size, seq_length, embedding_size]的形式
+  output = tf.reshape(output,
+                      input_shape[0:-1] + [input_shape[-1] * embedding_size])
+
+  # 返回输出的word_embedding以及参数矩阵embedding_table
+  return (output, embedding_table)
+</code></pre>
+<p>该函数用于将整型的input_ids转换为hidden_size维的浮点型张量后输出，并获取转换过程中的参数矩阵，即embedding_table。</p>
+<h2 id="create-attention-mask-from-input-mask"><a href="#create-attention-mask-from-input-mask" class="headerlink" title="create_attention_mask_from_input_mask"></a>create_attention_mask_from_input_mask</h2><pre><code class="python">def create_attention_mask_from_input_mask(from_tensor, to_mask):
+  &quot;&quot;&quot;Create 3D attention mask from a 2D tensor mask.
+  Args:
+    from_tensor: 2D or 3D Tensor of shape [batch_size, from_seq_length, ...].
+    to_mask: int32 Tensor of shape [batch_size, to_seq_length].
+  Returns:
+    float Tensor of shape [batch_size, from_seq_length, to_seq_length].
+  &quot;&quot;&quot;
+
+  # 获取输入张量的shape，[batch_size, from_seq_length]。
+  from_shape = get_shape_list(from_tensor, expected_rank=[2, 3])
+
+  # shape的首位是batch_size
+  batch_size = from_shape[0]
+
+  # shape的次位是from_seq_length
+  from_seq_length = from_shape[1]
+
+  # 获取to_mask的shape，[batch_size, to_seq_length]。
+  to_shape = get_shape_list(to_mask, expected_rank=2)
+
+  # shape的次位是to_seq_length
+  to_seq_length = to_shape[1]
+
+  # 将to_mask的形状reshape为[batch_size, 1, to_seq_length]，并将元素类型转换为float。
+  to_mask = tf.cast(
+      tf.reshape(to_mask, [batch_size, 1, to_seq_length]), tf.float32)
+  # We don&#39;t assume that `from_tensor` is a mask (although it could be). We
+  # don&#39;t actually care if we attend *from* padding tokens (only *to* padding)
+  # tokens so we create a tensor of all ones.
+  #
+  # `broadcast_ones` = [batch_size, from_seq_length, 1]
+  # 生成一个shape为[batch_size, from_seq_length, 1]的元素均为1的矩阵
+  broadcast_ones = tf.ones(
+      shape=[batch_size, from_seq_length, 1], dtype=tf.float32)
+  # Here we broadcast along two dimensions to create the mask.
+  # 相乘后，会生成一个[batch_size, from_seq_length,to_seq_length]的张量。
+  # 即相乘时，两个张量的第一个维度batch_size部分保持不变，
+  # [from_seq_length, 1]和[1, to_seq_length]部分按照矩阵相乘
+  # 得到一个[from_seq_length,to_seq_length]的矩阵。
+  mask = broadcast_ones * to_mask
+
+  # 返回输入张量的mask张量
+  return mask
+</code></pre>
+<p>该函数基于2D的输入input_ids以及该输入的input_mask，生成3D的attention_mask。<br>相关理解参考 <a href="https://www.cnblogs.com/gczr/p/12382240.html" target="_blank" rel="noopener">https://www.cnblogs.com/gczr/p/12382240.html</a> 的第四部分，构造 attention_mask。</p>
+<h2 id="attention-layer"><a href="#attention-layer" class="headerlink" title="attention_layer"></a>attention_layer</h2><pre><code class="python">def attention_layer(from_tensor,
+                    to_tensor,
+                    attention_mask=None,
+                    num_attention_heads=1,
+                    size_per_head=512,
+                    query_act=None,
+                    key_act=None,
+                    value_act=None,
+                    attention_probs_dropout_prob=0.0,
+                    initializer_range=0.02,
+                    do_return_2d_tensor=False,
+                    batch_size=None,
+                    from_seq_length=None,
+                    to_seq_length=None):
+  &quot;&quot;&quot;Performs multi-headed attention from `from_tensor` to `to_tensor`.
+  This is an implementation of multi-headed attention based on &quot;Attention
+  is all you Need&quot;. If `from_tensor` and `to_tensor` are the same, then
+  this is self-attention. Each timestep in `from_tensor` attends to the
+  corresponding sequence in `to_tensor`, and returns a fixed-with vector.
+  This function first projects `from_tensor` into a &quot;query&quot; tensor and
+  `to_tensor` into &quot;key&quot; and &quot;value&quot; tensors. These are (effectively) a list
+  of tensors of length `num_attention_heads`, where each tensor is of shape
+  [batch_size, seq_length, size_per_head].
+  Then, the query and key tensors are dot-producted and scaled. These are
+  softmaxed to obtain attention probabilities. The value tensors are then
+  interpolated by these probabilities, then concatenated back to a single
+  tensor and returned.
+  In practice, the multi-headed attention are done with transposes and
+  reshapes rather than actual separate tensors.
+  Args:
+    from_tensor: float Tensor of shape [batch_size, from_seq_length,
+      from_width].
+    to_tensor: float Tensor of shape [batch_size, to_seq_length, to_width].
+    attention_mask: (optional) int32 Tensor of shape [batch_size,
+      from_seq_length, to_seq_length]. The values should be 1 or 0. The
+      attention scores will effectively be set to -infinity for any positions in
+      the mask that are 0, and will be unchanged for positions that are 1.
+    num_attention_heads: int. Number of attention heads.
+    size_per_head: int. Size of each attention head.
+    query_act: (optional) Activation function for the query transform.
+    key_act: (optional) Activation function for the key transform.
+    value_act: (optional) Activation function for the value transform.
+    attention_probs_dropout_prob: (optional) float. Dropout probability of the
+      attention probabilities.
+    initializer_range: float. Range of the weight initializer.
+    do_return_2d_tensor: bool. If True, the output will be of shape [batch_size
+      * from_seq_length, num_attention_heads * size_per_head]. If False, the
+      output will be of shape [batch_size, from_seq_length, num_attention_heads
+      * size_per_head].
+    batch_size: (Optional) int. If the input is 2D, this might be the batch size
+      of the 3D version of the `from_tensor` and `to_tensor`.
+    from_seq_length: (Optional) If the input is 2D, this might be the seq length
+      of the 3D version of the `from_tensor`.
+    to_seq_length: (Optional) If the input is 2D, this might be the seq length
+      of the 3D version of the `to_tensor`.
+  Returns:
+    float Tensor of shape [batch_size, from_seq_length,
+      num_attention_heads * size_per_head]. (If `do_return_2d_tensor` is
+      true, this will be of shape [batch_size * from_seq_length,
+      num_attention_heads * size_per_head]).
+  Raises:
+    ValueError: Any of the arguments or tensor shapes are invalid.
+  &quot;&quot;&quot;
+  # 为了计算score，将输入的张量的维度顺序进行调整。
+  # 这里的transpose不是指的转置，而是指的顺序调整。
+  def transpose_for_scores(input_tensor, batch_size, num_attention_heads,
+                           seq_length, width):    
+    # 将[batch_size*seq_length, num_attention_heads*width]的相对扁平的张量
+    # reshape为高维度的[batch_size, seq_length, num_attention_heads, width]
+    output_tensor = tf.reshape(
+        input_tensor, [batch_size, seq_length, num_attention_heads, width])
+    # 调换张量的两个维度seq_length, num_attention_heads的顺序
+    output_tensor = tf.transpose(output_tensor, [0, 2, 1, 3])
+    # 返回输出张量
+    return output_tensor
+
+  # 获得from_tensor和to_tensor的shape
+  # 在self-attention中，from_tensor和to_tensor相同。
+  from_shape = get_shape_list(from_tensor, expected_rank=[2, 3])
+  to_shape = get_shape_list(to_tensor, expected_rank=[2, 3])
+
+  # 若from_tensor和to_tensor的shape不同，则报错。
+  if len(from_shape) != len(to_shape):
+    raise ValueError(
+        &quot;The rank of `from_tensor` must match the rank of `to_tensor`.&quot;)
+
+  # 若from_tensor的维度为3，
+  # 则为batch_size、from_seq_length、to_seq_length赋对应值。
+  if len(from_shape) == 3:
+    batch_size = from_shape[0]
+    from_seq_length = from_shape[1]
+    to_seq_length = to_shape[1]
+  # 若from_tensor的维度为2
+  elif len(from_shape) == 2:
+    # 这必然报错啊
+    # batch_size、from_seq_length、to_seq_length都没赋值啊。。。
+    if (batch_size is None or from_seq_length is None or to_seq_length is None):
+      raise ValueError(
+          &quot;When passing in rank 2 tensors to attention_layer, the values &quot;
+          &quot;for `batch_size`, `from_seq_length`, and `to_seq_length` &quot;
+          &quot;must all be specified.&quot;)
+  # Scalar dimensions referenced here:
+  #   B = batch size (number of sequences)
+  #   F = `from_tensor` sequence length
+  #   T = `to_tensor` sequence length
+  #   N = `num_attention_heads`
+  #   H = `size_per_head`
+  # F和T虽然是两个变量，但实际值相同
+  # from_tensor用于生成query
+  # to_tensor用于生成key和value
+
+  # 保留from_tensor、to_tensor的最后一个维度的信息，其他维度信息按顺序扁平化。
+  # [ [ [1, 2],                      [ [1, 2],
+  #     [2, 3] ],       ---\          [2, 3],
+  #   [ [3, 4],         ---/          [3, 4],
+  #     [4, 5] ] ]                    [4, 5] ]
+
+  # [2, 2, 2]          ---&gt;         [4, 2]
+  from_tensor_2d = reshape_to_matrix(from_tensor)
+  to_tensor_2d = reshape_to_matrix(to_tensor)
+
+  # 将原有的每个token的word_embedding宽度，通过一个全连接层，
+  # 输出为query层、key层、value层num_attention_heads * size_per_head的向量宽度。
+
+  # `query_layer` = [B*F, N*H]
+  query_layer = tf.layers.dense(
+      from_tensor_2d,
+      num_attention_heads * size_per_head,
+      activation=query_act,
+      name=&quot;query&quot;,
+      kernel_initializer=create_initializer(initializer_range))
+  # `key_layer` = [B*T, N*H]
+  key_layer = tf.layers.dense(
+      to_tensor_2d,
+      num_attention_heads * size_per_head,
+      activation=key_act,
+      name=&quot;key&quot;,
+      kernel_initializer=create_initializer(initializer_range))
+  # `value_layer` = [B*T, N*H]
+  value_layer = tf.layers.dense(
+      to_tensor_2d,
+      num_attention_heads * size_per_head,
+      activation=value_act,
+      name=&quot;value&quot;,
+      kernel_initializer=create_initializer(initializer_range))
+
+  # 为了计算scores，将query层、key层的张量维度顺序进行调整。
+
+  # `query_layer` = [B, N, F, H]
+  query_layer = transpose_for_scores(query_layer, batch_size,
+                                     num_attention_heads, from_seq_length,
+                                     size_per_head)
+  # `key_layer` = [B, N, T, H]
+  key_layer = transpose_for_scores(key_layer, batch_size, num_attention_heads,
+                                   to_seq_length, size_per_head)
+
+  # Take the dot product between &quot;query&quot; and &quot;key&quot; to get the raw
+  # attention scores.
+  # 使用公式计算attention_scores
+
+  # `attention_scores` = [B, N, F, T]
+  attention_scores = tf.matmul(query_layer, key_layer, transpose_b=True)
+  attention_scores = tf.multiply(attention_scores,
+                                 1.0 / math.sqrt(float(size_per_head)))
+
+  # 若attention_mask存在
+  if attention_mask is not None:
+    # 将attention_mask扩大一个维度
+    # `attention_mask` = [B, 1, F, T]
+    attention_mask = tf.expand_dims(attention_mask, axis=[1])
+    # Since attention_mask is 1.0 for positions we want to attend and 0.0 for
+    # masked positions, this operation will create a tensor which is 0.0 for
+    # positions we want to attend and -10000.0 for masked positions.
+    # 若attention_mask为1.0，则adder被设置为0.0；
+    # 若attention_mask为0.0，则adder被设置为-10000.0。
+    adder = (1.0 - tf.cast(attention_mask, tf.float32)) * -10000.0
+    # Since we are adding it to the raw scores before the softmax, this is
+    # effectively the same as removing these entirely.
+    # 为attention_scores加上这个带有mask信息的adder
+    attention_scores += adder
+
+  # Normalize the attention scores to probabilities.
+  # 对attention_scores进行softmax归一化
+  # `attention_probs` = [B, N, F, T]
+  attention_probs = tf.nn.softmax(attention_scores)
+
+  # This is actually dropping out entire tokens to attend to, which might
+  # seem a bit unusual, but is taken from the original Transformer paper.
+  # *对最终输出的attention_probs进行dropout
+  attention_probs = dropout(attention_probs, attention_probs_dropout_prob)
+
+  # 将[B*T, N*H]的value_layer张量reshape为[B, T, N, H]
+  # `value_layer` = [B, T, N, H]
+  value_layer = tf.reshape(
+      value_layer,
+      [batch_size, to_seq_length, num_attention_heads, size_per_head])
+
+  # 调整value_layer的维度顺序
+  # `value_layer` = [B, N, T, H]
+  value_layer = tf.transpose(value_layer, [0, 2, 1, 3])
+
+  # 将attention_probs和value_layer相乘，得到最终的context_layer。
+  # `context_layer` = [B, N, F, H]
+  context_layer = tf.matmul(attention_probs, value_layer)
+
+  # 调整context_layer的维度顺序
+  # `context_layer` = [B, F, N, H]
+  context_layer = tf.transpose(context_layer, [0, 2, 1, 3])
+
+  # 若将context_layer转为2d张量
+  if do_return_2d_tensor:
+    # 将[B, F, N, H]的context_layer张量reshape为[B*F, N*H]
+    # `context_layer` = [B*F, N*H]
+    context_layer = tf.reshape(
+        context_layer,
+        [batch_size * from_seq_length, num_attention_heads * size_per_head])
+  # 否则将[B, F, N, H]的context_layer转为[B, F, N*H]
+  else:
+    # `context_layer` = [B, F, N*H]
+    context_layer = tf.reshape(
+        context_layer,
+        [batch_size, from_seq_length, num_attention_heads * size_per_head])
+
+  # 返回context_layer
+  return context_layer
+</code></pre>
+<p>该函数用于将上层输入的word_embedding按照Transformer中的Masked Multi-Head Attention部分的原理转换为context_layer并输出。<br>具体原理可以参考 <a href="/2020/07/03/如何理解%20Transformer/#1-2-2-Multi-Head-Self-Attention">如何理解 Transformer</a> 。</p>
+<h2 id="transformer-model"><a href="#transformer-model" class="headerlink" title="transformer_model"></a>transformer_model</h2><pre><code class="python">def transformer_model(input_tensor,
+                      attention_mask=None,
+                      hidden_size=768,
+                      num_hidden_layers=12,
+                      num_attention_heads=12,
+                      intermediate_size=3072,
+                      intermediate_act_fn=gelu,
+                      hidden_dropout_prob=0.1,
+                      attention_probs_dropout_prob=0.1,
+                      initializer_range=0.02,
+                      do_return_all_layers=False):
+  &quot;&quot;&quot;Multi-headed, multi-layer Transformer from &quot;Attention is All You Need&quot;.
+  This is almost an exact implementation of the original Transformer encoder.
+  See the original paper:
+  https://arxiv.org/abs/1706.03762
+  Also see:
+  https://github.com/tensorflow/tensor2tensor/blob/master/tensor2tensor/models/transformer.py
+  Args:
+    input_tensor: float Tensor of shape [batch_size, seq_length, hidden_size].
+    attention_mask: (optional) int32 Tensor of shape [batch_size, seq_length,
+      seq_length], with 1 for positions that can be attended to and 0 in
+      positions that should not be.
+    hidden_size: int. Hidden size of the Transformer.
+    num_hidden_layers: int. Number of layers (blocks) in the Transformer.
+    num_attention_heads: int. Number of attention heads in the Transformer.
+    intermediate_size: int. The size of the &quot;intermediate&quot; (a.k.a., feed
+      forward) layer.
+    intermediate_act_fn: function. The non-linear activation function to apply
+      to the output of the intermediate/feed-forward layer.
+    hidden_dropout_prob: float. Dropout probability for the hidden layers.
+    attention_probs_dropout_prob: float. Dropout probability of the attention
+      probabilities.
+    initializer_range: float. Range of the initializer (stddev of truncated
+      normal).
+    do_return_all_layers: Whether to also return all layers or just the final
+      layer.
+  Returns:
+    float Tensor of shape [batch_size, seq_length, hidden_size], the final
+    hidden layer of the Transformer.
+  Raises:
+    ValueError: A Tensor shape or parameter is invalid.
+  &quot;&quot;&quot;
+  # *若hidden_size不是num_attention_heads的整数倍，则报错。
+  if hidden_size % num_attention_heads != 0:
+    raise ValueError(
+        &quot;The hidden size (%d) is not a multiple of the number of attention &quot;
+        &quot;heads (%d)&quot; % (hidden_size, num_attention_heads))
+
+  # 每个attention head的大小
+  attention_head_size = int(hidden_size / num_attention_heads)
+
+  # 获取输入张量的shape
+  input_shape = get_shape_list(input_tensor, expected_rank=3)
+
+  # 为batch_size、seq_length、input_width赋值
+  batch_size = input_shape[0]
+  seq_length = input_shape[1]
+  input_width = input_shape[2]
+
+  # The Transformer performs sum residuals on all layers so the input needs
+  # to be the same as the hidden size.
+  # 若input_width和hidden_size不一样大，则报错。
+  if input_width != hidden_size:
+    raise ValueError(&quot;The width of the input tensor (%d) != hidden size (%d)&quot; %
+                     (input_width, hidden_size))
+
+  # We keep the representation as a 2D tensor to avoid re-shaping it back and
+  # forth from a 3D tensor to a 2D tensor. Re-shapes are normally free on
+  # the GPU/CPU but may not be free on the TPU, so we want to minimize them to
+  # help the optimizer.
+  # 将高维张量保留最后一个维度的信息，降维至二维。
+  prev_output = reshape_to_matrix(input_tensor)
+
+  # 建立所有隐藏层输出的列表
+  all_layer_outputs = []
+
+  # 在所有hidden_layer中遍历，layer_idx表示层序号
+  for layer_idx in range(num_hidden_layers):
+    with tf.variable_scope(&quot;layer_%d&quot; % layer_idx):
+      # 将prev_output输入到该隐藏层中
+      layer_input = prev_output
+      with tf.variable_scope(&quot;attention&quot;):
+        # 建立attention_heads列表
+        attention_heads = []
+        with tf.variable_scope(&quot;self&quot;):
+          # 将word_embedding经过attention_layer输出为context_layer
+          attention_head = attention_layer(
+              from_tensor=layer_input,
+              to_tensor=layer_input,
+              attention_mask=attention_mask,
+              num_attention_heads=num_attention_heads,
+              size_per_head=attention_head_size,
+              attention_probs_dropout_prob=attention_probs_dropout_prob,
+              initializer_range=initializer_range,
+              do_return_2d_tensor=True,
+              batch_size=batch_size,
+              from_seq_length=seq_length,
+              to_seq_length=seq_length)
+          # 将该层的attention_head附到attention_heads列表中
+          attention_heads.append(attention_head)
+        # 将attention_output清空
+        attention_output = None
+        # *每次循环都清空attention_heads，然后再append一次attention_head，长度必然为1啊？？？
+        if len(attention_heads) == 1:
+          # 输出attention_heads[0]
+          attention_output = attention_heads[0]
+        else:
+          # In the case where we have other sequences, we just concatenate
+          # them to the self-attention head before the projection.
+          # *没明白他这里的in case如何触发
+          # 似乎如果是multi-head，attention_heads.append(attention_head)会将每个head进行append，这样len(attention_heads)就会大于1，但尚未验证。
+          # 对于multi-head的情况，将所有head进行concatenation。
+          attention_output = tf.concat(attention_heads, axis=-1)
+        # Run a linear projection of `hidden_size` then add a residual
+        # with `layer_input`.
+        # 将attention_output经过一个全连接层输出一个hidden_size大小的向量，
+        # 再加上原始值进行normalization。
+        with tf.variable_scope(&quot;output&quot;):
+          # 全连接层将attention_output（不定长，取决于head个数）map到hidden_size大小
+          # 该操作仅用于mapping，没有激活函数。
+          attention_output = tf.layers.dense(
+              attention_output,
+              hidden_size,
+              kernel_initializer=create_initializer(initializer_range))
+          # 对attention_output进行dropout
+          attention_output = dropout(attention_output, hidden_dropout_prob)
+          # 加上传入的word_embedding并进行normalization
+          attention_output = layer_norm(attention_output + layer_input)
+      # The activation is only applied to the &quot;intermediate&quot; hidden layer.
+      # 将attention的输出再传入一个中间层，进一步消化，有激活函数。
+      with tf.variable_scope(&quot;intermediate&quot;):
+        # 中间层
+        intermediate_output = tf.layers.dense(
+            attention_output,
+            intermediate_size,
+            activation=intermediate_act_fn,
+            kernel_initializer=create_initializer(initializer_range))
+      # Down-project back to `hidden_size` then add the residual.
+      # 将高维的中间层输出向量map回hidden_size
+      # Typically，intermediate_size = hidden_size * 4
+      with tf.variable_scope(&quot;output&quot;):
+        # 全连接层将中间层输出map回hidden_size，无激活函数。
+        layer_output = tf.layers.dense(
+            intermediate_output,
+            hidden_size,
+            kernel_initializer=create_initializer(initializer_range))
+        # 将该层的输出进行dropout
+        layer_output = dropout(layer_output, hidden_dropout_prob)
+        # 将该层的输出进行Add &amp; Normalize
+        layer_output = layer_norm(layer_output + attention_output)
+        # 将prev_output赋值为该层的输出，为下一层循环做准备。
+        prev_output = layer_output
+        # 在all_layer_outputs附上本层的输出
+        all_layer_outputs.append(layer_output)
+
+  # 如果返回全部encoder层的输出
+  if do_return_all_layers:
+    # 建立最终输出列表
+    final_outputs = []
+    # 将每层的输出由2d重新调整回高维张量
+    for layer_output in all_layer_outputs:
+      final_output = reshape_from_matrix(layer_output, input_shape)
+      # 将每层的调整后的张量逐层append到最终输出中
+      final_outputs.append(final_output)
+    # 返回最终的输出
+    return final_outputs
+  # 若不返回所有层的输出
+  else:
+    # 则直接将存在prev_output中的最后一层赋给最终输出
+    final_output = reshape_from_matrix(prev_output, input_shape)
+    # 返回最终输出
+    return final_output
+</code></pre>
+<p>该函数用于建立模型中的Transformer部分，用到了上面建立的attention_layer函数帮助建立Transformer。<br>关于Transformer，具体原理可参考 <a href="/2020/07/03/如何理解%20Transformer/#1-2-Encoder部分">如何理解 Transformer</a> 。</p>
+<h2 id="get-shape-list"><a href="#get-shape-list" class="headerlink" title="get_shape_list"></a>get_shape_list</h2><pre><code class="python">def get_shape_list(tensor, expected_rank=None, name=None):
+  &quot;&quot;&quot;Returns a list of the shape of tensor, preferring static dimensions.
+  Args:
+    tensor: A tf.Tensor object to find the shape of.
+    expected_rank: (optional) int. The expected rank of `tensor`. If this is
+      specified and the `tensor` has a different rank, and exception will be
+      thrown.
+    name: Optional name of the tensor for the error message.
+  Returns:
+    A list of dimensions of the shape of tensor. All static dimensions will
+    be returned as python integers, and dynamic dimensions will be returned
+    as tf.Tensor scalars.
+  &quot;&quot;&quot;
+  # 若name为空
+  if name is None:
+    # 则将tensor的名字赋给name
+    name = tensor.name
+
+  # 若期待的张量维度不为空
+  if expected_rank is not None:
+    # 则使用assert_rank判断张量维度是否与期待一致
+    assert_rank(tensor, expected_rank, name)
+
+  # 获取张量的形状列表（静态）
+  shape = tensor.shape.as_list()
+
+  # 建立一个存储序号的列表
+  non_static_indexes = []
+
+  # 循环遍历shape列表
+  for (index, dim) in enumerate(shape):
+    # 若tensor的静态维度大小为空，
+    if dim is None:
+      # 则记在non_static_indexes列表中，指示第几个维度为动态维度大小。
+      non_static_indexes.append(index)
+
+  # 若不存在动态维度大小，
+  if not non_static_indexes:
+    # 则直接返回张量形状。
+    return shape
+
+  # 若存在动态维度大小，
+  # 则使用tf.shape()获得动态形状
+  dyn_shape = tf.shape(tensor)
+
+  # 循环遍历non_static_indexes列表。
+  for index in non_static_indexes:
+    # 将对应的动态维度大小赋给形状的相应维度
+    shape[index] = dyn_shape[index]
+
+  # 返回张量的形状
+  return shape
+</code></pre>
+<p>该函数用于获取张量的shape，判断其维度是否满足要求。<br>函数将返回一个列表描述每个维度的大小。<br>参考博文 <a href="https://blog.csdn.net/wc996789331/article/details/89749796" target="_blank" rel="noopener">shape相关函数</a> 。</p>
+<h2 id="reshape-to-matrix"><a href="#reshape-to-matrix" class="headerlink" title="reshape_to_matrix"></a>reshape_to_matrix</h2><pre><code class="python">def reshape_to_matrix(input_tensor):
+  &quot;&quot;&quot;Reshapes a &gt;= rank 2 tensor to a rank 2 tensor (i.e., a matrix).&quot;&quot;&quot;
+  # 维度赋值
+  ndims = input_tensor.shape.ndims
+
+  # 若维度小于2，
+  if ndims &lt; 2:
+    # 则报错。
+    raise ValueError(&quot;Input tensor must have at least rank 2. Shape = %s&quot; %
+                     (input_tensor.shape))
+
+  # 若维度等于2，
+  if ndims == 2:
+    # 则直接返回张量。
+    return input_tensor
+
+  # 若维度大于2
+
+  # 获取张量中最小向量的长度，即最后一个维度的大小
+  width = input_tensor.shape[-1]
+
+  # 将张量转换为行矩阵。
+  # 保留张量最后一个维度的信息，其他维度信息按顺序扁平化。
+  # [ [ [1, 2],                      [ [1, 2],
+  #     [2, 3] ],       ---\          [2, 3],
+  #   [ [3, 4],         ---/          [3, 4],
+  #     [4, 5] ] ]                    [4, 5] ]
+
+  # [2, 2, 2]          ---&gt;         [4, 2]
+  output_tensor = tf.reshape(input_tensor, [-1, width])
+
+  # 返回输出张量
+  return output_tensor
+</code></pre>
+<p>该函数用于将高维张量在保留最后一个维度信息的情况下，扁平化其他维度实现降维。</p>
+<h2 id="reshape-from-matrix"><a href="#reshape-from-matrix" class="headerlink" title="reshape_from_matrix"></a>reshape_from_matrix</h2><pre><code class="python">def reshape_from_matrix(output_tensor, orig_shape_list):
+  &quot;&quot;&quot;Reshapes a rank 2 tensor back to its original rank &gt;= 2 tensor.&quot;&quot;&quot;
+  # 若原始shape_list的长度为2，即张量的原始维度为2，
+  if len(orig_shape_list) == 2:
+    # 则直接返回张量
+    return output_tensor
+
+  # 若原始shape_list的长度超过2
+  # （小于的情况不可能，因为该函数用于将降维的张量还原）
+
+  # 获取2d张量形状
+  output_shape = get_shape_list(output_tensor)
+
+  # 获取原始张量的[0:-1]维度的大小
+  orig_dims = orig_shape_list[0:-1]
+
+  # 获取2d张量的最后一维大小
+  width = output_shape[-1]
+
+  # 返回reshape后还原为原始的张量
+  return tf.reshape(output_tensor, orig_dims + [width])
+</code></pre>
+<p>该函数用于将前面reshape_to_matrix(input_tensor)后降维至2d的张量还原至原始的高维形状。</p>
+<h2 id="assert-rank"><a href="#assert-rank" class="headerlink" title="assert_rank"></a>assert_rank</h2><pre><code class="python">def assert_rank(tensor, expected_rank, name=None):
+  &quot;&quot;&quot;Raises an exception if the tensor rank is not of the expected rank.
+  Args:
+    tensor: A tf.Tensor to check the rank of.
+    expected_rank: Python integer or list of integers, expected rank.
+    name: Optional name of the tensor for the error message.
+  Raises:
+    ValueError: If the expected shape doesn&#39;t match the actual shape.
+  &quot;&quot;&quot;
+  # 若name为空，
+  if name is None:
+    # 则赋值为张量的name。
+    name = tensor.name
+
+  # 建立期望维度数的字典
+  expected_rank_dict = {}
+
+  # 建立{expected_rank0: True, expected_rank1: True}的字典文件
+  if isinstance(expected_rank, six.integer_types):
+    expected_rank_dict[expected_rank] = True
+  else:
+    for x in expected_rank:
+      expected_rank_dict[x] = True
+
+  # 获取张量的实际维度数
+  actual_rank = tensor.shape.ndims
+
+  # 若实际维度不在期待维度数字典中，
+  if actual_rank not in expected_rank_dict:
+    scope_name = tf.get_variable_scope().name
+    # 则报错。
+    raise ValueError(
+        &quot;For the tensor `%s` in scope `%s`, the actual rank &quot;
+        &quot;`%d` (shape = %s) is not equal to the expected rank `%s`&quot; %
+        (name, scope_name, actual_rank, str(tensor.shape), str(expected_rank)))
+</code></pre>
+<p>该函数用于判断张量维度是否符合预期，不符合预期则会报错提示。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>modeling.py的官方代码给出了987行，我从2020.08.29陆陆续续看了小一个礼拜到今天2020.09.03才完成。</p>
+<p>这段代码详细描述了BERT模型主体功能的代码实际实现，加深了我对于BERT模型、Tranformer建模的理解。</p>
+
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2020/09/13/日语语法 6.9 描述时间空间接近的高级方法（が早いか、や否や、そばから）/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                日语语法 6.9 描述时间空间接近的高级方法（が早いか、や否や、そばから）</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2020/09/04/日语语法 6.1 正式表达（である、ではない）/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                日语语法 6.1 正式表达（である、ではない）</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

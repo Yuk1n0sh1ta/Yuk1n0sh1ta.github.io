@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">语音和语言处理第三版 2.2 单词 | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      语音和语言处理第三版 2.2 单词</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2020-3-15<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <ul>
+<li>本文翻译自Dan Jurafsky和James H. Martin合著的Speech and Language<br>Processing第三版</li>
+<li>原文链接：<a href="https://web.stanford.edu/~jurafsky/slp3/" target="_blank" rel="noopener">https://web.stanford.edu/~jurafsky/slp3/</a></li>
+</ul>
+<h1 id="Chapter-2-正则表达式，文本标准化，编辑距离"><a href="#Chapter-2-正则表达式，文本标准化，编辑距离" class="headerlink" title="Chapter 2 正则表达式，文本标准化，编辑距离"></a>Chapter 2 正则表达式，文本标准化，编辑距离</h1><h2 id="2-2-单词"><a href="#2-2-单词" class="headerlink" title="2.2 单词"></a>2.2 单词</h2><p>在我们讨论处理单词之前，我们需要决定什么算作一个单词。让我们通过观察一个语料库，一个计算机可读的文本或者语音集合，开始。举个例子，Brown语料库是一个百万单词的集合。其中包含不同体裁的（新闻，科幻，非科幻，学术等等）500个手写英文文本样本。这些样本被Brown大学在1963-1964年间（KuˇceraandFrancis,1967）收集。在下面的Brown语料库的句子中有多少个单词呢？</p>
+<p>He stepped out into the hall, was delighted to encounter a water brother. </p>
+<p>如果我们不将标点看作单词的话，这句话有13个单词。如果我们考虑标点的话，则有15个单词。我们是否考虑句号，逗号等等取决于任务的要求。标点对于寻找事物的边界（逗号，句号，冒号）以及识别一些意思的角度（问号，叹号，引号）十分关键。对于一些任务，比如语音片段的标签化，解析或是语音合成，我们有时将标点符号视为独立的单词。</p>
+<p>Switchboard美式英语陌生人电话会话语料库在1990年代早期被收集。它包括2430个平均每个6分钟的会话，总计240小时的语音和约3百万个单词（Godfrey et al., 1992）。这样的口语语料库没有标点但是引入了其他的针对单词定义的难题。让我们看一个Switchboard语料库中的 utterance ； utterance 是一句话的口语关联 [1] ：<br>[1] utterance原意为“a spoken word, statement, or vocal sound.”后文我准备将utterance译为语音。</p>
+<p>I do uh main- mainly business data processing</p>
+<p>这段语音有两种不连贯之处。破碎的单词 <em>main-</em> 被称为碎片。像 <em>uh</em> 和 <em>um</em> 的单词被称作填充词或者填充停顿。我们应该将这些视为单词吗？再一次说明，这取决于应用背景。如果我们正在搭建一个语音转录系统，我们可能想要最后剔除这些不连贯。</p>
+<p>但是我们有时也保留这些不连贯之处。像 <em>uh</em> 或者 <em>um</em> 这样的不连贯实际上对于语音识别预测即将出现的单词是有用的，因为他们可能标志着说话人正在重新开始一个从句或者一个想法，并且因此也对被视为常规单词的语音识别有用。因为人们使用不同的停顿词 [2] ，这也可以成为识别说话人的一个线索。实际上， <em>Clark and Fox Tree (2002)</em> 展示了 <em>uh</em> 和 <em>um</em> 的不同意思。你认为他们分别表达什么意思呢？</p>
+<p>[2] 本段之前我将disfluency译作了不连贯之处，即指口语中的停顿。本段起我将译作停顿词。</p>
+<p>大写的token [3] 比如 <em>They</em> 和小写的token比如 <em>they</em> 是一个单词吗？这些单词在某些任务中（语音识别）会被搅在一起，然而对于部分语音或者命名实体标签，大写是一个有用的特征那个被保留。</p>
+<p>[3] token指的是语料库中的单个单词。前文中被我直译为标签，但这不太符合原意。之后我将直接使用token，后文有对于token的详细说明。</p>
+<p>对于一些被改变的形态比如 <em>cats</em> 和 <em>cat</em> 呢？这两个单词有相同的词源 <em>cat</em> 单具有不同的词态。lemma [4] 是具有相同词根，相同的主要词性，以及相同的词义的词汇形态集合。词态是完全变形或者派生的词汇形态。对于像阿拉伯语这种形态复杂的语言，我们经常需要处理词形化。对于许多英文处理任务，词态就足够了。</p>
+<p>[4] lemma就像是日语中的辞书形，指词汇出现在词典的基础形态。后文为将其与前后缀的词根相区分，将直接使用lemma。</p>
+<p>英语中有多少单词呢？想要回答这个问题我们需要区分两种对于单词的讨论方式。type是指语料库中不同单词的数量，如果词汇中的单词集合是V，type的数量就是词汇的规模|V|。token是所有单词的总数。如果忽略标点，下面这个Brown语料库的句子有16个token和14个type：</p>
+<p>They picnicked by the pool, then lay back on the grass and looked at the stars. </p>
+<p>当提及语言中的单词数量的时候，我们通常指的是单词的type数量。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Corpus</th>
+<th style="text-align:center">Tokens= N</th>
+<th style="text-align:center">Types= V</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Shakespeare</td>
+<td style="text-align:center">884 thousand</td>
+<td style="text-align:center">31 thousand</td>
+</tr>
+<tr>
+<td style="text-align:center">Brown corpus</td>
+<td style="text-align:center">1 million</td>
+<td style="text-align:center">38 thousand</td>
+</tr>
+<tr>
+<td style="text-align:center">Switchboard telephone conversations</td>
+<td style="text-align:center">2.4 million</td>
+<td style="text-align:center">20 thousand</td>
+</tr>
+<tr>
+<td style="text-align:center">COCA</td>
+<td style="text-align:center">440 million</td>
+<td style="text-align:center">2 million</td>
+</tr>
+<tr>
+<td style="text-align:center">Google N-grams</td>
+<td style="text-align:center">1 trillion</td>
+<td style="text-align:center">13 million</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.10 一些英语语料库的大致type和token数量。最大的谷歌N-gram语料库包含1300万个type，但这只计算了出现超过40次及以上的type，实际数字将更大。</center>
+
+<p>图2.10展示了不同主流英语语料库中计算得到的大致type和token数量。我们观察的语料库越大，找到的单词type就越多。并且实际上，这个type数量|V|和token数量N的关系被称为Herdan’sLaw (Herdan, 1960) 或者 Heaps’Law (Heaps, 1978) 。这些都以发现者命名（分别在语言学和信息检索领域）。该公式在式2.1中展示，其中k和β为正常数，且0&lt;β&lt;1。</p>
+<p>\begin{equation}<br>|V| = kN^β \tag{2.1}<br>\end{equation}</p>
+<p>β的值取决于语料库规模和体裁，但是至少对于图2.10中的大型语料库，β在 .67 到 .75 之间。大致上我们可以说文本的词汇规模增长速度远快于单词长度的平方根。</p>
+<p>另一个确定语言中单词数量的方法是用lemma数量代替词形type。词典可以帮助给出lemma的数量。词典的条目和加粗字体的数量是lemma数量的一个大致上限（因为一些lemma拥有多重加粗形式）。牛津英语词典1989年版拥有615000个词条。</p>
+
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2020/03/16/语音和语言处理第三版 2.3 语料库/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                语音和语言处理第三版 2.3 语料库</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2020/03/13/语音和语言处理第三版 2.1 正则表达式/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                语音和语言处理第三版 2.1 正则表达式</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

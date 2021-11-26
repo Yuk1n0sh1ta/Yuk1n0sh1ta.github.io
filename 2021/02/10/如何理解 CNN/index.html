@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">如何理解 CNN | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      如何理解 CNN</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2021-2-10<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <ul>
+<li>本文参考<br>[1] <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf" target="_blank" rel="noopener">Gradiant-Based Learning Applied to Document Recognition</a><br>[2] <a href="https://cs231n.github.io/" target="_blank" rel="noopener">CS231n Convolutional Neural Networks for Visual Recognition /Stanford</a></li>
+</ul>
+<h1 id="1-如何理解CNN"><a href="#1-如何理解CNN" class="headerlink" title="1 如何理解CNN"></a>1 如何理解CNN</h1><h2 id="1-1-什么是CNN"><a href="#1-1-什么是CNN" class="headerlink" title="1.1 什么是CNN"></a>1.1 什么是CNN</h2><p><strong>CNN模型</strong> 通常被认为始于Yann LeCun在1998年发表的文章 <a href="http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf" target="_blank" rel="noopener">Gradiant-Based Learning Applied to Document Recognition</a>，该模型通常被称为 <strong>LeNet</strong>。</p>
+<center><a href="https://s3.ax1x.com/2021/02/10/y0PaWV.png" data-fancybox="images" data-caption="LeNet的模型结构" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0PaWV.png"></a></center>
+
+<center><strong>图1.1 LeNet的模型结构[1]</strong></center>
+
+<p><strong>图1.1</strong> 为原文[1]中的配图，描述了一个两层卷积的CNN模型。</p>
+<p>CNN（Convoolutional Neural Network）：</p>
+<ol>
+<li>CNN，卷积神经网络，是一种使用卷积层提取图像特征，再经过池化层保留重要特征的深度学习模型。</li>
+<li>模型通常用于图像处理，能够很好的提取图像特征。</li>
+</ol>
+<p>符号理解：</p>
+<ol>
+<li>INPUT：输入图像是一个32*32的图像。虽然图像显示的是个A，但原文写的是Digits Recognition。</li>
+<li>Convolutions：将32*32的输入图像经过一个5*5的卷积核得到28*28的输出图像。这个卷积核即为传统神经网络中的参数矩阵，在该模型中第一层卷积共有6个经过初始化的卷积核。卷积核的概念可以参考数字图像处理算法中的滤波器，类似滤镜，例如 <a href="/2020/02/12/opencv边缘检测%20C++实现/#3-5-高斯滤波">高斯滤波</a>。</li>
+<li>Feature Maps：经过卷积核得到的中间输出图像被称为特征图，模型希望通过多个特征图来获取不同的特征。个人感觉该机制与Multi-Head Mechanism中的Multi-Head很相似。</li>
+<li>Subsampling：下采样，减少输出维度，在该领域主要体现为Pooling，即池化。个人理解池化的目的是用于保留并突出重要信息，下文将详细说明池化的实现。</li>
+<li>Full connection：全连接层，多称为Fully Connected Layer。用于将高维张量映射为向量，最终经过高斯分布得到对应每个Digits的概率。</li>
+</ol>
+<h2 id="1-2-LeNet的模型架构"><a href="#1-2-LeNet的模型架构" class="headerlink" title="1.2 LeNet的模型架构"></a>1.2 LeNet的模型架构</h2><h3 id="1-2-1-图像输入"><a href="#1-2-1-图像输入" class="headerlink" title="1.2.1 图像输入"></a>1.2.1 图像输入</h3><center><div style="width: 200px;"><a href="https://s3.ax1x.com/2021/02/10/y0P2Jx.png" data-fancybox="images" data-caption="LeNet的输入图像" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0P2Jx.png"></a></div></center>
+
+<center><strong>图1.2 LeNet的输入图像[1]</strong></center>
+
+<p>将32*32的原始图像输入到模型中。</p>
+<h3 id="1-2-2-第一层卷积"><a href="#1-2-2-第一层卷积" class="headerlink" title="1.2.2 第一层卷积"></a>1.2.2 第一层卷积</h3><center><div style="width: 400px;"><a href="https://s3.ax1x.com/2021/02/10/y0PfSK.png" data-fancybox="images" data-caption="LeNet的第一层卷积" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0PfSK.png"></a></div></center>
+
+<center><strong>图1.3 LeNet的第一层卷积[1]</strong></center>
+
+<p>第一个卷积层将输入的32*32的原始图像经过6个5*5的初始化的卷积核分别得到6个28*28的特征图C1。卷积的本质我认为就是element-wise的加权求和。</p>
+<h3 id="1-2-3-第一层下采样"><a href="#1-2-3-第一层下采样" class="headerlink" title="1.2.3 第一层下采样"></a>1.2.3 第一层下采样</h3><center><div style="width: 400px;"><a href="https://s3.ax1x.com/2021/02/10/y0PfSK.png" data-fancybox="images" data-caption="LeNet的第一层下采样" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0PfSK.png"></a></div></center>
+
+<center><strong>图1.4 LeNet的第一层下采样[1]</strong></center>
+
+<p>下采样在该模型上的体现即为池化。池化也可以理解为是卷积的一种，只不过池化有时候可能不存在有意义的卷积核（广义的卷积），比如最常用的池化方法max-pooling，如图1.5所示：</p>
+<center><a href="https://s3.ax1x.com/2021/02/10/y0PqYt.png" data-fancybox="images" data-caption="max-pooling示意图" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0PqYt.png"></a></center>
+
+<center><strong>图1.5 max-pooling示意图[2]</strong></center>
+
+<p>在max-pooling中，上一层28*28的特征图C1将被分为14*14个2*2的block，模型将选出每个block中的最大值，并将最大值作为这个block的结果输出到下一层中，最终生成下一层14*14的特征图S2。</p>
+<p>池化方法有很多种：</p>
+<ol>
+<li>max-pooling（取block最大值）</li>
+<li>mean-pooling（取block平均值，即经过一个平均卷积核）</li>
+<li>高斯池化（经过一个高斯模糊卷积核）</li>
+<li>可训练池化（经过一个可训练的初始化的卷积核）</li>
+</ol>
+<p>但在Le-Net中，原文提到：<br>The four inputs to a unit in S2 are added, then multiplied by a trainable coefficient, and added to a trainable bias …… Layer S2 has 12 trainable parameters …… </p>
+<p>即LeNet在下采样部分并没有使用现在流行的所谓pooling方法，而是将block内的像素值相加后乘上参数w再加上偏置b。最终针对6个不同的特征图将会有6对(w, b)的组合，即12个可训练参数。</p>
+<p>我想这也可以算是可训练池化的一种。</p>
+<h3 id="1-2-4-第二层卷积与下采样"><a href="#1-2-4-第二层卷积与下采样" class="headerlink" title="1.2.4 第二层卷积与下采样"></a>1.2.4 第二层卷积与下采样</h3><center><div style="width: 400px;"><a href="https://s3.ax1x.com/2021/02/10/y0PXSf.png" data-fancybox="images" data-caption="第二层卷积与下采样" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0PXSf.png"></a></div></center>
+
+<center><strong>图1.6 第二层卷积与下采样[2]</strong></center>
+
+<p>在第二轮的卷积中，模型通过一定的规则将经过第一轮卷积池化的6个特征图S2映射为16个特征图。</p>
+<center><a href="https://s3.ax1x.com/2021/02/10/y0iSmQ.png" data-fancybox="images" data-caption="第二层卷积的映射关系" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0iSmQ.png"></a></center>
+
+<center><strong>表1.1 第二层卷积的映射关系[2]</strong></center>
+
+<p>在LeNet中，原文提到这样映射的原因以及如何映射：</p>
+<ol>
+<li><strong>Why not</strong> connect every S2 feature map to every C3 feature map?<br><strong>The reason</strong> is twofold. <strong>First</strong>, a non-complete connection sheme keeps the number of connection <strong>within reasonable bounds</strong>. <strong>More importantly</strong>, it forces <strong>a break of symmetry</strong> in the network.<br><strong>Different feature maps are forced to extract different(hopefully complementary) features because they get different sets of inputs.</strong></li>
+<li>The rationale behind the connection sheme in the table Ⅰ is the followings.<br><strong>The first six</strong> C3 feature maps take inputs from <strong>every contiguous subsets of three</strong> feature maps in S2. <strong>(Column 0-5)</strong><br><strong>The next six</strong> take input from <strong>every contiguous subset of four</strong>. <strong>(Column 6-11)</strong><br><strong>The next three</strong> take input from some <strong>discontiiguous subsets of four</strong>. <strong>(Column 12-14)</strong><br><strong>Finally the last one</strong> takes input from <strong>all S2</strong> feature maps. <strong>(Column 15)</strong></li>
+<li>Layer C3 has 1516 trainable parameters ……</li>
+</ol>
+<p>即LeNet在第二层卷积中：</p>
+<ol>
+<li>没有使用6张S2特征图到16张C3特征图的全映射，而是使用了 <strong>表1.1</strong> 的映射规律。</li>
+<li>映射规律中，<strong>列0-5</strong> 使用了循环连续的三连特征图（理解为tri-gram），<strong>列6-11</strong> 使用了循环连续的四连特征图（理解为qua-gram），<strong>列12-14</strong> 使用了循环不连续的四连特征图（理解为两个bi-gram），<strong>列15</strong> 使用了S2全部特征图。</li>
+<li>对于每个特征图到特征图的映射，需要一个5*5的初始化的卷积核，故共需要 25 * (3*6 + 4*6 + 4*3 + 6) + 16 = 1516 个参数。<br>其中，25是每个卷积核的参数量，16是16个列每列对应偏置的参数量。</li>
+</ol>
+<p>在第二层下采样中，采取了和第一层C1-S2相同的池化方式。通过选取无重叠的2*2block的最大值对C3进行max-pooling，将10*10的C3特征图池化为5*5的S4特征图。</p>
+<h3 id="1-2-5-第三层卷积以及全连接层"><a href="#1-2-5-第三层卷积以及全连接层" class="headerlink" title="1.2.5 第三层卷积以及全连接层"></a>1.2.5 第三层卷积以及全连接层</h3><center><a href="https://s3.ax1x.com/2021/02/10/y0iPkn.png" data-fancybox="images" data-caption="第三层卷积以及全连接层" target="_blank" rel="noopener"><img src="https://s3.ax1x.com/2021/02/10/y0iPkn.png"></a></center>
+
+<center><strong>图1.7 第三层卷积以及全连接层[2]</strong></center>
+
+<p>第三层池化将第二层卷积池化后5*5的S4特征图再通过一定的规则经过5*5的卷积核卷积后得到120个1*1的特征图。</p>
+<center><strong>表1.2 第三层卷积的映射关系</strong></center>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">0</th>
+<th style="text-align:center">1</th>
+<th style="text-align:center">…</th>
+<th style="text-align:center">120</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">X</td>
+</tr>
+<tr>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+</tr>
+<tr>
+<td style="text-align:center">16</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+<td style="text-align:center">X</td>
+</tr>
+</tbody>
+</table>
+<p>在 <strong>图1.7</strong> 中，S4-C5下方的注释将这个过程称为全连接。而在LeNet原文中是这样描述的：<br>C5 is labeled as a convolutional layer, instead of a fully-connected layer, because if LeNet-5 input were made bigger with everything else kept constant, the feature map dimension would be larger than 1*1.<br>即C5在 <strong>图1.7</strong> 中表现为全连接只是一个巧合，实际情况当 <a href="/2021/02/10/如何理解%20CNN/#1-2-1-图像输入">1.2.1</a> 的输入图像像素量变大时，可能会出现C5为X*X。</p>
+<p>C5经过一个全连接层将120维的向量转换为84个（似乎是为了与ASCII匹配），在经过一个高斯连接层（还没来得及搞明白这层）映射为一个10维向量（与10个数字匹配）。</p>
+<h2 id="1-3-待续"><a href="#1-3-待续" class="headerlink" title="1.3 待续"></a>1.3 待续</h2><h1 id="2-TextCNN"><a href="#2-TextCNN" class="headerlink" title="2 TextCNN"></a>2 TextCNN</h1><p>待续。。。</p>
+
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2021/02/17/大阪隔离记录（在留卡再入国）/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                大阪隔离记录（在留卡再入国）</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2021/02/10/2020 全年更新日志/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                2020 全年更新日志</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

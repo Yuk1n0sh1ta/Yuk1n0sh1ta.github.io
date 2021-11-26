@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">语音和语言处理第三版 2.1 正则表达式 | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      语音和语言处理第三版 2.1 正则表达式</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2020-3-13<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <ul>
+<li>本文翻译自Dan Jurafsky和James H. Martin合著的Speech and Language<br>Processing第三版</li>
+<li>原文链接：<a href="https://web.stanford.edu/~jurafsky/slp3/" target="_blank" rel="noopener">https://web.stanford.edu/~jurafsky/slp3/</a></li>
+</ul>
+<h1 id="Chapter-2-正则表达式，文本标准化，编辑距离"><a href="#Chapter-2-正则表达式，文本标准化，编辑距离" class="headerlink" title="Chapter 2 正则表达式，文本标准化，编辑距离"></a>Chapter 2 正则表达式，文本标准化，编辑距离</h1><ul>
+<li><em>User: I am unhappy.<br>ELIZA: DO YOU THINK COMING HERE WILL HELP YOU NOT TO BE UNHAPPY<br>User: I need some help, that much seems certain.<br>ELIZA: WHAT WOULD IT MEAN TO YOU IF YOU GOT SOME HELP<br>User: Perhaps I could learn to get along with my mother.<br>ELIZA: TELL ME MORE ABOUT YOUR FAMILY<br>User: My mother takes care of me.<br>ELIZA: WHO ELSE IN YOU FAMILY TAKES CARE OF YOU<br>User: My father.<br>ELIZA: YOUR FATHER<br>User: You are like my father in some ways.</em><left>Weizenbaum (1966)</left>
+
+</li>
+</ul>
+<p>上述对话出自ELIZA，一个早期自然语言处理系统。他可以通过模仿罗氏心理治疗师 <a href="https://en.wikipedia.org/wiki/Carl_Rogers" target="_blank" rel="noopener">[1]</a> 和用户执行有限的对话。ELIZA是一个惊人简单的程序。他用模式匹配去识别像“I need X”这样的短句，并将他们翻译成像“What would it mean to you if you got X?”这样合适的输出。这个简单的技巧在这个领域得到成功，因为要模仿一个罗氏心理治疗师，实际上ELIZA不需要知道任何东西。就像Weizenbaum记录的那样，这是一种少有的对话形式，倾听者可以表现得就像他们对这个世界一无所知一样。ELIZA对于人类对话的模仿行为是非常成功的：很多和ELIZA互动过的人都开始相信，ELIZA确实可以理解他们和他们的问题。很多人甚至在被解释了程序的操作后，依然相信ELIZA的能力。甚至现在，这样的对话机器人还是一种有趣的消遣。</p>
+<p>当然，现代的对话代理远不止是一种消遣。他们可以回答问题，预定航班，或者找餐厅。他们依靠这些功能对用户的意图有更复杂的了解。我们将在26章对此进行进一步说明。尽管如此，这个简单的基于模式的方法驱动了在自然语言处理领域扮演重要角色的ELIZA和其他对话机器人。</p>
+<p>我们将从最重要的描述文本模式的工具正则表达式开始。正则表达式可以被用于指定字符串。这些我们可能想将从一个文件中，从ELIZA在上文的转义“I need X”中提取的字符串转变为定义的字符串，比如199美元或24.99美元，以提取文件中的标价表格。</p>
+<p>我们之后会转向一系列任务，统称为文本标准化，在这之中正则化扮演了重要的角色。标准化的文本意味着将其转化为一个更加便捷标准的形式。举个例子，我们要对语言进行的大多数处理都依赖于文本中第一次的分词或者标记化单词，即标记化任务。英文单词往往被空格分离，但有时空格总是不充分。 <em>New York</em> 和 <em>rock ’n’ roll</em> 总是被认为是长单词，尽管他们包含空格。与此同时，我们需要把 <em>I’m</em> 分成 <em>I</em> 和 <em>am</em> 两个单词。为了处理推特文本，我们将会需要标记化表情符号比如 <em>:)</em> 或者标签比如 <em>#nlproc</em> 。有些语言，比如日语，没有单词见的空格，因此单词标签化变得更加困难。</p>
+<p>文本标准化的另一部分就是词的形态变化，即确定两个单词是否拥有相同的词源，尽管他们表面看上去不一样。举个例子，单词 <em>sang</em> ， <em>sung</em> 和 <em>sings</em> 都是动词 <em>sing</em> 的变形。形态变化对于处理语言形态复杂的语言，比如阿拉伯语，是非常必要的。提取词干指的是一种简单版本的形态变化，在这种变化中我们通常只是去掉词尾的后缀。文本标准化也包括文本分割：将一段文本分为独立的句子，使用句号或者惊叹号作为提示。</p>
+<p>最后，我们将需要比较单词和其它字符串。我们将介绍一个度量标准称作编辑距离，它将基于把一个字符串改为另一个所需要的编辑次数（插入，删除、替换）测定两个字符串的相似程度。编辑距离是一个广泛用于语言处理的算法，从拼写纠正，语音识别到同义词解析。</p>
+<p>[1] <a href="https://en.wikipedia.org/wiki/Carl_Rogers" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Carl_Rogers</a></p>
+<h2 id="2-1-正则表达式"><a href="#2-1-正则表达式" class="headerlink" title="2.1 正则表达式"></a>2.1 正则表达式</h2><p>一个没有被承认的在计算机科学标准化中的成功就是正则表达式，这是一个指定文本搜索字符串的语言。这个实用的语言用于每个计算机语言，单词处理器，以及文本处理工具比如Unix工具grep或者Emacs。正式而言，正则表达式是一种描述字符串集的代数标记。正则表达式在文本搜索中尤其有用，比如当我们有一个模式需要搜索匹配，或者有一个文本语料库需要遍历的时候。一个正则表达式搜索功能将会搜索遍历整个语料库，返回所有匹配模式的文本。这个语料库可以是单一文件或者一个集合。举个例子，Unix命令行工具grep使用正则表达式并返回匹配表达式的每一行输出文件。</p>
+<p>如果匹配数超过一个，一次搜索可以被设计成在一行中返回所有匹配文本，也可以被设计成只返回第一个。之后的例子我们通常会强调匹配正则表达式的模式部分，并且只显示第一个匹配结果。我们将展示被斜杠限制的正则表达式，但请注意斜杠并不是正则表达式的一部分。</p>
+<p>正则表达式有很多变种。我们将描述延伸正则表达式，不同的正则表达式解析器可能只能识别上述表达式的子集，或者处理一些表达式时会有些许区别。用一个线上正则表达式测试器是一个测试你的正则表达式以及探索这些变化的便捷方法。</p>
+<h3 id="2-1-1-基本正则表达式的一些模式"><a href="#2-1-1-基本正则表达式的一些模式" class="headerlink" title="2.1.1 基本正则表达式的一些模式"></a>2.1.1 基本正则表达式的一些模式</h3><p>最简单的一种正则表达式就是简单字符的序列。为了检索 <em>woodchunk</em> 我们键入 /woodchuck/ 。这个表达式 /Buttercup/ 会匹配任何包含子字符串 <em>Buttercap</em> 的字符串。在grep中使用那个表达式将会返回 <em>I’m called little Buttercup</em> 。这个检索字符串可以包含单个字符（比如 /!/ ）或者一个字符序列（比如 /urgl/）。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">正则表达式</th>
+<th style="text-align:center">示例匹配pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/woodchucks/</td>
+<td style="text-align:center">“interesting links to <u>woodchucks</u> and lemurs“</td>
+</tr>
+<tr>
+<td style="text-align:center">/a/</td>
+<td style="text-align:center">“M<u>a</u>ry Ann stopped by Mona’s“</td>
+</tr>
+<tr>
+<td style="text-align:center">/!/</td>
+<td style="text-align:center">“You’ve left the burglar behind again<u>!</u>“ said Nori</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.1 一些简单的正则表达式搜索</center>
+
+<p>正则表达式是大小写敏感的，小写的 /s/ 和大写的 /S/ 是不一样的（ /s/ 会匹配小写的 s 而不是大写的 S ）。这意味着pattern <em>woodchunks</em> 将不会匹配字符串 <em>Woodchunks</em> 。我们可以用方括号 [and] 解决这个问题。在括号中的字符串指定了其中字符多选一的匹配。举个例子，图2.2展示了pattern /[wW]/ 匹配了包含 <em>w</em> 或者 <em>W</em> 的pattern。[1]</p>
+<p>[1] 一直把pattern译为模式真是太烦了，这段之后我就直接用pattern了。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">正则表达式</th>
+<th style="text-align:center">匹配</th>
+<th>示例pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/[wW]oodchuck/</td>
+<td style="text-align:center">Woodchuck or woodchuck</td>
+<td>“<u>Woodchuck</u>”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[abc]/</td>
+<td style="text-align:center">‘a’, ‘b’, or ‘c’</td>
+<td>“In uomini, in sold<u>a</u>ti”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[1234567890]/</td>
+<td style="text-align:center">any digit</td>
+<td>“plenty of <u>7</u> to 5”</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.2 方括号 [] 用于指定字符的或</center>
+
+<p>正则表达式 [1234567890] 指定了任意单个十进制数。尽管像十进制数或者字母这样类型的字符在表达中是重要的构建基块，但他们会变得笨拙。（比如，指定 [ABCDEFGHIJKLMNOPQRSTUVWXYZ] 就十分不方便）。如果有一个定义正确的序列和字符集关联，那么方括号就可以与横杠（-）连用去指定范围内任何一个字符。pattern [2-5] 指定了<em>2</em>，<em>3</em>，<em>4</em> 或 <em>5</em>中的任意一个字符。pattern [b-g] 指定了<em>b</em>，<em>c</em>，<em>d</em>，<em>e</em>，<em>f</em> 或 <em>g</em> 中的任意一个字符。一些其他的示例如图2.3中所示。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Match</th>
+<th style="text-align:center">Example Patterns Matched</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/[A-Z]/</td>
+<td style="text-align:center">an upper case letter</td>
+<td style="text-align:center">“we should call it ‘<u>D</u>renched Blossoms’ ”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[a-z]/</td>
+<td style="text-align:center">a lower case letter</td>
+<td style="text-align:center">“<u>m</u>y beans were impatient to be hoed!”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[0-9]/</td>
+<td style="text-align:center">a single digit</td>
+<td style="text-align:center">“Chapter <u>1</u>: Down the Rabbit Hole”</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.3 方括号 [] 和横杠 - 连用指定范围</center>
+
+<p>方括号也可以和插入符号 ^ 连用来指定一个不满足某些条件的字符。如果插入符号 ^ 是左方括号后的第一个符号，那么结果pattern就需要被取反。举个例子，pattern /[ˆa]/ 匹配任意一个除了a以外的单字符（包括特殊字符）。这只有在插入符号是左方括号后的第一个符号时成立。如果他出现在了其他地方，它通常只是代表一个插入符。图2.4展示了一些例子。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Match(single characters)</th>
+<th style="text-align:center">Example Patterns Matched</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/[ˆA-Z]/</td>
+<td style="text-align:center">not an upper case letter</td>
+<td style="text-align:center">“O<u>y</u>fn pripetchik”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[ˆSs]/</td>
+<td style="text-align:center">neither ‘S’ nor ‘s’</td>
+<td style="text-align:center">“<u>I</u> have no exquisite reason for’t”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[ˆ.]/</td>
+<td style="text-align:center">not a period</td>
+<td style="text-align:center">“<u>o</u>ur resident Djinn”</td>
+</tr>
+<tr>
+<td style="text-align:center">/[eˆ]/</td>
+<td style="text-align:center">either ‘e’ or ‘ˆ’</td>
+<td style="text-align:center">“look up <u>ˆ</u> now”</td>
+</tr>
+<tr>
+<td style="text-align:center">/aˆb/</td>
+<td style="text-align:center">the pattern ‘aˆb’</td>
+<td style="text-align:center">“look up <u>aˆ b</u> now”</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.4 插入符号用于表示取反或者指示代表插入符号本身</center>
+
+<p>*请看后面的正则表达式，用反斜杠跳出这个状态。</p>
+<p>我们如何描述可选元素，比如在 <em>woodchunk</em> 和 <em>woodchunks</em> 中的可选元素 <em>s</em> 。我们不能用方括号，因为当他们允许我们描述”s or S“的时候，他们不会允许我们描述”s or nothing“。为此我们用问号/?/来描述”the preceding character or nothing“，如图2.5所示。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Match</th>
+<th style="text-align:center">Example Patterns Matched</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/woodchucks?/</td>
+<td style="text-align:center">woodchuck or woodchucks</td>
+<td style="text-align:center">“<u>woodchuck</u>”</td>
+</tr>
+<tr>
+<td style="text-align:center">/colou?r/</td>
+<td style="text-align:center">color or colour</td>
+<td style="text-align:center">“<u>color</u>”</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.5 问号 ? 标志了前面表达式 [2] 的可选性</center>
+
+<p>[2] 此处实际上是标志了问号前一个字符的可选性。</p>
+<p>我们可以把问号看作是“zero or one instances of the previous character”的意思。也就是说，这是一个指定我们想要多少某个东西，这在正则表达中是一个非常重要的事情。举个例子，考虑某些绵羊的语言包括一些和下面类似的字符串：</p>
+<ul>
+<li>baa! baaa! baaaa! baaaaa! …</li>
+</ul>
+<p>这个语言包含字符串 <em>a b</em> ，后面跟着至少两个 <em>a</em> ，最后还有一个惊叹号。允许我们描述一些类似“some number of <em>a</em> s”的运算符集合基于星号或者说是 * ，通常被称为 Kleene * (generally pronounced“cleanystar”)。星号 * 意味着“zero or more occurrences of the immediately previous character or regular expression”。因此， /a*/ 表示“any string of zero or more <em>a</em> s”。这会匹配 <em>a</em> 或者<em>aaa</em> ，但是着也会匹配 <em>Off Minor</em> 因为 字符串<em>Off Minor</em> 有0个a。因此，正则表达式为了匹配一个以及以上的 <em>a</em> 用 /aa*/ 表示，表示a后面可以跟着0个及以上的 <em>a</em> 。更复杂的表达也可以被重复。因此， /[ab]*/ 表示“zero or more a’s or b’s”（不是“zero or more right square braces”）。这会匹配像 <em>aaaa</em> 或 <em>ababab</em> 或 <em>bbbb</em> 这样的字符串。</p>
+<p>为了指定多个十进制数（对寻找价钱很有用），我们俩可以将正则表达式 /[0-9]/ 拓展一位。因此，整数（十进制数的字符串）就是 /[0-9][0-9]*/ 。（为什么不是 /[0-9]*/ 呢）</p>
+<p>有些时候，不得不为了十进制数而写两次正则表达式，这十分让人讨厌。因此，有一种指定某个字符出现至少一次的更简单方法。Kleene + 表示“one or more occurrences of the immediately precedingKleene+ character or regular expression”。因此，表达式 /[0-9]+/ 是指定一个十进制数序列最一般的方法。综上，指定绵羊语言有两种方法： /baaa*！/ 或者 /baa+!/ 。</p>
+<p>一个非常重要的特殊符号是句号 /./ ，一个可以匹配任何单个字符的任意替代表达（除去回车），如图2.6所示。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Match</th>
+<th style="text-align:center">Example Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">/beg.n/</td>
+<td style="text-align:center">any character between beg and n</td>
+<td style="text-align:center"><u>begin</u>, <u>beg’n</u>, <u>begun</u></td>
+</tr>
+</tbody>
+</table>
+<center>图 2.6 使用句号 . 指定任意字符</center>
+
+<p>任意替代符号经常和星号合用表示“any string of characters”。举个例子，假设我们想要找到含有特定单词的一行，比如 <em>aardvark</em> 出现两次。我们可以通过正则表达式 /aardvark.*aardvark/ 指定上述情况。</p>
+<p>锚符号是将正则表达式抛锚在字符串特定位置的一个特殊符号。最常见的锚符号就是插入符号 ^ 以及金钱符号 $ 。插入符号 ^ 匹配每句话的开始。pattern /ˆThe/ 只匹配位于每句话开始的单词 <em>The</em> 。因此，插入符号有三个用法：匹配每句话的开始，在方括号中表示取反，或者仅仅表示插入符号本身。（是什么上下文环境让grep或者Python知道一个给定的插入符号应该具有的功能呢？）金钱符号 $ 匹配每句话的结尾。因此，pattern / $/ 是一个匹配结尾空格得有用pattern，并且 /ˆThe dog.$/ 匹配一个只含有词组 <em>The dog</em> 的句子。（我们不得不在此处使用反斜杠，因为我们想要 . 表示句号而不是任意替代符号）</p>
+<p>有两种其他的锚符号： \b 匹配一个单词的边缘， \B 匹配一个非边缘。因此， /\bthe\b/ 匹配单词 <em>the</em> 而不是单词 <em>other</em> 。更技术性地讲， 一个用于正则表达式的单词被定义为任意十进制数、下划线或者字母的序列。这基于单词在编程语言中的定义。举个例子， /\b99\b/ 将会在 <em>There are 99 bottles of beer on the wall</em> 中匹配字符串 <em>99</em> （因为 <em>99</em> 跟在一个空格后面），但是不会在 <em>There are 299 bottles of beer on the wall</em> 中匹配 99 （因为 <em>99</em> 跟在一个数字后面）。但是，他会匹配 <em>$99</em> 中的 <em>99</em> （因为99跟在一个金钱符号之后，而金钱符号不是一个十进制数、下划线或者字母）。</p>
+<h3 id="2-1-2-取或，分类，优先"><a href="#2-1-2-取或，分类，优先" class="headerlink" title="2.1.2 取或，分类，优先"></a>2.1.2 取或，分类，优先</h3><p>假设我们需要搜索关于宠物的文本，也许我们特别对猫和狗感兴趣。在这种情况下，我们可能想要搜索字符串 <em>cat</em> 或者字符串 <em>dog</em> 。由于我们不能用方括号搜索“cat or dog”（我们为什么不能直接使用 /[catdog]/ ？），我们需要一个新的运算符，取或运算符，也可以称为管道符号 | 。pattern /cat|dog/ 可以匹配字符串 <em>cat</em> 或者字符串 <em>dog</em> 。</p>
+<p>有时候我们需要用这个取或运算符在一个更大序列的中间。举个例子，假设我想要为我的侄子Daivid搜索关于宠物鱼的信息。我怎么可以同时指定 <em>guppy</em> 和 <em>guppies</em> ？我们不能简单的用 /guppy|ies/ ，因为这只会匹配字符串 <em>guppy</em> 和 <em>ies</em> 。这是因为像 <em>guppy</em> 这样的序列优先于取或运算符 | 。为了使取或运算符支队特定pattern生效，我们需要使用括号运算符( and )。为了相邻运算符比如管道符号 | 以及星号 * 的使用，我们可以将一个pattern封闭在括号内使其看起来像一个单个字符。因此，pattern /gupp(y|ies)/ 可以根据我们的想法指定取或符号只对后缀 <em>y</em> 和 <em>ies</em> 起作用。</p>
+<p>括号运算符 ( 在我们使用像星号 * 的计数器时也有用。不像 | 运算符，星号 * 运算符默认情况下只应用于单字符，而不是整个序列。假设我们想要匹配字符串的一段重复实例。也许我们有一段文字包含表格中的列标签 <em>Column 1 Column 2 Column 3</em> 。这个表达式 /Column [0-9]+ */ 不会匹配任何列的数值，而会匹配一个后面跟着任意个空格的单列。星号只作用于它前面的空格而非整个序列。我们可以用括号写出表达式 /(Column [0-9]+ *)*/ 去匹配单词 <em>Column</em> 后面可以跟0及以上个空格，并且整个pattern可以重复0及以上次。</p>
+<p>这个一个运算符可以比其他运算符优先级高的想法要求我们用括号去指定我们想表达的含义。这个想法被正则表达式的运算符优先级制度进行格式化。下列表格给出了正则表达式的运算符优先级，从最高到最低的优先级。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">名称</th>
+<th style="text-align:center">符号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Parenthesis</td>
+<td style="text-align:center">()</td>
+</tr>
+<tr>
+<td style="text-align:center">Counters</td>
+<td style="text-align:center">* + ? {}</td>
+</tr>
+<tr>
+<td style="text-align:center">Sequences and anchors</td>
+<td style="text-align:center">the ˆmy end$</td>
+</tr>
+<tr>
+<td style="text-align:center">Disjunction</td>
+<td style="text-align:center">\</td>
+</tr>
+</tbody>
+</table>
+<p>因此，因为计数器比文本序列的优先级更高， /the*/ 将匹配 <em>theeeee</em> 而不是 <em>thethe</em> 。因为文本序列比取或富豪的优先级高， /the|any/ 将匹配 <em>the</em> 或者 <em>any</em> 而不是 <em>thany</em> 或者 <em>theny</em> 。</p>
+<p>pattern在另一种角度可能会模棱两可。考虑当匹配文本 <em>once upon a time</em> 时，表达式 /[a-z]*/ 的结果。因为 /[a-z]*/ 匹配0及以上各字母，这个表达式可以匹配空字符，或者指示首字母 <em>o</em> ， <em>on</em> ， <em>onc</em> 或者 <em>once</em> 。在这些情况正则表达式总是匹配可以匹配到的最大字符串，我们称pattern式贪婪的，拓展去尽可能覆盖更多的字符串。</p>
+<p>然而，有很多办法去强迫非贪婪匹配，使用 ? 筛选器的另一种用法。运算符 *？是一个星号匹配尽可能短的文本。运算符 +? 是一个加号匹配尽可能短的文本。</p>
+<h3 id="2-1-3-一个简单的例子"><a href="#2-1-3-一个简单的例子" class="headerlink" title="2.1.3 一个简单的例子"></a>2.1.3 一个简单的例子</h3><p>假设我们想要写一个正则表达式去寻找英语的冠词 <em>the</em> 。一个简单的（但是不正确的）pattern可能是</p>
+<p>/the/</p>
+<p>一个问题就是这个pattern将错过 <em>the</em> 位于句首因此首字母大写的情况（比如 <em>The</em> ）。这可能将我们引导至下面的pattern：</p>
+<p>/[tT]he/</p>
+<p>但是我们仍然将错误的返回嵌入其他单词的文本（比如 <em>other</em> 或者 <em>theology</em> ）。因此我们需要指定两边具有边界的单词实例：</p>
+<p>/\b[tT]he\b/</p>
+<p>假设我们想要不用 /\b/ 实现这个。我们可能因为 /\b/ 将不处理下划线和数字作为单词边界而弃用这个方法，但是我们可能想要在一些与下划线和数字相邻的上下文中找到 <em>the</em> 。我们需要指定我们想要 <em>the</em> 两边都没有英文字母的实例：</p>
+<p>/[ˆa-zA-Z][tT]he[ˆa-zA-Z]/</p>
+<p>但是这个pattern仍然有一个问题：他将不会找到位于句首的 <em>the</em> 。这是因为正则表达式 [ˆa-zA-Z] 被我们用来避免 <em>the</em> 的嵌入实例，意味着 <em>the</em> 的前面必须有一些单字符（尽管非字母）。我们可以通过指定 <em>the</em> 为句首或者 <em>the</em> 前面是一个非字母字符避免这个问题。在句尾也是同理。</p>
+<p>/(ˆ|[ˆa-zA-Z])[tT]he([ˆa-zA-Z]|$)/</p>
+<p>我们刚刚进行的操作是基于两种固定错误：错误肯定，我们错误地匹配了像 <em>other</em> 或者 <em>there</em> 的字符串；以及错误否定，我们错误地错过了像 <em>The</em> 的字符串。处理这两种问题在实现语音和语言处理系统中频繁出现。因此，应用中降低总错误率主要有两个努力方向：</p>
+<ul>
+<li>提高准确率（降低错误肯定）</li>
+<li>提高召回率（降低错误否定）</li>
+</ul>
+<h3 id="2-1-4-一个更复杂的例子"><a href="#2-1-4-一个更复杂的例子" class="headerlink" title="2.1.4 一个更复杂的例子"></a>2.1.4 一个更复杂的例子</h3><p>让我们使用正则表达式的力量尝试一个更重要的例子。假设我们想要开发一个帮助用户网上买电脑的应用。用户可能想要“any machine with at least 6 GHz and 500 GB of disk space for less than $1000”。想要实现这样的检索，我们首先需要有能力找到像 <em>6 GHz</em> 或 <em>500 GB</em> 或 <em>Mac</em> 或 <em>$999.99</em>。在这部分的最后，我们将找到这个任务的一些简单的正则表达式。</p>
+<p>首先，让我们完成关于价格的正则表达式。这是一个用金钱符号后面跟十进制数字符串的正则表达式：</p>
+<p>/$[0-9]+/</p>
+<p>注意， $ 符号在这里有一个相比我们之前讨论的句尾功能不一样的功能。大多数正则表达式解析器足够聪明，可以意识到 $ 在这里不是表示句尾。（作为一个思维实验，试思考正则表达式解析器如何从上下文弄清楚 $ 的功能。）</p>
+<p>现在我们需要处理价钱的小数部分。我们需要加一个十进制的小数点和十进制的小数点后两位：</p>
+<p>/$[0-9]+.[0-9][0-9]/</p>
+<p>这个pattern只允许 <em>$199.99</em> 但不允许 <em>$199</em> 。我们需要让钱的分位可选并确定他不在单词边界。</p>
+<p>/(ˆ|\W)$[0-9]+(.[0-9][0-9])?\b/ </p>
+<p>最后一点，这个pattern允许像 $199999.99 这样非常贵的价格。我们需要限制价格的高低：</p>
+<p>/(ˆ|\W)$[0-9]{0,3}(.[0-9][0-9])?\b/ </p>
+<p>硬盘空间怎么样呢？我们需要再一次允许可选的小数位（<em>5.5 GB</em>）。注意 ? 的使用可以使得最后的 <em>s</em> 是可选的，并且 / */  表示“zero or more spaces”因为看可能总是有额外的空格在附近：</p>
+<p>/\b[0-9]+(.[0-9]+)? *(GB|[Gg]igabytes?)\b/ </p>
+<p>改善正则表达式使得他只匹配高于 500 GB 是留给读者的练习。</p>
+<h3 id="2-1-5-更多的运算符"><a href="#2-1-5-更多的运算符" class="headerlink" title="2.1.5 更多的运算符"></a>2.1.5 更多的运算符</h3><p>图2.7展示了一些普遍范围的别名。这些别名主要被用于节省打字时间。租好了星号 * 和加号 + ，我们还可以通过括在圆括号里使用明确的数字，比如计数器。正则表达式 /{3}/ 表示“exactly 3 occurrences of the previous character or expression”。因此，/a.{24}z/ 将会匹配 <em>a</em> 后面跟着24个点再跟一个 <em>z</em> （而不是 <em>a</em> 后面跟23或者25个点再跟一个 <em>z</em> ）</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Expansion</th>
+<th style="text-align:center">Match</th>
+<th style="text-align:center">First Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">\d</td>
+<td style="text-align:center">[0-9]</td>
+<td style="text-align:center">any digit</td>
+<td style="text-align:center">Party of <u>5</u></td>
+</tr>
+<tr>
+<td style="text-align:center">\D</td>
+<td style="text-align:center">[ˆ0-9]</td>
+<td style="text-align:center">any non-digit</td>
+<td style="text-align:center"><u>B</u>lue moon</td>
+</tr>
+<tr>
+<td style="text-align:center">\w</td>
+<td style="text-align:center">[a-zA-Z0-9_]</td>
+<td style="text-align:center">any alphanumeric/underscore</td>
+<td style="text-align:center"><u>D</u>aiyu</td>
+</tr>
+<tr>
+<td style="text-align:center">\W</td>
+<td style="text-align:center">[ˆ\w]</td>
+<td style="text-align:center">a non-alphanumeric</td>
+<td style="text-align:center"><u>!</u>!!!</td>
+</tr>
+<tr>
+<td style="text-align:center">\s</td>
+<td style="text-align:center">[ \r\t\n\f]</td>
+<td style="text-align:center">whitespace (space, tab)</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">\S</td>
+<td style="text-align:center">[ˆ\s]</td>
+<td style="text-align:center">Non-whitespace</td>
+<td style="text-align:center"><u>i</u>n Concord</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.7 一些常见字符集的别名</center>
+
+<p>一个区间的数字也可以被指定。因此， /{n,m}/ 指定前面字符或者表达式 <em>n</em> 到 <em>m</em> 次的出现次数。并且， /{n,}/ 表示前面表达式至少出现 <em>n</em> 次。正则表达式中的计数用法被总结在图2.8中。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:center">zero or more occurrences of the previous char or expression</td>
+</tr>
+<tr>
+<td style="text-align:center">+</td>
+<td style="text-align:center">one or more occurrences of the previous char or expression</td>
+</tr>
+<tr>
+<td style="text-align:center">?</td>
+<td style="text-align:center">exactly zero or one occurrence of the previous char or expression</td>
+</tr>
+<tr>
+<td style="text-align:center">{n}</td>
+<td style="text-align:center">n occurrences of the previous char or expression</td>
+</tr>
+<tr>
+<td style="text-align:center">{n,m}</td>
+<td style="text-align:center">from n to m occurrences of the previous char or expression</td>
+</tr>
+<tr>
+<td style="text-align:center">{n,}</td>
+<td style="text-align:center">at least n occurrences of the previous char or expression</td>
+</tr>
+<tr>
+<td style="text-align:center">{,m}</td>
+<td style="text-align:center">up to m occurrences of the previous char or expression</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.8 计数的一些正则表达式运算符</center>
+
+<p>最后，特定特殊字符可以被特殊的基于反斜杠的记号进行指定（见图2.9）。最常见的就是转行符号 \n 以及缩进符号 \t 。想要指定这些特殊的字符本身（像 ., *, [, 和 \），在他们前面加上反斜杠（比如/./, /*/, /[/, 和 /\/）。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">RE</th>
+<th style="text-align:center">Match</th>
+<th style="text-align:center">First Patterns Matched</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:center">an asterisk “*”</td>
+<td style="text-align:center">“K<u>*</u>A*P*L*A*N”</td>
+</tr>
+<tr>
+<td style="text-align:center">.</td>
+<td style="text-align:center">a period “.”</td>
+<td style="text-align:center">“Dr<u>.</u> Livingston, I presume”</td>
+</tr>
+<tr>
+<td style="text-align:center">\?</td>
+<td style="text-align:center">a question mark</td>
+<td style="text-align:center">“Why don’t they come and lend a hand<u>?</u>”</td>
+</tr>
+<tr>
+<td style="text-align:center">\n</td>
+<td style="text-align:center">a newline</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">\t</td>
+<td style="text-align:center">a tab</td>
+</tr>
+</tbody>
+</table>
+<center>图 2.9 一些需要被反斜杠转义的字符</center>
+
+<h3 id="2-1-6-替换，群组捕获，ELIZA"><a href="#2-1-6-替换，群组捕获，ELIZA" class="headerlink" title="2.1.6 替换，群组捕获，ELIZA"></a>2.1.6 替换，群组捕获，ELIZA</h3><p>一个正则表达式的一个重要用法就是替换。举个例子，替换运算符 s/regexp1/pattern/ 被用在Python中，并且Unix命令行中，像vim或者sed允许被正则表达式特定的字符串被另一个字符串替换：</p>
+<p>s/colour/color/</p>
+<p>有能力指定一个匹配首个pattern的字符串的子部分往往很有用。举个例子，假设我们想要用尖括号括住文本中的所有整数，比如将 <em>the 35 boxes</em>  改为 <em>the <35> boxes</35></em>。我们喜欢拥有一种可以直接指向我们发现的整数的方法，这样我们就可以简单的添加括号。为了实现这个，我们将括号运算符( and )括在第一个pattern的周围并用第二个pattern的数字运算符 \1 指向后面。这是他的具体实现：</p>
+<p>s/([0-9]+)/&lt;\1&gt;/ </p>
+<p>括号运算符和数字运算符也可以指定一个特定的在文本中必须出现两次的字符串或者表达式。举个例子，假设我们正在寻找pattern “the Xer they were, the Xer they will be“，这里我们想要限制两个X为相同的字符串。我们可以通过在第一个X周围加上括号运算符，并用数字运算符 \1 替换第二个X的方法实现，如下所示：</p>
+<p>/the (.*)er they were, the \1er they will be/ </p>
+<p>这里 \1 将会被在括号运算符中第一个物品匹配的任何字符串替代。因此这将会匹配 <em>the bigger they were, the bigger they will be</em> 但是不会匹配 <em>the bigger they were, the faster they will be</em> 。</p>
+<p>这个将一个pattern存在内存中的括号运算符的用法被称为群组捕获。每当一个群组捕获被使用时（比如，用一个括号运算符括住一个pattern），匹配的结果将会被存在数字标记的寄存器中。如果你匹配了两个不同的括号运算符集合， \2 表示你第二个捕获群组匹配的任何东西。因此：</p>
+<p>/the (.*)er they (.*), the \1er we \2/</p>
+<p>将会匹配 <em>the faster they ran,the faster we ran</em> 而不会匹配 <em>the faster they ran,the faster we ate</em> 。相似地，第三个捕获群组被存在 \3 中，第四个被存在 \4 中，依此类推。</p>
+<p>括号运算符因此在正则表达式中拥有双重功能：我们被用于集合terms，以指定运算符应该采用的顺序，并且他们被用以捕获寄存器中的一些东西。偶尔我们可能想要用括号集合一些东西，而不像将匹配结果讯在寄存器中。这种情况，我们通过在左括号后面添加 ?: 指令，以这种形式 (?: pattern) 使用非捕获群组。</p>
+<p>/(?:some|a few) (people|cats) like some \1/</p>
+<p>将会匹配 <em>some cats like some cats but not some cats like some a few</em> 。</p>
+<p>替换和捕获群组在实现简单对话机器人中，比如   ELIZA (Weizenbaum, 1966)，非常有用。回想 ELIZA 通过像如下对话一样模拟一个罗氏心理学家：</p>
+<ul>
+<li><em>User1: Men are all alike.<br>ELIZA1: IN WHAT WAY<br>User2: They’re always bugging us about something or other.<br>ELIZA2: CAN YOU THINK OF A SPECIFIC EXAMPLE<br>User3: Well, my boyfriend made me come here.<br>ELIZA3: YOUR BOYFRIEND MADE YOU COME HERE<br>User4: He says I’m depressed much of the time.<br>ELIZA4: I AM SORRY TO HEAR YOU ARE DEPRESSED</em></li>
+</ul>
+<p>ELIZA 通过一系列或者一连串正则表达式的替换进行工作，每个替换都会匹配或者替换输入文本的一些部分。输入文本是首字母大写的。第一个替换就是将所有 <em>MY</em> 的实例改变为 <em>YOUR</em> ，以及将 <em>I’M</em> 变为<em>YOU ARE</em> ，依此类推。下一个替换集匹配并替换其他输入中的pattern。这里有一些例子：</p>
+<p>s/.* I’M (depressed|sad) .*/I AM SORRY TO HEAR YOU ARE \1/<br>s/.* I AM (depressed|sad) .*/WHY DO YOU THINK YOU ARE \1/<br>s/.* all .*/IN WHAT WAY/<br>s/.* always .*/CAN YOU THINK OF A SPECIFIC EXAMPLE/</p>
+<p>因为多重替换可以应用于给出的输入，替换被分配了一个排名，并根据顺序被执行。创造pattern是练习2.3的主题，并且我们将在2.6章回到 ELIZA 架构的细节。</p>
+<h3 id="2-1-7-前瞻判别"><a href="#2-1-7-前瞻判别" class="headerlink" title="2.1.7 前瞻判别"></a>2.1.7 前瞻判别</h3><p>最终，我们将会多次遇到需要预判未来的情况：在文本中提前看是否有pattern匹配，但是不提前匹配指针，这样我们可以在pattern出现时处理他们。</p>
+<p>这些前瞻判别使用我们在前面部分，非捕获群组见到的 (? 语法。如果pattern出现，则运算符 (?= pattern) 为真，单宽度为0，举个例子，匹配指针并不提前。如果一个pattern不匹配，运算符 (?! pattern) 只返回真，但再一次说明，这是宽度为0，且不提前指针的。否定前瞻在我们解析一些复杂pattern但想要排除特殊情况时十分常用。举个例子，假设我们想要匹配句首的任何非 ”Volcano“起始的任意单个单词。我们可以这样用否定前瞻：</p>
+<p>/ˆ(?!Volcano)[A-Za-z]+/</p>
+
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2020/03/15/语音和语言处理第三版 2.2 单词/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                语音和语言处理第三版 2.2 单词</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2020/03/07/日语语法 3.12 副词和用于结束句子的助词/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                日语语法 3.12 副词和用于结束句子的助词</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

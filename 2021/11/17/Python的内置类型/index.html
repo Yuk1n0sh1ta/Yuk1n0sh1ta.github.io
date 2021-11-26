@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">Python的内置类型 | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      Python的内置类型</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2021-11-17<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <ul>
+<li>本文参考<br>[1] <a href="https://docs.python.org/zh-cn/3/" target="_blank" rel="noopener">官方 Python3 教程</a><br>[2] <a href="https://www.runoob.com/python3/python3-tutorial.html" target="_blank" rel="noopener">RUNOOB Python3 教程</a></li>
+</ul>
+<h1 id="Python的内置类型"><a href="#Python的内置类型" class="headerlink" title="Python的内置类型"></a>Python的内置类型</h1><h2 id="逻辑值"><a href="#逻辑值" class="headerlink" title="逻辑值"></a>逻辑值</h2><ol>
+<li>被定义为假值的常量: <code>None</code> 和 <code>False</code>。</li>
+<li>任何数值类型的零: <code>0</code>, <code>0.0</code>, <code>0j</code>, <code>Decimal(0)</code>, <code>Fraction(0, 1)</code></li>
+<li>空的序列和多项集: <code>&#39;&#39;</code>, <code>()</code>, <code>[]</code>, <code>{}</code>, <code>set()</code>, <code>range(0)</code></li>
+</ol>
+<h2 id="逻辑运算"><a href="#逻辑运算" class="headerlink" title="逻辑运算"></a>逻辑运算</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">逻辑运算</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">x or y</td>
+<td style="text-align:center">或</td>
+</tr>
+<tr>
+<td style="text-align:center">x and y</td>
+<td style="text-align:center">与</td>
+</tr>
+<tr>
+<td style="text-align:center">not x</td>
+<td style="text-align:center">非</td>
+</tr>
+</tbody>
+</table>
+<h2 id="比较运算"><a href="#比较运算" class="headerlink" title="比较运算"></a>比较运算</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">比较运算</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">&lt;</td>
+<td style="text-align:center">严格小于</td>
+</tr>
+<tr>
+<td style="text-align:center">&lt;=</td>
+<td style="text-align:center">小于等于</td>
+</tr>
+<tr>
+<td style="text-align:center">&gt;</td>
+<td style="text-align:center">严格大于</td>
+</tr>
+<tr>
+<td style="text-align:center">&gt;=</td>
+<td style="text-align:center">大于等于</td>
+</tr>
+<tr>
+<td style="text-align:center">==</td>
+<td style="text-align:center">等于</td>
+</tr>
+<tr>
+<td style="text-align:center">!=</td>
+<td style="text-align:center">不等于</td>
+</tr>
+</tbody>
+</table>
+<h2 id="成员运算及身份运算"><a href="#成员运算及身份运算" class="headerlink" title="成员运算及身份运算"></a>成员运算及身份运算</h2><table>
+<thead>
+<tr>
+<th style="text-align:center">运算</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">in</td>
+<td style="text-align:center">包含于</td>
+</tr>
+<tr>
+<td style="text-align:center">not in</td>
+<td style="text-align:center">不包含于</td>
+</tr>
+<tr>
+<td style="text-align:center">is</td>
+<td style="text-align:center">相同对象</td>
+</tr>
+<tr>
+<td style="text-align:center">is not</td>
+<td style="text-align:center">不相同对象</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="python">&gt;&gt;&gt; a = [1, 2, 3]
+
+&gt;&gt;&gt; b = a
+&gt;&gt;&gt; b == a
+True
+&gt;&gt;&gt; b is a
+True
+
+&gt;&gt;&gt; b = a[:]
+&gt;&gt;&gt; b == a
+True
+&gt;&gt;&gt; b is a
+False
+</code></pre>
+<ol>
+<li><code>b = a</code> 中，列表的赋值采用的是引用赋值，两者不光数值相同，指针指向也相同。其中之一的列表元素发生改变，另一个也会跟着改变。此时，a 和 b 为相同对象。</li>
+<li><code>b = a[:]</code> 中，<code>[:]</code> 表示只取值，此时列表的赋值只是单纯的复制了数值，两者的数值虽然相同，但指针指向不同。其中之一的列表元素发生改变，另一个不会跟着改变。此时，a 和 b 为不同对象。</li>
+</ol>
+<h2 id="数字类型及运算符"><a href="#数字类型及运算符" class="headerlink" title="数字类型及运算符"></a>数字类型及运算符</h2><h3 id="数字类型"><a href="#数字类型" class="headerlink" title="数字类型"></a>数字类型</h3><ol>
+<li>int<br><code>x = 5</code></li>
+<li>float<br><code>x = 5.0</code></li>
+<li>complex<br><code>x = 5 + 5.0j</code></li>
+</ol>
+<pre><code class="python">&gt;&gt;&gt; x = []
+&gt;&gt;&gt; x.append(5);x.append(5.1);x.append(5+5.1j)
+&gt;&gt;&gt; x
+[5, 5.1, (5+5.1j)]
+</code></pre>
+<h3 id="数字运算"><a href="#数字运算" class="headerlink" title="数字运算"></a>数字运算</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">数字运算</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">x + y</td>
+<td style="text-align:center">加</td>
+</tr>
+<tr>
+<td style="text-align:center">x - y</td>
+<td style="text-align:center">减</td>
+</tr>
+<tr>
+<td style="text-align:center">x * y</td>
+<td style="text-align:center">乘</td>
+</tr>
+<tr>
+<td style="text-align:center">x / y</td>
+<td style="text-align:center">除</td>
+</tr>
+<tr>
+<td style="text-align:center">x // y</td>
+<td style="text-align:center">整除（向下取整）</td>
+</tr>
+<tr>
+<td style="text-align:center">x % y</td>
+<td style="text-align:center">取余</td>
+</tr>
+<tr>
+<td style="text-align:center">x ** y</td>
+<td style="text-align:center">x 的 y 次幂</td>
+</tr>
+<tr>
+<td style="text-align:center">pow(x, y)</td>
+<td style="text-align:center">x 的 y 次幂</td>
+</tr>
+<tr>
+<td style="text-align:center">abs(x)</td>
+<td style="text-align:center">取绝对值</td>
+</tr>
+<tr>
+<td style="text-align:center">int()</td>
+<td style="text-align:center">整数强制类型转换</td>
+</tr>
+<tr>
+<td style="text-align:center">float()</td>
+<td style="text-align:center">浮点数强制类型转换</td>
+</tr>
+<tr>
+<td style="text-align:center">complex(real, imag)</td>
+<td style="text-align:center">复数</td>
+</tr>
+<tr>
+<td style="text-align:center">divmod(x, y)</td>
+<td style="text-align:center">(x // y, x % y)</td>
+</tr>
+<tr>
+<td style="text-align:center">round(x[, n])</td>
+<td style="text-align:center">将x保留n位小数（四舍五入）</td>
+</tr>
+<tr>
+<td style="text-align:center">math.floor(x)</td>
+<td style="text-align:center">&lt;=x的最大整数</td>
+</tr>
+<tr>
+<td style="text-align:center">math.ceil(x)</td>
+<td style="text-align:center">&gt;=x的最小整数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">位运算</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">x</td>
+<td style="text-align:center">y</td>
+</tr>
+<tr>
+<td style="text-align:center">x ^ y</td>
+<td style="text-align:center">按位异或</td>
+</tr>
+<tr>
+<td style="text-align:center">x &amp; y</td>
+<td style="text-align:center">按位与</td>
+</tr>
+<tr>
+<td style="text-align:center">x &lt;&lt; n</td>
+<td style="text-align:center">左移n位</td>
+</tr>
+<tr>
+<td style="text-align:center">x &gt;&gt; n</td>
+<td style="text-align:center">右移n位</td>
+</tr>
+<tr>
+<td style="text-align:center">~x</td>
+<td style="text-align:center">按位取反</td>
+</tr>
+</tbody>
+</table>
+<h2 id="序列类型"><a href="#序列类型" class="headerlink" title="序列类型"></a>序列类型</h2><h3 id="通用序列操作"><a href="#通用序列操作" class="headerlink" title="通用序列操作"></a>通用序列操作</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">通用序列操作</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">x in s</td>
+<td style="text-align:center">如果 s 中的某项等于 x 则结果为 True，否则为 False</td>
+</tr>
+<tr>
+<td style="text-align:center">x not in s</td>
+<td style="text-align:center">如果 s 中的某项等于 x 则结果为 False，否则为 True</td>
+</tr>
+<tr>
+<td style="text-align:center">s + t</td>
+<td style="text-align:center">s 与 t 相拼接</td>
+</tr>
+<tr>
+<td style="text-align:center">s * n</td>
+<td style="text-align:center">相当于 s 与自身进行 n 次拼接</td>
+</tr>
+<tr>
+<td style="text-align:center">s[i]</td>
+<td style="text-align:center">s 的第 i 项，起始为 0</td>
+</tr>
+<tr>
+<td style="text-align:center">s[i:j]</td>
+<td style="text-align:center">s 从 i 到 j 的切片</td>
+</tr>
+<tr>
+<td style="text-align:center">s[i:j:step]</td>
+<td style="text-align:center">s 从 i 到 j 步长为 k 的切片</td>
+</tr>
+<tr>
+<td style="text-align:center">len(s)</td>
+<td style="text-align:center">s 的长度</td>
+</tr>
+<tr>
+<td style="text-align:center">min(s)</td>
+<td style="text-align:center">s 的最小项</td>
+</tr>
+<tr>
+<td style="text-align:center">max(s)</td>
+<td style="text-align:center">s 的最大项</td>
+</tr>
+<tr>
+<td style="text-align:center">s.index(x[, i[, j]])</td>
+<td style="text-align:center">x 在 s 中首次出现项的索引号（索引号在 i 或其后且在 j 之前）</td>
+</tr>
+<tr>
+<td style="text-align:center">s.count(x)</td>
+<td style="text-align:center">x 在 s 中出现的总次数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="可变序列操作"><a href="#可变序列操作" class="headerlink" title="可变序列操作"></a>可变序列操作</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">可变序列操作</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">s[i] = x</td>
+<td style="text-align:center">将 s 的第 i 项替换为 x</td>
+</tr>
+<tr>
+<td style="text-align:center">s[i:j] = t</td>
+<td style="text-align:center">将 s 从 i 到 j 的切片替换为可迭代对象 t 的内容</td>
+</tr>
+<tr>
+<td style="text-align:center">del s[i:j]</td>
+<td style="text-align:center">等同于 s[i:j] = []</td>
+</tr>
+<tr>
+<td style="text-align:center">s.append(x)</td>
+<td style="text-align:center">将 x 添加到序列的末尾 (等同于 s[len(s):len(s)] = [x])</td>
+</tr>
+<tr>
+<td style="text-align:center">s.clear()</td>
+<td style="text-align:center">从 s 中移除所有项 (等同于 del s[:])</td>
+</tr>
+<tr>
+<td style="text-align:center">s.copy()</td>
+<td style="text-align:center">创建 s 的浅拷贝 (等同于 s[:])</td>
+</tr>
+<tr>
+<td style="text-align:center">s.extend(t)</td>
+<td style="text-align:center">用 t 的内容扩展 s (基本上等同于 s[len(s):len(s)] = t)</td>
+</tr>
+<tr>
+<td style="text-align:center">s.insert(i, x)</td>
+<td style="text-align:center">在由 i 给出的索引位置将 x 插入 s (等同于 s[i:i] = [x])</td>
+</tr>
+<tr>
+<td style="text-align:center">s.pop(*[, i])</td>
+<td style="text-align:center">提取在 i 位置上的项，并将其从 s 中移除</td>
+</tr>
+<tr>
+<td style="text-align:center">s.remove(x)</td>
+<td style="text-align:center">删除 s 中第一个 s[i] 等于 x 的项目。</td>
+</tr>
+<tr>
+<td style="text-align:center">s.reverse()</td>
+<td style="text-align:center">就地将列表中的元素逆序。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h3><p>列表是可变序列，通常用于存放同类项目的集合（其中精确的相似程度将根据应用而变化）。</p>
+<p><code>class list([iterable])</code><br>可以用多种方式构建列表：</p>
+<ol>
+<li>使用一对方括号来表示空列表: <code>[]</code></li>
+<li>使用方括号，其中的项以逗号分隔: <code>[a]</code> / <code>[a, b, c]</code></li>
+<li>使用列表推导式: <code>[x for _ in iterable]</code></li>
+<li>使用类型的构造器: <code>list()</code> / <code>list(iterable)</code></li>
+</ol>
+<p><code>list.sort(\*, key=None, reverse=False)</code><br>此方法会对列表进行原地排序，保证稳定。</p>
+<pre><code class="python">&gt;&gt;&gt; list = [1, 5, 3, 4, 6, 2]
+&gt;&gt;&gt; list.sort()
+&gt;&gt;&gt; list
+[1, 2, 3, 4, 5, 6]
+
+&gt;&gt;&gt; list = [[1, 5, 3], [4, 6, 2]]
+&gt;&gt;&gt; list.sort(key=lambda x:x[2])
+&gt;&gt;&gt; list
+[[4, 6, 2], [1, 5, 3]]
+</code></pre>
+<h3 id="元组"><a href="#元组" class="headerlink" title="元组"></a>元组</h3><p>元组是不可变序列，通常用于储存异构数据的多项集（例如由 <code>enumerate()</code> 内置函数所产生的二元组）。 元组也被用于需要同构数据的不可变序列的情况（例如允许存储到 set 或 dict 的实例）。</p>
+<p><code>class tuple([iterable])</code><br>可以用多种方式构建元组：</p>
+<ol>
+<li>使用一对圆括号来表示空元组: <code>()</code></li>
+<li>使用一个后缀的逗号来表示单元组: <code>a,</code> / <code>(a,)</code></li>
+<li>使用以逗号分隔的多个项: <code>a, b, c</code> / <code>(a, b, c)</code></li>
+<li>使用内置的tuple(): <code>tuple()</code> / <code>tuple(iterable)</code></li>
+</ol>
+<h3 id="range-对象"><a href="#range-对象" class="headerlink" title="range 对象"></a>range 对象</h3><p>range 类型表示不可变的数字序列，通常用于在 for 循环中循环指定的次数。</p>
+<p><code>class range(stop)</code><br><code>class range(start, stop[, step])</code><br>range 构造器的参数必须为整数。 </p>
+<ol>
+<li>如果省略 step 参数，其默认值为 1。 </li>
+<li>如果省略 start 参数，其默认值为 0。</li>
+<li>如果 step 为零则会引发 ValueError。</li>
+</ol>
+<pre><code class="python">&gt;&gt;&gt; list(range(10))
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+&gt;&gt;&gt; list(range(1, 11))
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+&gt;&gt;&gt; list(range(0, 30, 5))
+[0, 5, 10, 15, 20, 25]
+&gt;&gt;&gt; list(range(0, 10, 3))
+[0, 3, 6, 9]
+&gt;&gt;&gt; list(range(0, -10, -1))
+[0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+&gt;&gt;&gt; list(range(0))
+[]
+&gt;&gt;&gt; list(range(1, 0))
+[]
+</code></pre>
+<h3 id="文本序列类型"><a href="#文本序列类型" class="headerlink" title="文本序列类型"></a>文本序列类型</h3><p>在 Python 中处理文本数据是使用 str 对象，也称为 字符串。<br>字符串是由 Unicode 码位构成的不可变序列。</p>
+<p><code>class str(object=&#39;&#39;)</code><br><code>class str(object=b&#39;&#39;, encoding=&#39;utf-8&#39;, errors=&#39;strict&#39;)</code><br>可以用多种方式构建：</p>
+<ol>
+<li>使用引号：<code>&#39;&#39;</code> /<code>&quot;&quot;</code> /<code>&#39;&#39;&#39; &#39;&#39;&#39;</code> / <code>&quot;&quot;&quot; &quot;&quot;&quot;</code></li>
+<li>使用内置的str()：<code>str()</code> / <code>str(object)</code></li>
+<li>使用raw禁止转义：<code>r&#39;\n&#39;</code></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">str的方法</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">str.capitalize()</td>
+<td style="text-align:center">将str首字母大写</td>
+</tr>
+<tr>
+<td style="text-align:center">str.find(s)</td>
+<td style="text-align:center">检测字符串s是否在str中，真返回True，假返回False</td>
+</tr>
+<tr>
+<td style="text-align:center">str.is?()</td>
+<td style="text-align:center">检查str是否为?，真返回True，假返回False</td>
+</tr>
+<tr>
+<td style="text-align:center">str.join(s)</td>
+<td style="text-align:center">以str为分割，将s中的元素合并为一个新的字符串</td>
+</tr>
+<tr>
+<td style="text-align:center">str.lower() / str.upper()</td>
+<td style="text-align:center">将str全部字符转为小写/大写</td>
+</tr>
+<tr>
+<td style="text-align:center">str.lstrip(s) / str.rstrip(s) / str.strip(s)</td>
+<td style="text-align:center">将str 左侧/右侧/两侧 的字符串s去掉</td>
+</tr>
+<tr>
+<td style="text-align:center">str.replace(old, new[, max])</td>
+<td style="text-align:center">将str中的字符串old替换为new，最大次数为max</td>
+</tr>
+<tr>
+<td style="text-align:center">str.split(sep, maxsplit=-1)</td>
+<td style="text-align:center">将str以sep中的元素为基准进行分割，最多分割maxsplit次，得到maxsplit段</td>
+</tr>
+<tr>
+<td style="text-align:center">str.startwith(startstr, beg=0, end=len(string))</td>
+<td style="text-align:center">检查str是否在(beg, end)区间以startstr作为开头</td>
+</tr>
+<tr>
+<td style="text-align:center">str.swapcase()</td>
+<td style="text-align:center">将str的 大/小 写字母转换为 小/大 写字母</td>
+</tr>
+<tr>
+<td style="text-align:center">str.title()</td>
+<td style="text-align:center">将str中所有单词首字母大写</td>
+</tr>
+</tbody>
+</table>
+<p><code>str.is?()</code>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">str.is?() 中的 ?</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">alnum</td>
+<td style="text-align:center">是否只包含字母或数字</td>
+</tr>
+<tr>
+<td style="text-align:center">alpha</td>
+<td style="text-align:center">是否只包含字母</td>
+</tr>
+<tr>
+<td style="text-align:center">digit</td>
+<td style="text-align:center">是否只包含数字</td>
+</tr>
+<tr>
+<td style="text-align:center">lower</td>
+<td style="text-align:center">是否只包含小写字母（只考虑区分大小写的）</td>
+</tr>
+<tr>
+<td style="text-align:center">numeric</td>
+<td style="text-align:center">是否只包含数字字符</td>
+</tr>
+<tr>
+<td style="text-align:center">space</td>
+<td style="text-align:center">是否只包含空格</td>
+</tr>
+<tr>
+<td style="text-align:center">upper</td>
+<td style="text-align:center">是否只包含大写字母（只考虑区分大小写的）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="字符串格式化"><a href="#字符串格式化" class="headerlink" title="字符串格式化"></a>字符串格式化</h3><p><a href="https://docs.python.org/zh-cn/3/library/string.html#formatstrings" target="_blank" rel="noopener">str.format()</a></p>
+<h2 id="二进制序列类型（待补充）"><a href="#二进制序列类型（待补充）" class="headerlink" title="二进制序列类型（待补充）"></a>二进制序列类型（待补充）</h2><h2 id="集合类型-set-frozen"><a href="#集合类型-set-frozen" class="headerlink" title="集合类型 - set, frozen"></a>集合类型 - set, frozen</h2><p>set 对象是由具有唯一性的 hashable 对象所组成的无序多项集。常见的用途包括成员检测、从序列中去除重复项以及数学中的集合类计算，例如交集、并集、差集与对称差集等等。<br>目前有两种内置集合类型：set 和 frozenset。</p>
+<ol>
+<li>set 类型是可变的。其内容可以使用 <code>add()</code> 和 <code>remove()</code> 这样的方法来改变。由于是可变类型，它没有哈希值，且不能被用作字典的键或其他集合的元素。</li>
+<li>frozenset 类型是不可变并且为 hashable 。其内容在被创建后不能再改变；因此它可以被用作字典的键或其他集合的元素。</li>
+</ol>
+<p><code>class set([iterable])</code><br><code>class frozenset([iterable])</code><br>返回一个新的 set 或 frozenset 对象，其元素来自于 iterable。集合的元素必须为 hashable 要表示由集合对象构成的集合，所有的内层集合必须为 frozenset 对象。如果未指定 iterable，则将返回一个新的空集合。<br>集合可用多种方式来创建：</p>
+<ol>
+<li>使用花括号内以逗号分隔元素的方式:<br><code>{&#39;jack&#39;, &#39;sjoerd&#39;}</code></li>
+<li>使用集合推导式:<br><code>{c for c in &#39;abracadabra&#39; if c not in &#39;abc&#39;}</code></li>
+<li>使用类型构造器:<br><code>set()</code> / <code>set(&#39;foobar&#39;)</code> / <code>set([&#39;a&#39;, &#39;b&#39;, &#39;foo&#39;])</code></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">set的操作</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">len(set)</td>
+<td style="text-align:center">返回set中的元素数量</td>
+</tr>
+<tr>
+<td style="text-align:center">element in set / element not in set</td>
+<td style="text-align:center">判断element是否出现在set中</td>
+</tr>
+<tr>
+<td style="text-align:center">set.add(element)</td>
+<td style="text-align:center">将element加入set</td>
+</tr>
+<tr>
+<td style="text-align:center">set.clear()</td>
+<td style="text-align:center">清空set</td>
+</tr>
+<tr>
+<td style="text-align:center">set.copy()</td>
+<td style="text-align:center">返回set的浅拷贝</td>
+</tr>
+<tr>
+<td style="text-align:center">setx.difference(sety)</td>
+<td style="text-align:center">返回包含在setx但不包含在sety的元素</td>
+</tr>
+<tr>
+<td style="text-align:center">set.discard(element)</td>
+<td style="text-align:center">移除set中的指定element（element不存在不报错）</td>
+</tr>
+<tr>
+<td style="text-align:center">set.intersection(set)</td>
+<td style="text-align:center">返回两个集合的交集</td>
+</tr>
+<tr>
+<td style="text-align:center">set.isjoint(set)</td>
+<td style="text-align:center">判断两个集合是否有交集</td>
+</tr>
+<tr>
+<td style="text-align:center">setx.issubset(sety)</td>
+<td style="text-align:center">判断setx是否为sety的子集</td>
+</tr>
+<tr>
+<td style="text-align:center">setx.issuperset(sety)</td>
+<td style="text-align:center">判断setx是否为sety的父集</td>
+</tr>
+<tr>
+<td style="text-align:center">set.pop()</td>
+<td style="text-align:center">随机移除set中的元素，返回该元素</td>
+</tr>
+<tr>
+<td style="text-align:center">set.remove(element)</td>
+<td style="text-align:center">移除set中的指定element（element不存在报错）</td>
+</tr>
+<tr>
+<td style="text-align:center">setx.symmetric_difference(sety)</td>
+<td style="text-align:center">返回setx和sety中不重复的元素</td>
+</tr>
+<tr>
+<td style="text-align:center">set.union(set)</td>
+<td style="text-align:center">返回两个集合的并集</td>
+</tr>
+<tr>
+<td style="text-align:center">setx.update(sety)</td>
+<td style="text-align:center">将setx置为两个集合的并集</td>
+</tr>
+</tbody>
+</table>
+<h2 id="映射类型"><a href="#映射类型" class="headerlink" title="映射类型"></a>映射类型</h2><p>mapping 对象会将 hashable 值映射到任意对象。 映射属于可变对象。目前仅有一种标准映射类型 字典。<br>字典的键几乎可以是任何值。非 hashable 的值，即包含列表、字典或其他可变类型的值（此类对象基于值而非对象标识进行比较）不可用作键。数字类型用作键时遵循数字比较的一般规则：如果两个数值相等 (例如 1 和 1.0) 则两者可以被用来索引同一字典条目。</p>
+<p><code>class dict(\*\*kwarg)</code><br><code>class dict(mapping, \*\*kwarg)</code><br><code>class dict(iterable, \*\*kwarg)</code><br>返回一个新的字典，基于可选的位置参数和可能为空的关键字参数集来初始化。<br>字典可用多种方式来创建：</p>
+<ol>
+<li>使用花括号内以逗号分隔 键: 值 对的方式: <code>{&#39;jack&#39;: 4098, &#39;sjoerd&#39;: 4127}</code> or <code>{4098: &#39;jack&#39;, 4127: &#39;sjoerd&#39;}</code></li>
+<li>使用字典推导式: <code>{}</code>, <code>{x: x ** 2 for x in range(10)}</code></li>
+<li>使用类型构造器: <code>dict()</code> / <code>dict([(&#39;foo&#39;, 100), (&#39;bar&#39;, 200)])</code> / <code>dict(foo=100, bar=200)</code></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">dict的操作</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">list(dict)</td>
+<td style="text-align:center">返回dict所有key的列表</td>
+</tr>
+<tr>
+<td style="text-align:center">len(dict)</td>
+<td style="text-align:center">返回dict的长度</td>
+</tr>
+<tr>
+<td style="text-align:center">dict[key]</td>
+<td style="text-align:center">返回dict中key的value，若key不存在则报错</td>
+</tr>
+<tr>
+<td style="text-align:center">dict[key] = value</td>
+<td style="text-align:center">将key增加至dict中并赋值value</td>
+</tr>
+<tr>
+<td style="text-align:center">del dict[key]</td>
+<td style="text-align:center">移除dict中的key，若key不存在则报错</td>
+</tr>
+<tr>
+<td style="text-align:center">key in dict / key not in dict</td>
+<td style="text-align:center">判断key是否在dict中</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.clear()</td>
+<td style="text-align:center">清空dict</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.copy()</td>
+<td style="text-align:center">返回dict的浅拷贝</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.fromkeys(iterable[, value])</td>
+<td style="text-align:center">通过iterable类型的元素建立列表</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.get(key[, default])</td>
+<td style="text-align:center">如果key存在则返回key对应的value，如果key不存在则返回default的值，default默认为None</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.items()</td>
+<td style="text-align:center">以((key, value), ( , ), …)的形式返回dict的键值对</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.keys()</td>
+<td style="text-align:center">以视图对象dict_keys([key1, key2, …])的形式返回dict的keys</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.pop(key)</td>
+<td style="text-align:center">返回dict中key的value，并将该key移除（key不存在则报错）</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.popitem()</td>
+<td style="text-align:center">以LIFO（Last In First Out）顺序返回dict中key的value，并将其移除</td>
+</tr>
+<tr>
+<td style="text-align:center">dict.values()</td>
+<td style="text-align:center">以视图对象dict_values([value1, value2, …])的形式返回dict的values</td>
+</tr>
+</tbody>
+</table>
+<h3 id="字典视图对象"><a href="#字典视图对象" class="headerlink" title="字典视图对象"></a>字典视图对象</h3><p>由 <code>dict.keys()</code>, <code>dict.values()</code> 和 <code>dict.items()</code> 所返回的对象是 视图对象。该对象提供字典条目的一个动态视图，这意味着当字典改变时，视图也会相应改变。<br>可以使用 <code>list(dict.keys())</code> 将字典视图对象转换为list。</p>
+<h2 id="上下文管理器类型（待补充）"><a href="#上下文管理器类型（待补充）" class="headerlink" title="上下文管理器类型（待补充）"></a>上下文管理器类型（待补充）</h2><p>Python 的 with 语句支持通过上下文管理器所定义的运行时上下文这一概念。此对象的实现使用了一对专门方法，允许用户自定义类来定义运行时上下文，在语句体被执行前进入该上下文，并在语句执行完毕时退出该上下文。<br>详情请参考 <a href="\">with 语句</a>。</p>
+<h2 id="union类型（待补充）"><a href="#union类型（待补充）" class="headerlink" title="union类型（待补充）"></a>union类型（待补充）</h2>
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2021/11/23/CS224N - 单词的含义表示/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                CS224N - 单词的含义表示</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2021/07/11/「突撃！南島原情報局」南岛原市宣传片字幕翻译/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                「突撃！南島原情報局」南岛原市宣传片字幕翻译</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>

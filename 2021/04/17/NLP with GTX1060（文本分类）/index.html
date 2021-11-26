@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  
+  <title itemprop="name">NLP with GTX1060（文本分类） | 彩音のBlog</title>
+  
+    <link rel="shortcut icon" href="/images/favicon.ico">
+  
+  <meta http-equiv="x-dns-prefetch-control" content="on">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+SerifMerriweather|Merriweather+Sans|Source+Code+Pro|Ubuntu:400,700|Noto+Serif+SC" media="all">
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="stylesheet" id="saukra_css-css" href="/css/style.css" type="text/css" media="all">
+  <link rel="stylesheet" href="/css/lib.min.css" media="all">
+  <link rel="stylesheet" href="/css/font.css" media="all">
+  <link rel="stylesheet" href="/css/insight.css" media="all">
+  <link rel="stylesheet" href="/css/jquery.fancybox.min.css" media="all">
+  <link rel="stylesheet" href="/css/zoom.css" media="all">
+  <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<!--   <link rel="stylesheet" id="saukra_css-css" href="https://2heng.xin/wp-content/cache/autoptimize/css/autoptimize_ad42a61f4c7d4bdd9f91afcff6b5dda5.css
+" type="text/css" media="all"> -->
+  <script>
+  /*Initial Variables*/
+  var mashiro_option = new Object();
+  var mashiro_global = new Object();
+  mashiro_option.NProgressON = true;
+  /* 
+   * 邮箱信息之类的东西可以填在这里，这些js变量基本都作用于sakura-app.js
+   * 这样的设置仅是为了方便在基于PHP开发的主题中设置js变量，既然移植到了Node上，我想或许可以精简这一逻辑吧
+   */
+  mashiro_option.email_domain = "";
+  mashiro_option.email_name = "";
+  mashiro_option.cookie_version_control = "";
+  mashiro_option.qzone_autocomplete = false;
+  mashiro_option.site_name = "桜の彩音";
+  mashiro_option.author_name = "彩音";
+  mashiro_option.site_url = "/index.html";
+  mashiro_option.v_appId = "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI";
+  mashiro_option.v_appKey = "wJkDCj8fLwzhY7dC7QXfQe1V";
+  mashiro_option.mathjax = "1";
+  mashiro_option.qq_api_url = "https://api.mashiro.top/qqinfo/"; 
+  mashiro_option.qq_avatar_api_url = "https://api.mashiro.top/qqinfo/";
+
+  // mashiro_option.jsdelivr_css_src = "https://cdn.jsdelivr.net/gh/moezx/cdn@3.4.5/css/lib.min.css";
+  // mashiro_option.float_player_on = true;
+
+  /*End of Initial Variables*/
+  </script>
+  <script type="text/javascript">
+  var bg = "https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjouiF.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/03/NjoMRJ.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg".split(",");
+  var bgindex = Math.floor(Math.random()*bg.length);
+  if (!!window.ActiveXObject || "ActiveXObject" in window) { //is IE?
+    alert('朋友，IE浏览器未适配哦~');
+  }
+  </script>
+  <style type="text/css">
+  .hljs-ln{border-collapse:collapse}.hljs-ln td{padding:0}.hljs-ln-n:before{content:attr(data-line-number)}
+  </style>
+  <style type="text/css">.site-top .lower nav{display:block !important;}.author-profile i,.post-like a,.post-share .show-share,.sub-text,.we-info a,span.sitename,.post-more i:hover,#pagination a:hover,.post-content a:hover,.float-content i:hover{color:#FE9600}.feature i,.download,.navigator i:hover,.links ul li:before,.ar-time i,span.ar-circle,.object,.comment .comment-reply-link,.siren-checkbox-radio:checked + .siren-checkbox-radioInput:after{background:#FE9600}::-webkit-scrollbar-thumb{background:#FE9600}.download,.navigator i:hover,.link-title,.links ul li:hover,#pagination a:hover,.comment-respond input[type='submit']:hover{border-color:#FE9600}.entry-content a:hover,.site-info a:hover,.comment h4 a,#comments-navi a.prev,#comments-navi a.next,.comment h4 a:hover,.site-top ul li a:hover,.entry-title a:hover,#archives-temp h3,span.page-numbers.current,.sorry li a:hover,.site-title a:hover,i.iconfont.js-toggle-search.iconsearch:hover,.comment-respond input[type='submit']:hover{color:#FE9600}.comments .comments-main{display:block !important;}.comments .comments-hidden{display:none !important;}background-position:center center;background-attachment:inherit;}
+  </style>
+</head>
+</html>
+<body class="page-template page-template-user page-template-page-analytics page-template-userpage-analytics-php page page-id-1297 chinese-font serif isWebKit">
+  <div class="scrollbar" id="bar">
+  </div>
+  <a href="#" class="cd-top faa-float animated"></a>
+  <section id="main-container">
+    <div class="headertop filter-dot">
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="/index.html">
+          <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+        </a>
+      </div>
+      <div class="header-info">
+        <p>施工中。。。</p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+          
+            
+              
+                <li>
+                  <a href="http://github.com/yuk1n0sh1ta" target="_blank" class="social-github" title="github">
+                    <img src="/img/social/github.svg">
+                  </a>
+                </li>
+              
+            
+          
+          <li id="bg-next">
+            <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/next-b.svg">
+          </li>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+    <div id="video-add">
+    </div>
+    <div class="video-stu">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+    <div id="page" class="centerbg">
+      <header class="site-header no-select gizle sabit" role="banner">
+  <div class="site-top">
+    <div class="site-branding">
+      <span class="site-title">
+        <span class="logolink moe-mashiro">
+          <a href="/">
+            <span class="sakurasono">桜の</span>
+            <span class="shironeko">彩音</span>
+          </a>
+        </span>
+      </span>
+    </div>
+    <div class="searchbox search-form-submit">
+      <i class="iconfont js-toggle-search iconsearch icon-search">
+      </i>
+    </div>
+    <div id="show-nav" class="showNav mobile-fit">
+      <div class="line line1">
+      </div>
+      <div class="line line2">
+      </div>
+      <div class="line line3">
+      </div>
+    </div>
+    <div class="lower-cantiner">
+      <div class="lower">
+        <nav class="mobile-fit-control hide">
+          <ul id="menu-new" class="menu">
+            
+              <li>
+                <a href="/">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+                    首页
+                  </span>
+                </a>
+                
+              </li>
+            
+              <li>
+                <a href="/archives">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+                    归档
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/categories/学习/">
+                          <i class="fa fa-code" aria-hidden="true"></i>
+                          学习
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/categories/生活/">
+                          <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                          生活
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+                    清单
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/musiclist/">
+                          <i class="fa fa-headphones" aria-hidden="true"></i>
+                          歌单
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/gallery/">
+                          <i class="fa fa-photo" aria-hidden="true"></i>
+                          美术
+                        </a>
+                      </li>
+                    
+                      <li>
+                        <a href="/photo/">
+                          <i class="fa fa-film" aria-hidden="true"></i>
+                          相册
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+              <li>
+                <a href="javascript:;">
+                  <span class="faa-parent animated-hover">
+                    <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+                    关于
+                  </span>
+                </a>
+                
+                  <ul class="sub-menu">
+                    
+                      <li>
+                        <a href="/about/">
+                          <i class="fa fa-meetup" aria-hidden="true"></i>
+                          我
+                        </a>
+                      </li>
+                    
+                  </ul>
+                
+              </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <link rel="stylesheet" type="text/css" href="/css/sharejs.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+<div class="pattern-center-blank"></div>
+
+  <div class="pattern-center single-center">
+    <!-- 有配图默认渲染第一张 -->
+    <div class="pattern-attachment-img lazyload" style="background-image: url(https://s2.ax1x.com/2020/02/10/14XAGd.jpg);" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+    </div>
+    <header class="pattern-header single-header">
+      <h1 class="entry-title">
+      NLP with GTX1060（文本分类）</h1>
+      <p class="entry-census">
+        <span>
+          <a href="">
+            <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+          </a>
+        </span>
+        <span>
+          <a href="">彩音</a>
+        </span>
+        <whitefont>
+        ·</whitefont>
+        <whitefont>2021-4-17<whitefont>
+        ·</whitefont>
+      <whitefont id="busuanzi_value_page_pv"></whitefont><whitefont>次阅读</whitefont></p>
+    </header>
+  </div>
+
+<div id="content" class="site-content">
+  <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
+      <article id="post-1" class="post-1 post type-post status-publish format-standard has-post-thumbnail hentry category-uncategorized">
+        <div class="toc"></div>
+        <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
+        
+        <div class="entry-content">
+          <h1 id="NLP-with-GTX1060（文本分类）"><a href="#NLP-with-GTX1060（文本分类）" class="headerlink" title="NLP with GTX1060（文本分类）"></a>NLP with GTX1060（文本分类）</h1><h1 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1 环境准备"></a>1 环境准备</h1><p>我的软件环境：</p>
+<ol>
+<li>Windows10 </li>
+<li>python3.7</li>
+<li>cuda11.0 + pytorch1.8.0 + cudnn（对应版本）</li>
+</ol>
+<ul>
+<li>cuda和cudnn需要和驱动版本搭配，cudnn安装需要注册英伟达账号。</li>
+</ul>
+<p>我的硬件环境：</p>
+<ol>
+<li>Intel I7-8750H</li>
+<li>Nvidia GTX1060(6G)</li>
+</ol>
+<p>python依赖的几个库：</p>
+<ol>
+<li>pytorch（<a href="https://pytorch.org/" target="_blank" rel="noopener">官网命令行安装</a>）</li>
+<li>transformers（<a href="https://huggingface.co/transformers/installation.html" target="_blank" rel="noopener">官网安装引导</a>）</li>
+<li>可能还要按需安装numpy（已经被pytorch依赖）、sklearn、matplotlib等。（直接pip）</li>
+</ol>
+<h1 id="2-文本分类-with-GTX1060"><a href="#2-文本分类-with-GTX1060" class="headerlink" title="2 文本分类 with GTX1060"></a>2 文本分类 with GTX1060</h1><h2 id="2-1-介绍"><a href="#2-1-介绍" class="headerlink" title="2.1 介绍"></a>2.1 介绍</h2><h3 id="2-1-1-任务介绍"><a href="#2-1-1-任务介绍" class="headerlink" title="2.1.1 任务介绍"></a>2.1.1 任务介绍</h3><p>文本分类概要：</p>
+<ol>
+<li>已知条件：每段文本都有且只有一个标签与之对应，标签集合已知。</li>
+<li>先验知识：一个标注好标签的文本集合。</li>
+<li>目标：对给定一段任意文本进行正确的分类。</li>
+</ol>
+<p>文本分类的实际应用：</p>
+<ol>
+<li>文章分类</li>
+<li>文本情感分析（消极/积极）</li>
+</ol>
+<h3 id="2-1-2-模型介绍"><a href="#2-1-2-模型介绍" class="headerlink" title="2.1.2 模型介绍"></a>2.1.2 模型介绍</h3><p>使用模型：<a href="https://arxiv.org/abs/1910.01108" target="_blank" rel="noopener">DistilBERT</a><br>特点：<a href="https://huggingface.co/transformers/model_doc/distilbert.html" target="_blank" rel="noopener">DistilBERT is a small, fast, cheap and light Transformer model trained by distilling BERT base. It has 40% less parameters than bert-base-uncased, runs 60% faster while preserving over 95% of BERT’s performances as measured on the GLUE language understanding benchmark. </a><br>一句话概括：又快又好</p>
+<h2 id="2-2-代码"><a href="#2-2-代码" class="headerlink" title="2.2 代码"></a>2.2 代码</h2><h3 id="2-2-1-DistilBERT模型训练"><a href="#2-2-1-DistilBERT模型训练" class="headerlink" title="2.2.1 DistilBERT模型训练"></a>2.2.1 DistilBERT模型训练</h3><pre><code class="python"># 库
+import torch
+from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
+from transformers import Trainer, TrainingArguments
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+# 定义 读取tsv文件函数
+# tsv文件 - [text1, text2, ... , text], [label1, label2, ... , label]
+# 其中返回的label会转换为Lookup Table中的序号
+def read_tsv_file(file_dir):
+    # Create Lookup Table
+    str2label = [&quot;cs.AI&quot;, &quot;cs.CE&quot;, &quot;cs.cv&quot;, &quot;cs.DS&quot;, &quot;cs.IT&quot;, &quot;cs.NE&quot;, &quot;cs.PL&quot;, &quot;cs.SY&quot;, &quot;math.AC&quot;, &quot;math.GR&quot;, &quot;math.ST&quot;]
+    texts = []
+    labels = []
+    with open(file_dir, &#39;r&#39;, encoding=&#39;utf-8&#39;, newline=&#39;&#39;) as tsv_file:
+        for line in tsv_file.readlines():
+            if line == &#39;&#39; or line == &#39;\n&#39;:
+                continue
+            line_list = line.split(&#39;\t&#39;)
+            texts.append(line_list[-1])                         # 文本在tsv中的最后一栏   
+            labels.append(str2label.index(line_list[-2]))       # 标签在tsv中的倒数第二栏
+        tsv_file.close()
+    return texts, labels
+# 定义 bert训练函数
+def bert_classification_training(train_file_name, eval_file_name, epochs):
+    # 设备选择
+    device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+    # 文件输入
+    train_texts, train_labels = read_tsv_file(train_file_name + &#39;.tsv&#39;)
+    train_num = len(train_labels)
+    eval_texts, eval_labels = read_tsv_file(eval_file_name + &#39;.tsv&#39;)
+    eval_num = len(eval_labels)
+    # 模型、tokenizer选择
+    tokenizer = DistilBertTokenizerFast.from_pretrained(&#39;./distilbert-base-uncased&#39;)  # DistilBertTokenizer和BertTokenizerFast一样。Fast版本比非Fast版本多了CPU多线程支持，所以快。
+    model = DistilBertForSequenceClassification.from_pretrained(&#39;./distilbert-base-uncased&#39;)
+    # Tokenization
+    ###  注1
+    train_encodings = tokenizer(train_texts, truncation=True, padding=True, max_length=512, return_tensors=&quot;pt&quot;)
+    eval_encodings = tokenizer(eval_texts, truncation=True, padding=True, max_length=512, return_tensors=&quot;pt&quot;)
+    # 定义 MyDataset类
+    class MyDataset(torch.utils.data.Dataset):
+        def __init__(self, encodings, labels):
+            self.encodings = encodings
+            self.labels = labels
+        ### 注2
+        def __getitem__(self, idx):
+            item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+            item[&#39;labels&#39;] = torch.tensor(self.labels[idx])
+            return item
+        def __len__(self):
+            return len(self.labels)
+    # 创建数据集
+    train_dataset = MyDataset(train_encodings, train_labels)
+    eval_dataset = MyDataset(eval_encodings, eval_labels)
+    # MyTrainer参数设定
+    ### 注3
+    training_args = TrainingArguments(
+        output_dir=&#39;./results&#39;,                 # 输出目录
+        num_train_epochs=epochs,                # 训练轮数
+        per_device_train_batch_size=8,          # 训练batch
+        per_device_eval_batch_size=8,           # 评估batch
+        learning_rate=5e-5,                     # AdamW学习率
+        warmup_ratio=0.01,                      # 热身比率
+        weight_decay=0.01,                      # 衰减率
+        logging_steps=10,                       # log频率
+        metric_for_best_model=&#39;eval_accuracy&#39;,  # 决定最好模型的metric
+        eval_steps=500,                         # 评估频率
+        load_best_model_at_end=True,            # 是否在训练结束后加载最好的模型
+    )
+    # 定义 计算评估指标函数
+    def compute_metrics(pred):
+        labels = pred.label_ids
+        preds = pred.predictions.argmax(-1)
+        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=&#39;macro&#39;)
+        acc = accuracy_score(labels, preds)
+        return {
+            &#39;accuracy&#39;: acc,
+            &#39;f1&#39;: f1,
+            &#39;precision&#39;: precision,
+            &#39;recall&#39;: recall
+        }
+    # 初始化MyTrainer
+    MyTrainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        compute_metrics=compute_metrics
+    )
+    # 开始训练
+    MyTrainer.train()
+    # 保存最后的模型
+    bert_model_save_dir = &#39;./bert_model.pkl&#39;
+    torch.save(model, bert_model_save_dir)
+    # 开始评估
+    output_dict = MyTrainer.evaluate()
+    # 提取评估结果
+    eval_loss = output_dict[&#39;traineval_loss&#39;]
+    eval_accuracy = output_dict[&#39;eval_accuracy&#39;]
+    eval_macrof1 = output_dict[&#39;eval_f1&#39;]
+    eval_precision = output_dict[&#39;eval_precision&#39;]
+    eval_recall = output_dict[&#39;eval_recall&#39;]
+    # 将评估结果写入tsv文件
+    with open(&#39;distilbert_train&#39; + str(train_num) + &#39;_eval&#39; + str(eval_num) + &#39;_result.csv&#39;, &#39;a&#39;, encoding=&#39;utf-8&#39;) as result:
+        result.write(&#39;eval_loss,&#39; + str(eval_loss) + &#39;\n&#39;)
+        result.write(&#39;eval_accuracy,&#39; + str(eval_accuracy) + &#39;\n&#39;)
+        result.write(&#39;eval_macrof1,&#39; + str(eval_macrof1) + &#39;\n&#39;)
+        result.write(&#39;eval_precision,&#39; + str(eval_precision) + &#39;\n&#39;)
+        result.write(&#39;eval_recall,&#39; + str(eval_recall) + &#39;\n&#39;)
+        result.close()
+# 定义 主函数
+def main():
+    train_file_name, eval_file_name, epochs = input(&#39;Please input your train, evaluation file directory and expected number of training epoch.\nInput format: train eval 8\n&#39;).split(&#39; &#39;)
+    bert_classification_training(train_file_name, eval_file_name, float(epochs))
+</code></pre>
+<h3 id="2-2-2-DistilBERT模型预测"><a href="#2-2-2-DistilBERT模型预测" class="headerlink" title="2.2.2 DistilBERT模型预测"></a>2.2.2 DistilBERT模型预测</h3><pre><code class="python"># 库
+import torch
+import torch.nn as nn
+from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
+# 定义 bert预测函数
+def bert_classification_prediction(input_text):
+    # 设备选择
+    device = torch.device(&quot;cuda&quot; if torch.cuda.is_available() else &quot;cpu&quot;)
+    # 选择已经训练好的模型和tokenizer
+    tokenizer = DistilBertTokenizerFast.from_pretrained(&#39;./distilbert-base-uncased&#39;)
+    model = torch.load(&#39;./bert_model.pkl&#39;)
+    model = model.to(device)
+    # 将输入文本转化为对应label的归一化概率
+    input_encoding = tokenizer(input_text, truncation=True, padding=True, max_length=512, return_tensors=&quot;pt&quot;)  # tokenization
+    input_encoding = input_encoding.to(device)
+    output = model(**input_encoding)            # 模型输出
+    output_logit = output.logits                # 对应label的logits
+    softmax = nn.Softmax()               # 选择归一化函数
+    output_prob = softmax(output_logit)     # 得到归一化概率
+    # 将概率排序后输出
+    output_prob_dict = {}
+    str2label = [&quot;cs.AI&quot;, &quot;cs.CE&quot;, &quot;cs.cv&quot;, &quot;cs.DS&quot;, &quot;cs.IT&quot;, &quot;cs.NE&quot;, &quot;cs.PL&quot;, &quot;cs.SY&quot;, &quot;math.AC&quot;, &quot;math.GR&quot;, &quot;math.ST&quot;]
+    # 降序排列
+    for i in range(output_logit.shape[-1]):
+        output_prob_dict[str2label[i]] = output_prob[0][i]
+    out_prob_dict_sorted = sorted(output_prob_dict.items(), key=lambda x:x[1], reverse=True)
+    # 打印
+    count = 1
+    for (key, val) in out_prob_dict_sorted:
+        if count &gt; 5:   # 打印概率前5的结果
+            break
+        else:
+            print([key, float(val)])
+            count = count + 1
+# 定义 主函数
+def main():
+    input_text = input(&quot;Please input your text: &quot;)
+    bert_classification_prediction(input_text)
+</code></pre>
+<h2 id="2-3-实验"><a href="#2-3-实验" class="headerlink" title="2.3 实验"></a>2.3 实验</h2><h3 id="2-3-1-tsv文件范例"><a href="#2-3-1-tsv文件范例" class="headerlink" title="2.3.1 tsv文件范例"></a>2.3.1 tsv文件范例</h3><table>
+<thead>
+<tr>
+<th>id</th>
+<th>label</th>
+<th>text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Label 1</td>
+<td>Text 1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Label 2</td>
+<td>Text 2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Label 3</td>
+<td>Text 3</td>
+</tr>
+</tbody>
+</table>
+<p>实际使用详情参见 <code>read_tsv_file(file_dir):</code> 函数的文件读取逻辑。</p>
+<h3 id="2-3-2-训练参数及结果"><a href="#2-3-2-训练参数及结果" class="headerlink" title="2.3.2 训练参数及结果"></a>2.3.2 训练参数及结果</h3><table>
+<thead>
+<tr>
+<th style="text-align:center">Key</th>
+<th style="text-align:center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Task</td>
+<td style="text-align:center">Document Classification</td>
+</tr>
+<tr>
+<td style="text-align:center">Dataset</td>
+<td style="text-align:center">arXiv</td>
+</tr>
+<tr>
+<td style="text-align:center">Category</td>
+<td style="text-align:center">11</td>
+</tr>
+<tr>
+<td style="text-align:center">Train</td>
+<td style="text-align:center">2000</td>
+</tr>
+<tr>
+<td style="text-align:center">Eval</td>
+<td style="text-align:center">300</td>
+</tr>
+<tr>
+<td style="text-align:center">Batch Size</td>
+<td style="text-align:center">8(Max)</td>
+</tr>
+<tr>
+<td style="text-align:center">Input Length</td>
+<td style="text-align:center">512 Tokens</td>
+</tr>
+<tr>
+<td style="text-align:center">Epoch</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">Training Time</td>
+<td style="text-align:center">20min</td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">76.7%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-4-注解"><a href="#2-4-注解" class="headerlink" title="2.4 注解"></a>2.4 注解</h2><h3 id="2-4-1-tokenizer"><a href="#2-4-1-tokenizer" class="headerlink" title="2.4.1 tokenizer"></a>2.4.1 tokenizer</h3><p><code>train_encodings = tokenizer(train_texts, truncation=True, padding=True, max_length=512, return_tensors=&quot;pt&quot;)</code></p>
+<ol>
+<li>truncation：多出裁剪</li>
+<li>padding：不足填充</li>
+<li>return_tensor=”pt”：<br>‘tf’: Return TensorFlow tf.constant objects.<br>‘pt’: Return PyTorch torch.Tensor objects.<br>‘np’: Return Numpy np.ndarray objects.</li>
+</ol>
+<p>文档链接：<br><a href="https://huggingface.co/transformers/main_classes/tokenizer.html#transformers.PreTrainedTokenizerFast" target="_blank" rel="noopener">tokenizer方法</a></p>
+<h3 id="2-4-2-MyDataset"><a href="#2-4-2-MyDataset" class="headerlink" title="2.4.2 MyDataset"></a>2.4.2 MyDataset</h3><pre><code class="python">def __getitem__(self, idx):
+            item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+            item[&#39;labels&#39;] = torch.tensor(self.labels[idx])
+            return item
+</code></pre>
+<ol>
+<li><code>item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}</code> 将被tokenizer编码后的encoding字典中的各项提取出来，包括input_ids、attention_mask。</li>
+<li><code>item[&#39;labels&#39;] = torch.tensor(self.labels[idx])</code> 将labels也加入到item字典中，和input_ids、attention_mask并列。</li>
+</ol>
+<h3 id="2-4-3-MyTrainer"><a href="#2-4-3-MyTrainer" class="headerlink" title="2.4.3 MyTrainer"></a>2.4.3 MyTrainer</h3><p>见附录。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="Trainer的Parameters"><a href="#Trainer的Parameters" class="headerlink" title="Trainer的Parameters"></a>Trainer的Parameters</h3><pre><code class="python">    &#39;&#39;&#39;
+    Parameters:
+        output_dir (:obj:`str`):
+            The output directory where the model predictions and checkpoints will be written.
+        overwrite_output_dir (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            If :obj:`True`, overwrite the content of the output directory. Use this to continue training if
+            :obj:`output_dir` points to a checkpoint directory.
+        do_train (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to run training or not. This argument is not directly used by :class:`~transformers.Trainer`, it&#39;s
+            intended to be used by your training/evaluation scripts instead. See the `example scripts
+            &lt;https://github.com/huggingface/transformers/tree/master/examples&gt;`__ for more details.
+        do_eval (:obj:`bool`, `optional`):
+            Whether to run evaluation on the validation set or not. Will be set to :obj:`True` if
+            :obj:`evaluation_strategy` is different from :obj:`&quot;no&quot;`. This argument is not directly used by
+            :class:`~transformers.Trainer`, it&#39;s intended to be used by your training/evaluation scripts instead. See
+            the `example scripts &lt;https://github.com/huggingface/transformers/tree/master/examples&gt;`__ for more
+            details.
+        do_predict (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to run predictions on the test set or not. This argument is not directly used by
+            :class:`~transformers.Trainer`, it&#39;s intended to be used by your training/evaluation scripts instead. See
+            the `example scripts &lt;https://github.com/huggingface/transformers/tree/master/examples&gt;`__ for more
+            details.
+        evaluation_strategy (:obj:`str` or :class:`~transformers.trainer_utils.IntervalStrategy`, `optional`, defaults to :obj:`&quot;no&quot;`):
+            The evaluation strategy to adopt during training. Possible values are:
+
+                * :obj:`&quot;no&quot;`: No evaluation is done during training.
+                * :obj:`&quot;steps&quot;`: Evaluation is done (and logged) every :obj:`eval_steps`.
+                * :obj:`&quot;epoch&quot;`: Evaluation is done at the end of each epoch.
+
+        prediction_loss_only (:obj:`bool`, `optional`, defaults to `False`):
+            When performing evaluation and generating predictions, only returns the loss.
+        per_device_train_batch_size (:obj:`int`, `optional`, defaults to 8):
+            The batch size per GPU/TPU core/CPU for training.
+        per_device_eval_batch_size (:obj:`int`, `optional`, defaults to 8):
+            The batch size per GPU/TPU core/CPU for evaluation.
+        gradient_accumulation_steps (:obj:`int`, `optional`, defaults to 1):
+            Number of updates steps to accumulate the gradients for, before performing a backward/update pass.
+
+            .. warning::
+
+                When using gradient accumulation, one step is counted as one step with backward pass. Therefore,
+                logging, evaluation, save will be conducted every ``gradient_accumulation_steps * xxx_step`` training
+                examples.
+        eval_accumulation_steps (:obj:`int`, `optional`):
+            Number of predictions steps to accumulate the output tensors for, before moving the results to the CPU. If
+            left unset, the whole predictions are accumulated on GPU/TPU before being moved to the CPU (faster but
+            requires more memory).
+        learning_rate (:obj:`float`, `optional`, defaults to 5e-5):
+            The initial learning rate for :class:`~transformers.AdamW` optimizer.
+        weight_decay (:obj:`float`, `optional`, defaults to 0):
+            The weight decay to apply (if not zero) to all layers except all bias and LayerNorm weights in
+            :class:`~transformers.AdamW` optimizer.
+        adam_beta1 (:obj:`float`, `optional`, defaults to 0.9):
+            The beta1 hyperparameter for the :class:`~transformers.AdamW` optimizer.
+        adam_beta2 (:obj:`float`, `optional`, defaults to 0.999):
+            The beta2 hyperparameter for the :class:`~transformers.AdamW` optimizer.
+        adam_epsilon (:obj:`float`, `optional`, defaults to 1e-8):
+            The epsilon hyperparameter for the :class:`~transformers.AdamW` optimizer.
+        max_grad_norm (:obj:`float`, `optional`, defaults to 1.0):
+            Maximum gradient norm (for gradient clipping).
+        num_train_epochs(:obj:`float`, `optional`, defaults to 3.0):
+            Total number of training epochs to perform (if not an integer, will perform the decimal part percents of
+            the last epoch before stopping training).
+        max_steps (:obj:`int`, `optional`, defaults to -1):
+            If set to a positive number, the total number of training steps to perform. Overrides
+            :obj:`num_train_epochs`.
+        lr_scheduler_type (:obj:`str` or :class:`~transformers.SchedulerType`, `optional`, defaults to :obj:`&quot;linear&quot;`):
+            The scheduler type to use. See the documentation of :class:`~transformers.SchedulerType` for all possible
+            values.
+        warmup_ratio (:obj:`float`, `optional`, defaults to 0.0):
+            Ratio of total training steps used for a linear warmup from 0 to :obj:`learning_rate`.
+        warmup_steps (:obj:`int`, `optional`, defaults to 0):
+            Number of steps used for a linear warmup from 0 to :obj:`learning_rate`. Overrides any effect of
+            :obj:`warmup_ratio`.
+        logging_dir (:obj:`str`, `optional`):
+            `TensorBoard &lt;https://www.tensorflow.org/tensorboard&gt;`__ log directory. Will default to
+            `runs/**CURRENT_DATETIME_HOSTNAME**`.
+        logging_strategy (:obj:`str` or :class:`~transformers.trainer_utils.IntervalStrategy`, `optional`, defaults to :obj:`&quot;steps&quot;`):
+            The logging strategy to adopt during training. Possible values are:
+
+                * :obj:`&quot;no&quot;`: No logging is done during training.
+                * :obj:`&quot;epoch&quot;`: Logging is done at the end of each epoch.
+                * :obj:`&quot;steps&quot;`: Logging is done every :obj:`logging_steps`.
+
+        logging_first_step (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to log and evaluate the first :obj:`global_step` or not.
+        logging_steps (:obj:`int`, `optional`, defaults to 500):
+            Number of update steps between two logs if :obj:`logging_strategy=&quot;steps&quot;`.
+        save_strategy (:obj:`str` or :class:`~transformers.trainer_utils.IntervalStrategy`, `optional`, defaults to :obj:`&quot;steps&quot;`):
+            The checkpoint save strategy to adopt during training. Possible values are:
+
+                * :obj:`&quot;no&quot;`: No save is done during training.
+                * :obj:`&quot;epoch&quot;`: Save is done at the end of each epoch.
+                * :obj:`&quot;steps&quot;`: Save is done every :obj:`save_steps`.
+
+        save_steps (:obj:`int`, `optional`, defaults to 500):
+            Number of updates steps before two checkpoint saves if :obj:`save_strategy=&quot;steps&quot;`.
+        save_total_limit (:obj:`int`, `optional`):
+            If a value is passed, will limit the total amount of checkpoints. Deletes the older checkpoints in
+            :obj:`output_dir`.
+        no_cuda (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to not use CUDA even when it is available or not.
+        seed (:obj:`int`, `optional`, defaults to 42):
+            Random seed that will be set at the beginning of training. To ensure reproducibility across runs, use the
+            :func:`~transformers.Trainer.model_init` function to instantiate the model if it has some randomly
+            initialized parameters.
+        fp16 (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to use 16-bit (mixed) precision training instead of 32-bit training.
+        fp16_opt_level (:obj:`str`, `optional`, defaults to &#39;O1&#39;):
+            For :obj:`fp16` training, Apex AMP optimization level selected in [&#39;O0&#39;, &#39;O1&#39;, &#39;O2&#39;, and &#39;O3&#39;]. See details
+            on the `Apex documentation &lt;https://nvidia.github.io/apex/amp.html&gt;`__.
+        fp16_backend (:obj:`str`, `optional`, defaults to :obj:`&quot;auto&quot;`):
+            The backend to use for mixed precision training. Must be one of :obj:`&quot;auto&quot;`, :obj:`&quot;amp&quot;` or
+            :obj:`&quot;apex&quot;`. :obj:`&quot;auto&quot;` will use AMP or APEX depending on the PyTorch version detected, while the
+            other choices will force the requested backend.
+        fp16_full_eval (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to use full 16-bit precision evaluation instead of 32-bit. This will be faster and save memory but
+            can harm metric values.
+        local_rank (:obj:`int`, `optional`, defaults to -1):
+            Rank of the process during distributed training.
+        tpu_num_cores (:obj:`int`, `optional`):
+            When training on TPU, the number of TPU cores (automatically passed by launcher script).
+        debug (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            When training on TPU, whether to print debug metrics or not.
+        dataloader_drop_last (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether to drop the last incomplete batch (if the length of the dataset is not divisible by the batch size)
+            or not.
+        eval_steps (:obj:`int`, `optional`):
+            Number of update steps between two evaluations if :obj:`evaluation_strategy=&quot;steps&quot;`. Will default to the
+            same value as :obj:`logging_steps` if not set.
+        dataloader_num_workers (:obj:`int`, `optional`, defaults to 0):
+            Number of subprocesses to use for data loading (PyTorch only). 0 means that the data will be loaded in the
+            main process.
+        past_index (:obj:`int`, `optional`, defaults to -1):
+            Some models like :doc:`TransformerXL &lt;../model_doc/transformerxl&gt;` or :doc`XLNet &lt;../model_doc/xlnet&gt;` can
+            make use of the past hidden states for their predictions. If this argument is set to a positive int, the
+            ``Trainer`` will use the corresponding output (usually index 2) as the past state and feed it to the model
+            at the next training step under the keyword argument ``mems``.
+        run_name (:obj:`str`, `optional`):
+            A descriptor for the run. Typically used for `wandb &lt;https://www.wandb.com/&gt;`_ logging.
+        disable_tqdm (:obj:`bool`, `optional`):
+            Whether or not to disable the tqdm progress bars and table of metrics produced by
+            :class:`~transformers.notebook.NotebookTrainingTracker` in Jupyter Notebooks. Will default to :obj:`True`
+            if the logging level is set to warn or lower (default), :obj:`False` otherwise.
+        remove_unused_columns (:obj:`bool`, `optional`, defaults to :obj:`True`):
+            If using :obj:`datasets.Dataset` datasets, whether or not to automatically remove the columns unused by the
+            model forward method.
+
+            (Note that this behavior is not implemented for :class:`~transformers.TFTrainer` yet.)
+        label_names (:obj:`List[str]`, `optional`):
+            The list of keys in your dictionary of inputs that correspond to the labels.
+
+            Will eventually default to :obj:`[&quot;labels&quot;]` except if the model used is one of the
+            :obj:`XxxForQuestionAnswering` in which case it will default to :obj:`[&quot;start_positions&quot;,
+            &quot;end_positions&quot;]`.
+        load_best_model_at_end (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether or not to load the best model found during training at the end of training.
+
+            .. note::
+
+                When set to :obj:`True`, the parameters :obj:`save_strategy` and :obj:`save_steps` will be ignored and
+                the model will be saved after each evaluation.
+        metric_for_best_model (:obj:`str`, `optional`):
+            Use in conjunction with :obj:`load_best_model_at_end` to specify the metric to use to compare two different
+            models. Must be the name of a metric returned by the evaluation with or without the prefix :obj:`&quot;eval_&quot;`.
+            Will default to :obj:`&quot;loss&quot;` if unspecified and :obj:`load_best_model_at_end=True` (to use the evaluation
+            loss).
+
+            If you set this value, :obj:`greater_is_better` will default to :obj:`True`. Don&#39;t forget to set it to
+            :obj:`False` if your metric is better when lower.
+        greater_is_better (:obj:`bool`, `optional`):
+            Use in conjunction with :obj:`load_best_model_at_end` and :obj:`metric_for_best_model` to specify if better
+            models should have a greater metric or not. Will default to:
+
+            - :obj:`True` if :obj:`metric_for_best_model` is set to a value that isn&#39;t :obj:`&quot;loss&quot;` or
+              :obj:`&quot;eval_loss&quot;`.
+            - :obj:`False` if :obj:`metric_for_best_model` is not set, or set to :obj:`&quot;loss&quot;` or :obj:`&quot;eval_loss&quot;`.
+        ignore_skip_data (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            When resuming training, whether or not to skip the epochs and batches to get the data loading at the same
+            stage as in the previous training. If set to :obj:`True`, the training will begin faster (as that skipping
+            step can take a long time) but will not yield the same results as the interrupted training would have.
+        sharded_ddp (:obj:`bool`, :obj:`str` or list of :class:`~transformers.trainer_utils.ShardedDDPOption`, `optional`, defaults to :obj:`False`):
+            Use Sharded DDP training from `FairScale &lt;https://github.com/facebookresearch/fairscale&gt;`__ (in distributed
+            training only). This is an experimental feature.
+
+            A list of options along the following:
+
+            - :obj:`&quot;simple&quot;`: to use first instance of sharded DDP released by fairscale (:obj:`ShardedDDP`) similar
+              to ZeRO-2.
+            - :obj:`&quot;zero_dp_2&quot;`: to use the second instance of sharded DPP released by fairscale
+              (:obj:`FullyShardedDDP`) in Zero-2 mode (with :obj:`reshard_after_forward=False`).
+            - :obj:`&quot;zero_dp_3&quot;`: to use the second instance of sharded DPP released by fairscale
+              (:obj:`FullyShardedDDP`) in Zero-3 mode (with :obj:`reshard_after_forward=True`).
+            - :obj:`&quot;offload&quot;`: to add ZeRO-offload (only compatible with :obj:`&quot;zero_dp_2&quot;` and :obj:`&quot;zero_dp_3&quot;`).
+
+            If a string is passed, it will be split on space. If a bool is passed, it will be converted to an empty
+            list for :obj:`False` and :obj:`[&quot;simple&quot;]` for :obj:`True`.
+        deepspeed (:obj:`str`, `optional`):
+            Use `Deepspeed &lt;https://github.com/microsoft/deepspeed&gt;`__. This is an experimental feature and its API may
+            evolve in the future. The value is the location of its json config file (usually ``ds_config.json``).
+        label_smoothing_factor (:obj:`float`, `optional`, defaults to 0.0):
+            The label smoothing factor to use. Zero means no label smoothing, otherwise the underlying onehot-encoded
+            labels are changed from 0s and 1s to :obj:`label_smoothing_factor/num_labels` and :obj:`1 -
+            label_smoothing_factor + label_smoothing_factor/num_labels` respectively.
+        adafactor (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether or not to use the :class:`~transformers.Adafactor` optimizer instead of
+            :class:`~transformers.AdamW`.
+        group_by_length (:obj:`bool`, `optional`, defaults to :obj:`False`):
+            Whether or not to group together samples of roughly the same legnth in the training dataset (to minimize
+            padding applied and be more efficient). Only useful if applying dynamic padding.
+        report_to (:obj:`str` or :obj:`List[str]`, `optional`, defaults to :obj:`&quot;all&quot;`):
+            The list of integrations to report the results and logs to. Supported platforms are :obj:`&quot;azure_ml&quot;`,
+            :obj:`&quot;comet_ml&quot;`, :obj:`&quot;mlflow&quot;`, :obj:`&quot;tensorboard&quot;` and :obj:`&quot;wandb&quot;`. Use :obj:`&quot;all&quot;` to report to
+            all integrations installed, :obj:`&quot;none&quot;` for no integrations.
+        ddp_find_unused_parameters (:obj:`bool`, `optional`):
+            When using distributed training, the value of the flag :obj:`find_unused_parameters` passed to
+            :obj:`DistributedDataParallel`. Will default to :obj:`False` if gradient checkpointing is used, :obj:`True`
+            otherwise.
+        dataloader_pin_memory (:obj:`bool`, `optional`, defaults to :obj:`True`)):
+            Whether you want to pin memory in data loaders or not. Will default to :obj:`True`.
+        skip_memory_metrics (:obj:`bool`, `optional`, defaults to :obj:`False`)):
+            Whether to skip adding of memory profiler reports to metrics. Defaults to :obj:`False`.
+    &#39;&#39;&#39;
+</code></pre>
+
+        </div>
+        <!-- .entry-content -->
+        <!--<div class="single-reward">
+          <div class="reward-open">赏
+            <div class="reward-main">
+              <ul class="reward-row">
+                <li class="alipay-code"><img src="/img/custom/social/github.svg"></li>
+                <li class="wechat-code"><img src="undefined"></li>
+              </ul>
+            </div>
+          </div>
+        </div>-->
+        <div style="text-align:center; width: 100%" class="social-share share-mobile" data-disabled="diandian, tencent"></div>
+        <footer class="post-footer">
+          <div class="post-lincenses"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="nofollow"><i class="fa fa-creative-commons" aria-hidden="true"></i> 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a></div>
+          <div class="post-tags">
+          </div>
+          <div class="post-share">
+            <div class="social-share sharehidden share-component"></div>
+            <i class="iconfont show-share icon-forward"></i>
+          </div>
+        </footer><!-- .entry-footer -->
+      </article>
+      <!-- #post-## -->
+      <div class="toc" style="background: none;"></div>
+      <section class="post-squares nextprev">
+        
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2021/04/17/NLP with GTX1060（完形填空）/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                NLP with GTX1060（完形填空）</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+        
+          
+            <div class="post-nepre half next">
+          
+            <a href="/2021/03/25/我的炉石卡组/" rel="next">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Next Post</span>
+              <div class="info">
+                <h3>
+                我的炉石卡组</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
+      </section>
+      
+<div id="vcomments"></div>
+<script>
+  window.onload = function(){
+      var valine = new Valine();
+      valine.init({
+        el: '#vcomments',
+        appId: "lYNRGPGqY6jaXXBdu5JwvBHN-MdYXbMMI",
+        appKey: "wJkDCj8fLwzhY7dC7QXfQe1V",
+        path: window.location.pathname,
+        placeholder: "欢迎在评论区留言！",
+        recordIP: true
+      })
+  }
+</script>
+
+
+      <!-- -->
+      <section class="author-profile">
+        <div class="info" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <a href="" class="profile gravatar"><img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" itemprop="image" alt="彩音" height="70" width="70"></a>
+          <div class="meta">
+            <span class="title">Author</span>
+            <h3 itemprop="name">
+            <a href="" itemprop="url" rel="author">彩音</a>
+            </h3>
+          </div>
+        </div>
+        <hr>
+        <p><i class="iconfont icon-write"></i>喵喵喵？</p>
+      </section>
+    </main><!-- #main -->
+  </div><!-- #primary -->
+</div>
+
+<!--  -->
+
+    </div>  
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="请输入关键词..."/>
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            // PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+    <!-- <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 彩音<br>
+      powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer> -->
+<footer id="colophon" class="site-footer" role="contentinfo">
+  <div class="site-info">
+    <div class="footertext">
+      <div class="img-preload">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/wordpress-rotating-ball-o.svg">
+        <img src="https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/other/disqus-preloader.svg">
+      </div>
+      <p style="color: #666666;">&copy 2019-2020 Yuk1n0sh1ta</p>
+    </div>
+    <div class="footer-device">
+    <p style="font-family: 'Ubuntu', sans-serif;">
+        <span style="color: #b9b9b9;">Theme <a href="https://github.com/honjun/hexo-theme-sakura" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Sakura</a> <i class="iconfont icon-sakura rotating" style="color: #ffc0cb;display:inline-block"></i> by <a href="https://2heng.xin/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Mashiro</a>&<a href="https://www.hojun.cn/" target="_blank" style="color: #b9b9b9;;text-decoration: underline dotted rgba(0, 0, 0, .1);">Hojun</a>, Powered by Hexo, Modified by Yuk1n0, Hosted by Github & Gitee</a>
+        </span>
+      </p>
+    </div>
+  </div><!-- .site-info -->
+</footer>
+
+
+
+<!-- <script src="/js/tocbot.js"></script> -->
+<script type="text/javascript" src="/js/lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script type="text/javascript" src="/js/InsightSearch.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" src="/js/zoom.min.js"></script>
+<script type="text/javascript" src="/js/sakura-app.js"></script>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<!--<script src='//unpkg.com/valine@1.3.4/dist/Valine.min.js'></script> Modified by Yuk1n0-->
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script src="/js/botui.js"></script>
+<!-- 不蒜子 网页计数器 -->
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script> -->
+<script type="text/javascript">
+/* <![CDATA[ */
+if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"close"},"windowheight":"fixed","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+} else {
+  var Poi = {"pjax":"0","movies":{"url": "","name":"","live":"open"},"windowheight":"auto","codelamp":"close","ajaxurl":"","order":"asc","formpostion":"bottom"};
+}
+/* ]]> */
+
+</script>
+<script>
+$(document).ready(function() {
+  if ($(".toc").length > 0 && document.body.clientWidth > 1200) {
+    if ($(".pattern-center").length > 0) { //有图的情况
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -400,
+          scrollSmoothOffset: -85
+      });
+    } else {
+      tocbot.init({
+          // Where to render the table of contents.
+          tocSelector: '.toc', // 放置目录的容器
+          // Where to grab the headings to build the table of contents.
+          contentSelector: '.entry-content', // 正文内容所在
+          // Which headings to grab inside of the contentSelector element.
+          scrollSmooth: true,
+          headingSelector: 'h1, h2, h3, h4, h5', // 需要索引的标题级别
+          headingsOffset: -85,
+          scrollSmoothOffset: -85
+      });
+    }
+    var offsetTop = $('.toc').offset().top - 95;
+    window.onscroll = function() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+      if (scrollTop >= offsetTop) {
+        $('.toc').addClass('toc-fixed');
+      } else {
+        $('.toc').removeClass('toc-fixed');
+      }
+    }
+  }
+});
+</script>
+
+
+<!--Updated by Yuk1n0 -->
+<script type="text/javascript" src="https://lib.baomitu.com/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+  </script>
+
+    <div class="openNav no-select" style="height: 50px;">
+      <div class="iconflat no-select" style="width: 50px; height: 50px;">
+        <div class="icon"></div>
+      </div>
+      <div class="site-branding search-form-submit">
+        <i class="iconfont js-toggle-search iconsearch icon-search"></i>
+      </div>
+    </div>
+  </section>
+  <div id="mo-nav" class="">
+  <div class="m-avatar">
+    <img src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+  </div>
+  <p style="text-align: center; color: #333; font-weight: 900; font-family: 'Ubuntu', sans-serif; letter-spacing: 1.5px">桜の彩音</p>
+  <p style="text-align: center; word-spacing: 20px;">
+    
+  </p>
+  <ul id="menu-new-1" class="menu">
+    
+      <li>
+        <a href="/">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-fort-awesome faa-shake" aria-hidden="true"></i>
+            首页
+          </span>
+        </a>
+        
+      </li>
+    
+      <li>
+        <a href="/archives">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-archive faa-shake" aria-hidden="true"></i>
+            归档
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/categories/学习/">
+                  <i class="fa fa-code" aria-hidden="true"></i>
+                  学习
+                </a>
+              </li>
+            
+              <li>
+                <a href="/categories/生活/">
+                  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                  生活
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-list-ul faa-vertical" aria-hidden="true"></i>
+            清单
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/musiclist/">
+                  <i class="fa fa-headphones" aria-hidden="true"></i>
+                  歌单
+                </a>
+              </li>
+            
+              <li>
+                <a href="/gallery/">
+                  <i class="fa fa-photo" aria-hidden="true"></i>
+                  美术
+                </a>
+              </li>
+            
+              <li>
+                <a href="/photo/">
+                  <i class="fa fa-film" aria-hidden="true"></i>
+                  相册
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+      <li>
+        <a href="javascript:;">
+          <span class="faa-parent animated-hover">
+            <i class="fa  fa-leaf faa-wrench" aria-hidden="true"></i>
+            关于
+          </span>
+        </a>
+        
+          <ul class="sub-menu">
+            
+              <li>
+                <a href="/about/">
+                  <i class="fa fa-meetup" aria-hidden="true"></i>
+                  我
+                </a>
+              </li>
+            
+          </ul>
+        
+      </li>
+    
+  </ul>
+  <p style="text-align: center; font-size: 13px; color: #b9b9b9;">&copy 2019-2020 Yuk1n0sh1ta</p>
+</div>
+<button onclick="topFunction()" class="mobile-cd-top" id="moblieGoTop" title="Go to top" style="display: none;"><i class="fa fa-chevron-up" aria-hidden="true"></i></button>
+  <link rel="stylesheet" href="\css\APlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+  .aplayer .aplayer-list ol li.aplayer-list-light{
+    background: rgba(101, 179, 253, 0.2);
+  }
+  .aplayer.aplayer-fixed{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.65);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer.aplayer-fixed .aplayer-body{
+    bottom: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    width: 400;
+  }
+  .aplayer .aplayer-lrc {
+    height: 44px;
+    width: 100%;
+  }
+  .aplayer .aplayer-lrc p{
+    font-family:'Courier New', Courier, monospace;
+    text-shadow: 0.5px 0.5px 1px black;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 130% !important;
+  }
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{
+    color: rgb(98, 109, 255);
+  }
+  .aplayer.aplayer-narrow .aplayer-body{
+    bottom: 5px;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer-fixed .aplayer-lrc {
+    display: none;
+  }
+  .aplayer.aplayer-narrow .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  .aplayer.aplayer.aplayer-fixed .lrc-show {
+    height: 54px;
+    width: 70%;
+    display: inherit;
+    left: 15%;
+    margin-left: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  }
+  
+</style>
+<meting-js
+
+    id="2017848421"
+
+    server="netease"
+
+    type="playlist"
+
+    fixed="true"
+
+    autoplay="false"
+
+    loop="all"
+
+    order="random"
+
+    preload="auto"
+
+    volume="0.7"
+
+    mutex="true"
+
+    theme="#2980b9"
+
+</meting-js>
+<script>
+  $(function(){
+    $('body').on('click', '.aplayer', function(){
+      if($('.aplayer-icon.aplayer-icon-lrc').hasClass('aplayer-icon-lrc-inactivity')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      }
+      else if($('.aplayer').hasClass('aplayer-withlrc')) {
+        $('.aplayer-lrc').removeClass('lrc-show');
+      } 
+      else {
+        if($('.aplayer-button').hasClass('aplayer-pause')) {
+        $('.aplayer-lrc').addClass('lrc-show');
+        }
+      }
+    })
+  });
+  
+</script>
+</body>
+</html>
