@@ -284,14 +284,25 @@
         <!--<div class="toc-entry-content"><!-- 套嵌目录使用（主要为了支援评论）-->
         
         <div class="entry-content">
-          <h1 id="Python的语句"><a href="#Python的语句" class="headerlink" title="Python的语句"></a>Python的语句</h1><h2 id="条件控制语句"><a href="#条件控制语句" class="headerlink" title="条件控制语句"></a>条件控制语句</h2><h3 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h3><pre><code class="python">if condition_1:
+          <ul>
+<li>本文参考<br>[1] <a href="https://docs.python.org/zh-cn/3/" target="_blank" rel="noopener">官方 Python3 教程</a><br>[2] <a href="https://www.runoob.com/python3/python3-tutorial.html" target="_blank" rel="noopener">RUNOOB Python3 教程</a></li>
+</ul>
+<h1 id="Python的语句"><a href="#Python的语句" class="headerlink" title="Python的语句"></a>Python的语句</h1><h2 id="条件控制语句"><a href="#条件控制语句" class="headerlink" title="条件控制语句"></a>条件控制语句</h2><h3 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h3><pre><code class="python">if condition_1:
     statement_1
 elif condition_2:
     statement_2
 else:
     statement_3
 </code></pre>
-<h3 id="match语句"><a href="#match语句" class="headerlink" title="match语句"></a>match语句</h3><h2 id="循环语句"><a href="#循环语句" class="headerlink" title="循环语句"></a>循环语句</h2><h3 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h3><pre><code class="python">for i in range(n):
+<h3 id="match语句（3-10新特性）"><a href="#match语句（3-10新特性）" class="headerlink" title="match语句（3.10新特性）"></a>match语句（3.10新特性）</h3><pre><code class="python">match var:
+    case var1:
+        statement_1
+    case var2 if condition:
+        statement_2
+    case var3|var4|var5:
+        statement_3
+</code></pre>
+<h2 id="循环语句"><a href="#循环语句" class="headerlink" title="循环语句"></a>循环语句</h2><h3 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h3><pre><code class="python">for i in range(n):
     statement_1
 else:
     statement_2
@@ -328,7 +339,83 @@ finally:
     raise XxxError
 </code></pre>
 <p>当 XxxError 为 AssertionError 时，上述两者等价。 </p>
-<h2 id="命名空间和作用域"><a href="#命名空间和作用域" class="headerlink" title="命名空间和作用域"></a>命名空间和作用域</h2>
+<h2 id="命名空间和作用域控制"><a href="#命名空间和作用域控制" class="headerlink" title="命名空间和作用域控制"></a>命名空间和作用域控制</h2><p>命名空间是变量名到对象的映射。</p>
+<p>命名空间主要有三种：</p>
+<ol>
+<li>Built-in</li>
+<li>Global</li>
+<li>Local</li>
+</ol>
+<p>作用域是可以直接访问到命名空间的区域。</p>
+<p>作用域主要有四种：</p>
+<ol>
+<li>Built-in</li>
+<li>Global</li>
+<li>Enclosing</li>
+<li>Local</li>
+</ol>
+<pre><code class="python">global_var = 0  # Global 作用域
+def enclosing_fun():
+    # Enclosing 作用域
+    enclosing_var = 0
+    def local_fun():
+        # Local 作用域
+        local_var = 0
+</code></pre>
+<p>对于同一变量，访问顺序为当前作用域由下至上（Local、Enclosing、Global、Built-in）。</p>
+<p>我认为命名空间仅仅是一种逻辑空间的映射，不具有物理意义；而作用域可以体现在代码块的嵌套关系上，也可以体现逻辑空间映射，但具有物理意义。</p>
+<h3 id="global-amp-nonlocal"><a href="#global-amp-nonlocal" class="headerlink" title="global &amp; nonlocal"></a>global &amp; nonlocal</h3><p>这个例子演示了如何引用不同作用域和名称空间：</p>
+<pre><code class="python">def scope_test():
+    def do_local():
+        spam = &quot;local spam&quot;
+
+    def do_nonlocal():
+        nonlocal spam
+        spam = &quot;nonlocal spam&quot;
+
+    def do_global():
+        global spam
+        spam = &quot;global spam&quot;
+
+    spam = &quot;test spam&quot;
+    do_local()
+    print(&quot;After local assignment:&quot;, spam)
+    do_nonlocal()
+    print(&quot;After nonlocal assignment:&quot;, spam)
+    do_global()
+    print(&quot;After global assignment:&quot;, spam)
+
+scope_test()
+print(&quot;In global scope:&quot;, spam)
+</code></pre>
+<p>这段代码的输出：</p>
+<pre><code>After local assignment: test spam
+After nonlocal assignment: nonlocal spam
+After global assignment: nonlocal spam
+In global scope: global spam
+</code></pre><p>解释：</p>
+<ol>
+<li>输出1没有受到 <code>do_local()</code> 的影响是因为 local 作用域的变量无法直接影响 enclosing 作用域。</li>
+<li>输出2受到了 <code>do_nonlocal()</code> 的影响是因为 <code>nonlocal spam</code> 语句赋予了 local 作用域的 spam 影响 enclosing 作用域的能力。</li>
+<li>输出4受到了 <code>do_global()</code> 的影响是因为 <code>global spam</code> 语句赋予了 local 作用域的 spam 影响 global 作用域的能力，而输出3没有受到 <code>do_global()</code> 的影响是因为 <code>global spam</code> 语句没有赋予其直接影响 enclosing 作用域的能力，而 enclosing 作用域的优先级别高于 global 作用域。</li>
+</ol>
+<p>不使用 global &amp; nonlocal 可以用如下方式控制变量的流动：</p>
+<pre><code class="python">def fun(x) -&gt; int:
+    x = x + 1
+    return x
+x = 0
+x = fun(x)
+print(x)
+</code></pre>
+<p>使用 global &amp; nonlocal 可以用如下方式控制变量的流动：</p>
+<pre><code class="python">def fun():
+    global x
+    x = x + 1
+x = 0
+fun()
+print(x)
+</code></pre>
+<h2 id="del-amp-with-amp-yield（待续）"><a href="#del-amp-with-amp-yield（待续）" class="headerlink" title="del&amp;with&amp;yield（待续）"></a>del&amp;with&amp;yield（待续）</h2>
         </div>
         <!-- .entry-content -->
         <!--<div class="single-reward">
