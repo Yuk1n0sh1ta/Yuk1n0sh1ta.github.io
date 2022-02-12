@@ -7942,12 +7942,12 @@ td.hljs-ln-numbers {
     font-size: 16px;
 }
 .toc {
-    width: 200px;
+    width: 350px;
     height: auto;
     z-index: 98;
     background-color: rgba(255,255,255,0);
     transform: translateX(0);
-    right: calc((100% - 950px - 250px) / 2);
+    right: calc((100% - 950px - 250px - 300px) / 2);
     top:10px;
     position: absolute;
     padding-top: 10px;
@@ -8106,4 +8106,8 @@ td.hljs-ln-numbers {
 }
 .gallery {
     display:flex;
+}
+a.toc-link{
+    font-size: 13px;
+    font-family: 'Ubuntu';
 }
