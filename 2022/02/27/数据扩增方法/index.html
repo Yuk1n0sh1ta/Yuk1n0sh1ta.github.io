@@ -578,13 +578,13 @@
 <p><strong>扩增方法：</strong></p>
 <ol>
 <li>Train baseline classifier<br>使用本地文本分类数据集$D_{train}$训练一个 baseline 分类器 $h$（论文中准备了三种分类器：SVM、LSTM、BERT）</li>
-<li>Fine-tune language model<br>将预训练语言模型 GPT-2 在处理后的文本分类数据集上进行语言模型任务的微调，得到 $GPT-2_{Finetuned}$。数据集处理方式如下：<center>$ Label, [SEP], Text_1, [EOS] $<br>$Label, [SEP], Text_2, [EOS] $<br>$… $<br>$Label, [SEP], Text_n, [EOS] $</center></li>
-<li>Synthesize labeled data<br>对于给定标签输入$Label, [SEP]$，使用微调后的 $GPT-2_{Finetuned}$ 继续预测直到预测出 $[EOS]$，将预测得到的句子及其标签整理成一个数据扩增候选数据集$D^*$。</li>
+<li>Fine-tune language model<br>将预训练语言模型 GPT-2 在处理后的文本分类数据集上进行语言模型任务的微调，得到 $GPT-2_{Finetuned}$。数据集处理方式如下：<br>$$Label, [SEP], Text_1, [EOS]$$$$Label, [SEP], Text_2, [EOS]$$$$…$$<br>$$Label, [SEP], Text_n, [EOS]$$</li>
+<li>Synthesize labeled data<br>对于给定标签输入$Label, [SEP]$，使用微调后的 $GPT2_{Finetuned}$ 继续预测直到预测出 $[EOS]$，将预测得到的句子及其标签整理成一个数据扩增候选数据集$D^*$。</li>
 <li>Filter synthesized data<br>使用第一步训练得到的 baseline 分类器 $h$对数据扩增候选数据集$D^*$进行预测，保留每个类别中预测结果的置信度最高的 N 个样本，并将这些高置信度数据整理成一个数据扩增数据集$D_{synthesized}$。将原始数据集$D_{train}$和数据扩增数据集$D_{synthesized}$合成为一个新的数据集$D_{new}$。</li>
-<li>Repeat<br>将$ D_{new} $作为新的$ {D’_{train}} $，重复步骤1-4，得到新的$ [{D’_{new}}, {D’’_{new}}, …] $。</li>
+<li>Repeat<br>将$D_{new0}$作为新的${D_{train}}$，重复步骤1-4，得到新的$[{D_{new1}}, {D_{new2}}, …]$。</li>
 </ol>
 <p><strong>结果：</strong></p>
-<p><a href="https://imgtu.com/i/bnwhSH" target="_blank" rel="noopener"><img src="https://s4.ax1x.com/2022/02/27/bnwhSH.png" alt="bnwhSH.png"></a></p>
+<p><center><a href="https://imgtu.com/i/bnwhSH" target="_blank" rel="noopener"><img src="https://s4.ax1x.com/2022/02/27/bnwhSH.png" alt="bnwhSH.png"></a><center></center></center></p>
 <ol>
 <li>LAMBADA扩增方法在多种分类器上都能取得相比其他扩增方法较为可观的提升。</li>
 <li>生成的高质量样本帮助了分类模型进一步泛化。</li>
@@ -617,11 +617,28 @@
       <div class="toc" style="background: none;"></div>
       <section class="post-squares nextprev">
         
+          
+            <div class="post-nepre half previous">
+          
+            <a href="/2023/01/15/Python的多进程/" rel="prev">
+              <div class="background">
+                <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
+              </div>
+              <span class="label">
+              Previous Post</span>
+              <div class="info">
+                <h3>
+                Python的多进程</h3>
+                <hr>
+              </div>
+            </a>
+          </div>
+        
         
           
-            <div class="post-nepre full next">
+            <div class="post-nepre half next">
           
-            <a href="/2022/02/12/文本匹配任务/" rel="next">
+            <a href="/2022/02/12/文本匹配方法/" rel="next">
               <div class="background">
                 <img class="lazyload" src="https://s1.ax1x.com/2020/07/13/UtQmM6.jpg,https://s1.ax1x.com/2020/07/13/UtQSMV.jpg,https://s1.ax1x.com/2020/07/03/NjoeaT.jpg,https://s1.ax1x.com/2020/07/03/NjIDET.jpg,https://s1.ax1x.com/2020/07/03/NjIXrt.jpg,https://s1.ax1x.com/2020/07/03/NjIb2d.jpg,https://s1.ax1x.com/2020/07/13/UtQVR1.jpg,https://s1.ax1x.com/2020/07/13/UtQ3id.jpg,https://s2.ax1x.com/2020/02/10/14XAGd.jpg" data-src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" onerror="imgError(this,3)" src="https://s2.ax1x.com/2020/02/10/14XAGd.jpg">
               </div>
@@ -629,7 +646,7 @@
               Next Post</span>
               <div class="info">
                 <h3>
-                文本匹配任务</h3>
+                文本匹配方法</h3>
                 <hr>
               </div>
             </a>
@@ -705,7 +722,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2022 彩音<br>
+      &copy; 2023 彩音<br>
       powered_by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
