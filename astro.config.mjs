@@ -7,7 +7,7 @@ import { remarkLegacyCompat } from './src/lib/markdown/remark-legacy-compat';
 import { SITE } from './src/config/site';
 
 export default defineConfig({
-  site: SITE.url,
+  site: process.env.SITE_URL || SITE.url,
   trailingSlash: 'ignore',
   integrations: [sitemap()],
   image: {
