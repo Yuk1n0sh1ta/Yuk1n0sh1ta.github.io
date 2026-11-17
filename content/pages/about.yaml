@@ -1,0 +1,93 @@
+# /about 对话式自我介绍配置（支持分支对话，预留 AI 接口扩展位）
+title: 关于 Yuk1n0
+subtitle: Interactive Profile · Dialogue Mode
+description: 以对话的方式认识 Yuk1n0——基于旧站 BotUI 对话重构，支持继续扩展分支或接入大模型接口。
+
+profile:
+  name: Yuk1n0
+  role: NLP · Deep Learning · Photography · Japanese
+  status: 探索构建与记录中
+  location: Tokyo / Beijing
+  # 头像路径（相对 content/assets/）
+  avatar: photos/DSCF1373.jpg
+  links:
+    - label: GitHub
+      url: https://github.com/Yuk1n0sh1ta
+    - label: Bilibili
+      url: https://space.bilibili.com/39873026
+    - label: 相册 Photography
+      url: /photos
+    - label: 美术馆 Gallery
+      url: /gallery
+
+# 对话树节点配置：start 为入口节点
+startNode: intro
+nodes:
+  intro:
+    messages:
+      - 你好呀！😊
+      - 这里是 Yuk1n0。
+      - 欢迎来到重构后的新小站！这里收录了我的技术笔记、日语语法整理，还有一些旅途中拍下的照片。
+    choices:
+      - label: 哦？展开说说 🤪
+        next: story
+      - label: 平时研究和记录什么？ 📚
+        next: tech
+      - label: 好了可以了再说就烦了 🙄
+        next: skip
+
+  skip:
+    messages:
+      - 收到，立刻闭嘴。想看干货的话，可以直接按 `⌘K` 搜索文章，或者去左侧边栏的相册逛逛 📷。
+    choices:
+      - label: 算了还是听听吧 👀
+        next: story
+      - label: 重置对话 ↺
+        next: intro
+
+  story:
+    messages:
+      - 曾经可以熟练抄写傅里叶变换对、快速临摹电路图，后来因为学不明白而对这些失去了兴趣 😣。
+      - 后来一路摸索进深度学习与自然语言处理的世界，建立这个博客就是为了认真记录每一步学习、踩坑与翻译的过程。
+      - 以前非常喜欢 Hexo 的 Sakura 主题，现在换成更纯粹、克制、偏阅读与检索体验的侧边栏架构，希望文字和照片本身成为主角。
+    choices:
+      - label: 为什么 ID 是 Yuk1n0？ 🤔
+        next: why_yukino
+      - label: 平时有些什么爱好？ ✨
+        next: hobby
+      - label: 博客现在是如何维护的？ 🛠️
+        next: tech
+
+  tech:
+    messages:
+      - 站里目前有几个比较成体系的系列：CS224N 与 Transformer/BERT 等深度学习笔记、NLP 论文精读、Python 基础，还有基于 Tae Kim 整理的 50 余节日语语法精炼笔记。
+      - 这版新博客把这些系列做成了专栏目录树与随动大纲，并且整个站点直接用 Obsidian 配合 Git 维护，写完推送即自动部署在 Cloudflare Pages。
+    choices:
+      - label: 为什么 ID 是 Yuk1n0？ 🤔
+        next: why_yukino
+      - label: 平时有些什么爱好？ ✨
+        next: hobby
+      - label: 去专栏看看 →
+        href: /series
+
+  why_yukino:
+    messages:
+      - 因为非常喜欢雪之下雪乃（Yukino）的声优早见沙织，声线温柔又有力量。
+    choices:
+      - label: 平时有些什么爱好？ ✨
+        next: hobby
+      - label: 去专栏看看 →
+        href: /series
+
+  hobby:
+    messages:
+      - 喜欢和朋友玩游戏、听歌（粤语、日语、华语流行都有涉猎，可以在左侧「音乐」页看看），也喜欢各种多人体育运动。
+      - 一直很向往画画、希望能像美术馆里收藏的画师们那样创作，虽然现在还又菜又缺乏练习（划掉），但一直在用富士相机记录喜欢的风景。
+      - 那么，好好逛逛我的博客吧？ ^_^
+    choices:
+      - label: 看看摄影相册 📷
+        href: /photos
+      - label: 去听听歌单 🎧
+        href: /music
+      - label: 重新开始对话 ↺
+        next: intro

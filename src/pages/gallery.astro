@@ -1,0 +1,11 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PhotoGalleryWall from '@/components/PhotoGalleryWall.astro';
+import { loadAlbum } from '@/lib/yaml-content';
+
+const album = await loadAlbum('gallery.yaml');
+---
+
+<BaseLayout title="色彩" description={album.notice}>
+  <PhotoGalleryWall album={album} eyebrow="Art Archive" showSourceLinks={true} defaultColumns={2} />
+</BaseLayout>

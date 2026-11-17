@@ -1,0 +1,298 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { loadAboutPage } from '@/lib/yaml-content';
+import { SITE } from '@/config/site';
+
+const about = await loadAboutPage();
+---
+
+<BaseLayout title="关于" description={about.description}>
+  <main class="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+    <!-- Top Profile Header Card -->
+    <section class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-4">
+          <img
+            src={about.profile.avatarMedia.fullSrc}
+            alt={about.profile.name}
+            width={about.profile.avatarMedia.width}
+            height={about.profile.avatarMedia.height}
+            class="h-16 w-24 shrink-0 rounded-xl border border-zinc-200 object-contain bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+          />
+          <div>
+            <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+              {about.subtitle}
+            </p>
+            <h1 class="mt-0.5 font-serif text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+              {about.profile.name}
+            </h1>
+            <p class="mt-1 font-mono text-xs text-zinc-500 dark:text-zinc-400">
+              {about.profile.role}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          {
+            about.profile.links.map((link) => (
+              <a
+                href={link.url}
+                target={link.url.startsWith('http') ? '_blank' : undefined}
+                rel={link.url.startsWith('http') ? 'noreferrer' : undefined}
+                class="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+              >
+                {link.label} ↗
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- OpenAI-style Interactive Dialogue Container (upgradeable to live LLM backend later) -->
+    <section
+      id="about-chat-app"
+      data-about-config={JSON.stringify({ startNode: about.startNode, nodes: about.nodes, brandIcon: SITE.brandIcon, author: about.profile.name })}
+      class="mt-6 overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
+    >
+      <!-- Window Header -->
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 bg-zinc-50/70 px-4 py-3 sm:px-5 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500"></span>
+          <span class="truncate font-mono text-xs font-medium text-zinc-700 dark:text-zinc-300">
+            与 {about.profile.name} 对话中
+          </span>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-2">
+          <button
+            id="chat-show-all-btn"
+            type="button"
+            class="whitespace-nowrap shrink-0 rounded-md border border-zinc-200 bg-white px-2.5 py-1 font-mono text-[11px] text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700"
+          >
+            展开全部简介
+          </button>
+          <button
+            id="chat-reset-btn"
+            type="button"
+            class="whitespace-nowrap shrink-0 rounded-md border border-zinc-200 bg-white px-2.5 py-1 font-mono text-[11px] text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700"
+          >
+            重置 ↺
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Thread -->
+      <div id="chat-messages" class="min-h-[360px] max-h-[560px] space-y-4 overflow-y-auto p-5 sm:p-6">
+        <noscript>
+          <div class="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
+            {about.nodes.intro.messages.map((m) => <p>{m}</p>)}
+            {about.nodes.story.messages.map((m) => <p>{m}</p>)}
+          </div>
+        </noscript>
+      </div>
+
+      <!-- Quick Choices & Free-form Input Bar -->
+      <div class="border-t border-zinc-200 bg-zinc-50/50 p-4 sm:px-6 dark:border-zinc-800 dark:bg-zinc-900/30">
+        <div id="chat-choices" class="mb-3 flex flex-wrap gap-2"></div>
+
+        <form id="chat-form" class="flex items-center gap-2">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="输入关键词提问（例如：日语、CS224N、摄影、博客架构）…"
+            class="flex-1 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm text-zinc-950 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-600"
+          />
+          <button
+            type="submit"
+            class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-zinc-950 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+          >
+            发送
+          </button>
+        </form>
+        <p class="mt-2 font-mono text-[11px] text-zinc-400 dark:text-zinc-500">
+          提示：可点击上方快捷分支，或直接输入关键词检索站内文章（预留后续接入 AI 对话接口）。
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    interface ChatChoice {
+      label: string;
+      next?: string;
+      href?: string;
+    }
+    interface ChatNode {
+      messages: string[];
+      choices?: ChatChoice[];
+    }
+    interface AboutConfig {
+      startNode: string;
+      nodes: Record<string, ChatNode>;
+      brandIcon: string;
+      author: string;
+    }
+
+    const container = document.getElementById('about-chat-app');
+    const messagesEl = document.getElementById('chat-messages');
+    const choicesEl = document.getElementById('chat-choices');
+    const resetBtn = document.getElementById('chat-reset-btn');
+    const showAllBtn = document.getElementById('chat-show-all-btn');
+    const form = document.getElementById('chat-form') as HTMLFormElement | null;
+    const input = document.getElementById('chat-input') as HTMLInputElement | null;
+
+    if (container && messagesEl && choicesEl) {
+      const cfg: AboutConfig = JSON.parse(container.dataset.aboutConfig || '{}');
+      const avatarBadgeHtml = `<span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-zinc-900 bg-black p-1 dark:border-zinc-700"><img src="${cfg.brandIcon || '/plane-icon.png'}" alt="${cfg.author}" class="h-full w-full object-contain [image-rendering:pixelated]" /></span>`;
+      let runToken = 0;
+
+      function scrollToBottom() {
+        messagesEl!.scrollTop = messagesEl!.scrollHeight;
+      }
+
+      function appendBubble(role: 'assistant' | 'user', htmlText: string) {
+        const row = document.createElement('div');
+        row.className = role === 'user' ? 'flex justify-end' : 'flex items-start gap-3';
+
+        if (role === 'assistant') {
+          row.innerHTML = `
+            ${avatarBadgeHtml}
+            <div class="max-w-[85%] rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm leading-relaxed text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">${htmlText}</div>
+          `;
+        } else {
+          row.innerHTML = `
+            <div class="max-w-[80%] rounded-xl bg-zinc-950 px-4 py-2.5 text-sm leading-relaxed text-white dark:bg-zinc-100 dark:text-zinc-950">${htmlText}</div>
+          `;
+        }
+        messagesEl!.appendChild(row);
+        scrollToBottom();
+      }
+
+      function renderChoices(choices: ChatChoice[] = []) {
+        choicesEl!.innerHTML = '';
+        choices.forEach((c) => {
+          if (c.href) {
+            const a = document.createElement('a');
+            a.href = c.href;
+            a.className =
+              'rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-400 hover:text-zinc-950 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:border-zinc-500';
+            a.textContent = c.label;
+            choicesEl!.appendChild(a);
+          } else {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className =
+              'rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200';
+            btn.textContent = c.label;
+            btn.addEventListener('click', () => {
+              appendBubble('user', c.label);
+              choicesEl!.innerHTML = '';
+              if (c.next) playNode(c.next);
+            });
+            choicesEl!.appendChild(btn);
+          }
+        });
+      }
+
+      function wait(ms: number) {
+        return new Promise((r) => setTimeout(r, ms));
+      }
+
+      async function playNode(nodeId: string, fast = false) {
+        const token = ++runToken;
+        const node = cfg.nodes[nodeId];
+        if (!node) return;
+        if (nodeId === cfg.startNode && messagesEl!.children.length > 0 && !fast) {
+          messagesEl!.innerHTML = '';
+        }
+
+        for (let i = 0; i < node.messages.length; i++) {
+          if (token !== runToken) return;
+          if (!fast) {
+            const typing = document.createElement('div');
+            typing.className = 'flex items-center gap-3 typing-indicator';
+            typing.innerHTML = `
+              ${avatarBadgeHtml}
+              <div class="rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2 font-mono text-xs text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900">输入中…</div>
+            `;
+            messagesEl!.appendChild(typing);
+            scrollToBottom();
+            await wait(i === 0 ? 320 : 520);
+            typing.remove();
+            if (token !== runToken) return;
+          }
+          appendBubble('assistant', node.messages[i]);
+        }
+
+        renderChoices(node.choices ?? []);
+      }
+
+      resetBtn?.addEventListener('click', () => {
+        messagesEl.innerHTML = '';
+        choicesEl.innerHTML = '';
+        playNode(cfg.startNode);
+      });
+
+      showAllBtn?.addEventListener('click', () => {
+        runToken++;
+        messagesEl.innerHTML = '';
+        ['intro', 'story', 'why_yukino', 'hobby'].forEach((id) => {
+          const n = cfg.nodes[id];
+          if (!n) return;
+          n.messages.forEach((m) => appendBubble('assistant', m));
+        });
+        renderChoices([
+          { label: '看看摄影相册 📷', href: '/photos' },
+          { label: '去专栏看看 📚', href: '/series' },
+          { label: '重置交互对话 ↺', next: 'intro' },
+        ]);
+      });
+
+      // Local intelligent fallback reply (ready to swap to Worker / OpenAI / Gemini API later)
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const q = (input?.value || '').trim();
+        if (!q) return;
+        input!.value = '';
+        appendBubble('user', q.replace(/</g, '&lt;'));
+
+        const lower = q.toLowerCase();
+        if (lower.includes('名字') || lower.includes('yuk1n0') || lower.includes('yukino') || lower.includes('id')) {
+          await playNode('why_yukino', true);
+          return;
+        }
+        if (lower.includes('爱好') || lower.includes('喜欢')) {
+          await playNode('hobby', true);
+          return;
+        }
+        if (lower.includes('相册') || lower.includes('摄影') || lower.includes('照片')) {
+          appendBubble('assistant', '旅途摄影整理在 <a href="/photos" class="underline decoration-[var(--accent)]">相册 Photography</a>，收藏的画师作品在 <a href="/gallery" class="underline decoration-[var(--accent)]">美术馆 Gallery</a>。');
+          return;
+        }
+
+        try {
+          const res = await fetch('/search-index.json');
+          if (res.ok) {
+            const list: Array<{ title: string; url: string; date: string }> = await res.json();
+            const hits = list.filter((p) => p.title.toLowerCase().includes(lower)).slice(0, 4);
+            if (hits.length > 0) {
+              const linksHtml = hits
+                .map((h) => `<li><a href="${h.url}" class="underline decoration-[var(--accent)]">${h.title}</a> <span class="font-mono text-[11px] text-zinc-400">(${h.date})</span></li>`)
+                .join('');
+              appendBubble('assistant', `在博客里帮你找到这些相关文章：<ul class="mt-2 list-disc pl-4 space-y-1">${linksHtml}</ul>`);
+              return;
+            }
+          }
+        } catch {}
+
+        appendBubble(
+          'assistant',
+          `目前我是离线引导模式，暂未接入大模型后端；你可以点击下方按钮继续了解我，或者按 <kbd class="rounded border px-1 font-mono text-xs">⌘K</kbd> 搜索「${q.replace(/</g, '&lt;')}」。`
+        );
+      });
+
+      playNode(cfg.startNode);
+    }
+  </script>
+</BaseLayout>

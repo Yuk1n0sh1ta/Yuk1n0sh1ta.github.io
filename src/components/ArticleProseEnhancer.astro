@@ -1,0 +1,151 @@
+<!-- Enhances rendered Markdown prose: code copy buttons, table wrappers, PhotoSwipe image zoom, and broken-image fallback -->
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+
+  function enhanceProse() {
+    const proseContainers = document.querySelectorAll<HTMLElement>('.editorial-prose');
+    if (!proseContainers.length) return;
+
+    proseContainers.forEach((prose) => {
+      // 1. Wrap <pre class="astro-code"> with clean language header + copy button
+      prose.querySelectorAll<HTMLPreElement>('pre.astro-code').forEach((pre) => {
+        if (pre.parentElement?.classList.contains('code-block-wrapper')) return;
+        const lang = pre.getAttribute('data-language') || 'text';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+
+        const header = document.createElement('div');
+        header.className = 'code-block-header';
+        header.innerHTML = `
+          <span class="uppercase tracking-wider">${lang}</span>
+          <button type="button" class="copy-code-btn inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium text-zinc-600 transition-colors hover:bg-zinc-200/70 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
+            复制
+          </button>
+        `;
+
+        const btn = header.querySelector<HTMLButtonElement>('.copy-code-btn');
+        btn?.addEventListener('click', async () => {
+          const code = pre.innerText;
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = '已复制 ✓';
+            setTimeout(() => {
+              btn.textContent = '复制';
+            }, 1600);
+          } catch {
+            btn.textContent = '复制失败';
+          }
+        });
+
+        pre.parentNode?.insertBefore(wrapper, pre);
+        wrapper.appendChild(header);
+        wrapper.appendChild(pre);
+      });
+
+      // 2. Wrap tables in responsive scroll container
+      prose.querySelectorAll<HTMLTableElement>('table').forEach((table) => {
+        if (table.parentElement?.classList.contains('table-wrap')) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'table-wrap';
+        table.parentNode?.insertBefore(wrap, table);
+        wrap.appendChild(table);
+      });
+
+      // 3. Add figcaption + PhotoSwipe zoom wrapper + graceful error fallback for external legacy images
+      prose.querySelectorAll<HTMLImageElement>('img').forEach((img) => {
+        if (img.dataset.enhanced) return;
+        img.dataset.enhanced = '1';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+
+        const alt = img.getAttribute('alt')?.trim() || '';
+        const src = img.getAttribute('src') || '';
+
+        const wrapAnchor = document.createElement('a');
+        wrapAnchor.href = src;
+        wrapAnchor.className = 'prose-pswp-item block';
+        wrapAnchor.dataset.pswpSrc = src;
+
+        const updateDimensions = () => {
+          if (img.naturalWidth && img.naturalHeight) {
+            wrapAnchor.dataset.pswpWidth = String(img.naturalWidth);
+            wrapAnchor.dataset.pswpHeight = String(img.naturalHeight);
+          }
+        };
+
+        if (img.complete && img.naturalWidth) {
+          updateDimensions();
+        } else {
+          img.addEventListener('load', updateDimensions, { once: true });
+        }
+
+        img.addEventListener(
+          'error',
+          () => {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'broken-img-placeholder';
+            const host = (() => {
+              try {
+                return new URL(src, window.location.origin).hostname;
+              } catch {
+                return 'external-host';
+              }
+            })();
+            placeholder.innerHTML = `
+              <span class="font-medium text-zinc-700 dark:text-zinc-300">${alt || '历史外链图片暂不可用'}</span>
+              <span class="text-[11px] opacity-80">原外链图床 (${host}) 已失效，可后续替换为本地图片</span>
+            `;
+            const target = img.closest('figure') || wrapAnchor;
+            target.replaceWith(placeholder);
+          },
+          { once: true }
+        );
+
+        const parent = img.parentNode;
+        if (parent) {
+          if (alt && !alt.startsWith('http') && alt !== 'image.png') {
+            const fig = document.createElement('figure');
+            fig.className = 'article-figure';
+            parent.insertBefore(fig, img);
+            wrapAnchor.appendChild(img);
+            fig.appendChild(wrapAnchor);
+            const cap = document.createElement('figcaption');
+            cap.textContent = alt;
+            fig.appendChild(cap);
+          } else {
+            parent.insertBefore(wrapAnchor, img);
+            wrapAnchor.appendChild(img);
+          }
+        }
+      });
+    });
+
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '.editorial-prose',
+      children: 'a.prose-pswp-item',
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 0.98,
+      padding: { top: 24, bottom: 24, left: 20, right: 20 },
+    });
+
+    // Fallback dimensions if image metadata wasn't captured before click
+    lightbox.addFilter('itemData', (itemData) => {
+      const el = itemData.element as HTMLAnchorElement | undefined;
+      if (el) {
+        const img = el.querySelector('img');
+        if (img && img.naturalWidth && img.naturalHeight) {
+          itemData.width = img.naturalWidth;
+          itemData.height = img.naturalHeight;
+        } else if (!itemData.width) {
+          itemData.width = 1400;
+          itemData.height = 900;
+        }
+      }
+      return itemData;
+    });
+
+    lightbox.init();
+  }
+
+  enhanceProse();
+</script>

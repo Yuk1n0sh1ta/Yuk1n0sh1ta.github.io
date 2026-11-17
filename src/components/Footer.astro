@@ -1,0 +1,22 @@
+---
+import { SITE } from '@/config/site';
+
+interface Props {
+  siteTitle?: string;
+}
+
+const { siteTitle = SITE.title } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-zinc-200 dark:border-zinc-800">
+  <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-10 dark:text-zinc-400">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <span class="font-medium text-zinc-700 dark:text-zinc-300">{siteTitle}</span>
+      <span>·</span>
+      <span>© {SITE.foundedYear}–{currentYear} {SITE.author}</span>
+      <span>·</span>
+      <span class="font-mono text-[11px]">Built with Astro & Obsidian · Deployed on Cloudflare Pages</span>
+    </div>
+  </div>
+</footer>

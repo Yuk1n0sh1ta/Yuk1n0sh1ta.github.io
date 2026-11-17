@@ -1,0 +1,461 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/config/site';
+import { resolveMedia } from '@/lib/media';
+import { loadAlbum, loadHomePage } from '@/lib/yaml-content';
+import {
+  estimateReadingStats,
+  extractExcerpt,
+  formatDateShort,
+  getAllPosts,
+  getPostTitle,
+  getPostUrl,
+  groupPostsBySeries,
+} from '@/lib/posts';
+
+const [posts, home, photosAlbum] = await Promise.all([
+  getAllPosts(),
+  loadHomePage(),
+  loadAlbum('photos.yaml'),
+]);
+const seriesGroups = groupPostsBySeries(posts);
+const heroPhoto = home.heroMedia;
+
+// Curated photography preview strip & random normal-ratio (3:2) hero pool
+const allAlbumItems = photosAlbum.sections.flatMap((s) => s.items);
+const normalRatioCandidates = [
+  {
+    src: heroPhoto.fullSrc,
+    caption: home.featuredCaption,
+    w: heroPhoto.width,
+    h: heroPhoto.height,
+  },
+  ...allAlbumItems
+    .filter((item) => {
+      const ratio = item.media.height > 0 ? item.media.width / item.media.height : 0;
+      return ratio >= 1.35 && ratio <= 1.65;
+    })
+    .map((item) => ({
+      src: item.media.fullSrc,
+      caption: item.caption || '旅途摄影 · Fujifilm Photography',
+      w: item.media.width,
+      h: item.media.height,
+    })),
+];
+const heroPool = Array.from(new Map(normalRatioCandidates.map((item) => [item.src, item])).values());
+const albumItemMap = new Map(allAlbumItems.map((item) => [item.src, item]));
+const showcasePhotos = await Promise.all(
+  home.showcasePhotos.map(async (src) => {
+    const existing = albumItemMap.get(src);
+    if (existing) return existing;
+    return {
+      src,
+      caption: '',
+      media: await resolveMedia(src),
+    };
+  })
+);
+
+// Category counts for segmented filter bar
+const categoryCounts = new Map<string, number>();
+for (const p of posts) {
+  const c = p.data.category || '未分类';
+  categoryCounts.set(c, (categoryCounts.get(c) ?? 0) + 1);
+}
+const categories = Array.from(categoryCounts.entries()).sort((a, b) => b[1] - a[1]);
+
+const enrichedPosts = posts.map((post) => ({
+  title: getPostTitle(post),
+  url: getPostUrl(post),
+  date: formatDateShort(post.data.date),
+  category: post.data.category,
+  series: post.data.series,
+  tags: post.data.tags,
+  excerpt: extractExcerpt(post.body ?? '', post.data.summary),
+  stats: estimateReadingStats(post.body ?? ''),
+}));
+---
+
+<BaseLayout exactTitle={home.seoTitle} description={home.seoDescription}>
+  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10 space-y-8">
+    <!-- Hero Section (OpenAI × jpgrammar.ai.studio Editorial Split) -->
+    <section class="grid grid-cols-1 items-start gap-8 border-b border-zinc-200 pb-8 lg:grid-cols-2 lg:gap-8 dark:border-zinc-800">
+      <div class="lg:pt-3">
+        <p class="font-mono text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          {home.eyebrow}{home.showStatsInEyebrow ? ` · ${posts.length} 篇文章 · ${seriesGroups.length} 个专栏` : ''}
+        </p>
+        <h1 class="mt-3 font-serif text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl lg:text-[42px] lg:leading-[1.15] dark:text-zinc-50">
+          {home.heading}
+        </h1>
+        <p class="mt-4 max-w-xl text-[15px] leading-relaxed text-zinc-600 dark:text-zinc-400">
+          {home.description}
+        </p>
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <a
+            href={home.primaryCta.href}
+            class="inline-flex items-center gap-2 rounded-md bg-zinc-950 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-200"
+          >
+            <span>{home.primaryCta.label}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a
+            href={home.secondaryCta.href}
+            class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+          >
+            {home.secondaryCta.label}
+          </a>
+          {
+            home.showSearchButton && (
+              <button
+                type="button"
+                onclick="window.dispatchEvent(new CustomEvent('open-cmdk'))"
+                class="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs font-mono text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700"
+              >
+                检索内容 ⌘K
+              </button>
+            )
+          }
+        </div>
+      </div>
+
+      {
+        home.showFeaturedPhoto && (
+          <div class="flex w-full justify-center lg:px-4">
+            <a
+              id="hero-photo-card"
+              href="/photos"
+              data-hero-pool={home.randomFeaturedPhoto ? JSON.stringify(heroPool) : undefined}
+              class="group block w-full max-w-[400px] overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+            >
+              <div class="aspect-[3/2] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                <img
+                  id="hero-photo-img"
+                  src={home.randomFeaturedPhoto ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : heroPhoto.fullSrc}
+                  alt={home.featuredCaption}
+                  width={heroPhoto.width}
+                  height={heroPhoto.height}
+                  decoding="async"
+                  class="block h-full w-full object-cover"
+                />
+              </div>
+              {home.randomFeaturedPhoto && (
+                <noscript>
+                  <img
+                    src={heroPhoto.fullSrc}
+                    alt={home.featuredCaption}
+                    width={heroPhoto.width}
+                    height={heroPhoto.height}
+                    class="block aspect-[3/2] w-full object-cover"
+                  />
+                </noscript>
+              )}
+              <div class="flex items-center justify-between gap-2 border-t border-zinc-200 px-3 py-1.5 font-mono text-[11px] text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <span id="hero-photo-caption" class="truncate">{home.featuredCaption}</span>
+                <span class="shrink-0 group-hover:text-[var(--accent)] transition-colors">光影 →</span>
+              </div>
+            </a>
+            {home.randomFeaturedPhoto && (
+              <script is:inline define:vars={{ fallbackSrc: heroPhoto.fullSrc }}>
+                (function () {
+                  try {
+                    var card = document.getElementById('hero-photo-card');
+                    var img = document.getElementById('hero-photo-img');
+                    var cap = document.getElementById('hero-photo-caption');
+                    if (!card || !img) return;
+                    var pool = JSON.parse(card.getAttribute('data-hero-pool') || '[]');
+                    if (pool.length > 0) {
+                      var pick = pool[Math.floor(Math.random() * pool.length)];
+                      img.src = pick.src;
+                      img.alt = pick.caption;
+                      img.width = pick.w;
+                      img.height = pick.h;
+                      if (cap) cap.textContent = pick.caption;
+                    } else {
+                      img.src = fallbackSrc;
+                    }
+                  } catch (e) {
+                    var fallbackImg = document.getElementById('hero-photo-img');
+                    if (fallbackImg) fallbackImg.src = fallbackSrc;
+                  }
+                })();
+              </script>
+            )}
+          </div>
+        )
+      }
+    </section>
+
+    <!-- Posts Feed with Controls Bar (Segmented Filter + Card/Compact View) -->
+    <section class="space-y-5" id="home-posts-section" data-default-view={SITE.appearance.defaultListView}>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+            {home.recentEyebrow}
+          </p>
+          <h2 class="mt-0.5 font-serif text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+            {home.recentHeading}
+          </h2>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Segmented Category Tabs -->
+          <div class="flex flex-wrap items-center gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900" role="tablist" aria-label="文章分类筛选">
+            <button
+              type="button"
+              data-home-cat="all"
+              class="home-cat-btn rounded-md px-2.5 py-1 text-xs font-medium transition-all"
+            >
+              全部 ({posts.length})
+            </button>
+            {
+              categories.map(([cat, count]) => (
+                <button
+                  type="button"
+                  data-home-cat={cat}
+                  class="home-cat-btn rounded-md px-2.5 py-1 text-xs font-medium transition-all"
+                >
+                  {cat} ({count})
+                </button>
+              ))
+            }
+          </div>
+
+          <!-- View Switcher: Cards vs Compact -->
+          <div class="inline-flex rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900" role="group" aria-label="视图切换">
+            <button
+              type="button"
+              data-home-view="cards"
+              class="home-view-btn rounded-md px-2.5 py-1 text-xs font-medium transition-all"
+            >
+              摘要卡片
+            </button>
+            <button
+              type="button"
+              data-home-view="compact"
+              class="home-view-btn rounded-md px-2.5 py-1 text-xs font-medium transition-all"
+            >
+              紧凑目录
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards Grid View -->
+      <div id="home-cards-grid" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {
+          enrichedPosts.map((post, idx) => (
+            <article
+              data-post-card
+              data-category={post.category}
+              data-initial-visible={idx < 12 ? '1' : '0'}
+              class:list={[
+                'group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700',
+                idx >= 12 && 'hidden',
+              ]}
+            >
+              <div>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+                  <span class="font-semibold text-[var(--accent)]">{post.category}</span>
+                  <span>·</span>
+                  <time>{post.date}</time>
+                  <span>·</span>
+                  <span>{post.stats.minutes} min read</span>
+                  {post.series && (
+                    <>
+                      <span>·</span>
+                      <span class="truncate max-w-[150px] text-zinc-700 dark:text-zinc-300">{post.series}</span>
+                    </>
+                  )}
+                </div>
+
+                <h3 class="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-zinc-950 dark:text-zinc-50">
+                  <a href={post.url} class="hover:text-[var(--accent)] transition-colors">
+                    {post.title}
+                  </a>
+                </h3>
+
+                {post.excerpt && (
+                  <p class="mt-2 line-clamp-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    {post.excerpt}
+                  </p>
+                )}
+              </div>
+
+              {post.tags.length > 0 && (
+                <div class="mt-4 flex flex-wrap gap-1.5">
+                  {post.tags.slice(0, 4).map((tag) => (
+                    <a
+                      href={`/posts?tag=${encodeURIComponent(tag)}`}
+                      class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-[11px] text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700"
+                    >
+                      #{tag}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))
+        }
+      </div>
+
+      <!-- Compact Directory View -->
+      <div
+        id="home-compact-list"
+        class="hidden overflow-hidden rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/40 dark:divide-zinc-800/80"
+      >
+        {
+          enrichedPosts.map((post, idx) => (
+            <a
+              href={post.url}
+              data-post-row
+              data-category={post.category}
+              data-initial-visible={idx < 20 ? '1' : '0'}
+              class:list={[
+                'flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-zinc-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:hover:bg-zinc-900/80',
+                idx >= 20 && 'hidden',
+              ]}
+            >
+              <div class="flex min-w-0 items-baseline gap-3">
+                <span class="shrink-0 font-mono text-xs text-zinc-400 tabular-nums">{post.date}</span>
+                <span class="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{post.title}</span>
+              </div>
+              <div class="flex shrink-0 items-center gap-2 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+                <span class="text-[var(--accent)]">{post.category}</span>
+                {post.series && <span class="hidden md:inline rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">{post.series}</span>}
+              </div>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="flex justify-center pt-2">
+        <a
+          href="/posts"
+          class="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-5 py-2 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-50"
+        >
+          查看全部 {posts.length} 篇文章归档 →
+        </a>
+      </div>
+    </section>
+
+    <!-- Photography & Gallery Preview Strip -->
+    <section class="space-y-5 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+            {home.galleryEyebrow}
+          </p>
+          <h2 class="mt-0.5 font-serif text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+            {home.galleryHeading}
+          </h2>
+        </div>
+        <div class="flex items-center gap-4 font-mono text-xs">
+          <a href="/photos" class="text-zinc-600 transition-colors hover:text-[var(--accent)] dark:text-zinc-400">
+            光影 Photography →
+          </a>
+          <a href="/gallery" class="text-zinc-600 transition-colors hover:text-[var(--accent)] dark:text-zinc-400">
+            色彩 Art →
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          showcasePhotos.map((photo) => (
+            <a
+              href="/photos"
+              class="group overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
+            >
+              <img
+                src={photo.media.fullSrc}
+                alt={photo.caption || '摄影作品'}
+                width={photo.media.width}
+                height={photo.media.height}
+                loading="lazy"
+                decoding="async"
+                class="block h-auto w-full"
+              />
+              {photo.caption && (
+                <p class="truncate border-t border-zinc-200 px-3 py-2 font-mono text-[11px] text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                  {photo.caption}
+                </p>
+              )}
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const section = document.getElementById('home-posts-section');
+    const cardsGrid = document.getElementById('home-cards-grid');
+    const compactList = document.getElementById('home-compact-list');
+
+    if (section && cardsGrid && compactList) {
+      let currentCat = 'all';
+      let currentView = localStorage.getItem('blog_home_view') || section.dataset.defaultView || 'cards';
+
+      function updateUI() {
+        document.querySelectorAll<HTMLElement>('.home-cat-btn').forEach((btn) => {
+          const active = btn.dataset.homeCat === currentCat;
+          btn.classList.toggle('bg-white', active);
+          btn.classList.toggle('dark:bg-zinc-800', active);
+          btn.classList.toggle('text-zinc-950', active);
+          btn.classList.toggle('dark:text-zinc-50', active);
+          btn.classList.toggle('shadow-xs', active);
+          btn.classList.toggle('text-zinc-600', !active);
+          btn.classList.toggle('dark:text-zinc-400', !active);
+        });
+
+        document.querySelectorAll<HTMLElement>('.home-view-btn').forEach((btn) => {
+          const active = btn.dataset.homeView === currentView;
+          btn.classList.toggle('bg-white', active);
+          btn.classList.toggle('dark:bg-zinc-800', active);
+          btn.classList.toggle('text-zinc-950', active);
+          btn.classList.toggle('dark:text-zinc-50', active);
+          btn.classList.toggle('shadow-xs', active);
+          btn.classList.toggle('text-zinc-600', !active);
+          btn.classList.toggle('dark:text-zinc-400', !active);
+        });
+
+        cardsGrid!.classList.toggle('hidden', currentView !== 'cards');
+        compactList!.classList.toggle('hidden', currentView !== 'compact');
+
+        let shownCards = 0;
+        cardsGrid!.querySelectorAll<HTMLElement>('[data-post-card]').forEach((card) => {
+          const matchesCat = currentCat === 'all' || card.dataset.category === currentCat;
+          const show = matchesCat && shownCards < 14;
+          if (show) shownCards++;
+          card.classList.toggle('hidden', !show);
+        });
+
+        let shownRows = 0;
+        compactList!.querySelectorAll<HTMLElement>('[data-post-row]').forEach((row) => {
+          const matchesCat = currentCat === 'all' || row.dataset.category === currentCat;
+          const show = matchesCat && shownRows < 24;
+          if (show) shownRows++;
+          row.classList.toggle('hidden', !show);
+        });
+      }
+
+      document.querySelectorAll<HTMLElement>('.home-cat-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentCat = btn.dataset.homeCat || 'all';
+          updateUI();
+        });
+      });
+
+      document.querySelectorAll<HTMLElement>('.home-view-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentView = btn.dataset.homeView || 'cards';
+          localStorage.setItem('blog_home_view', currentView);
+          updateUI();
+        });
+      });
+
+      updateUI();
+    }
+  </script>
+</BaseLayout>

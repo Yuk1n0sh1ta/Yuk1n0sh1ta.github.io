@@ -1,0 +1,14 @@
+# 相册 / 美术馆扩展格式参考
+# 将本段追加到 content/albums/photos.yaml 或 content/albums/gallery.yaml 的 sections 下
+# 图片放入 content/assets/photos/ 或 content/assets/gallery/ 目录即可自动生成 WebP 缩略图与灯箱
+
+- id: kyoto-autumn
+  title: 京都
+  featured:
+    src: photos/DSCF0001.jpg
+    caption: 摄于京都市清水寺
+  items:
+    - src: photos/DSCF0002.jpg
+      caption: 摄于京都市鸭川
+    - src: photos/DSCF0003.jpg
+      caption: 摄于京都市哲学之道

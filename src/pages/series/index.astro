@@ -1,0 +1,203 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { estimateReadingStats, formatDateShort, getAllPosts, getPostTitle, getPostUrl, groupPostsBySeries } from '@/lib/posts';
+
+const posts = await getAllPosts();
+const seriesGroups = groupPostsBySeries(posts);
+const totalSeriesPosts = seriesGroups.reduce((sum, g) => sum + g.posts.length, 0);
+---
+
+<BaseLayout title="专栏体系" description="按系统化专栏浏览日语语法、CS224N、深度学习与论文精读笔记。">
+  {/* Integrate Series Directory Tree directly into the Left Sidebar (no double-sidebar) */}
+  <Fragment slot="sidebar-context">
+    <div id="series-sidebar" class="border-t border-zinc-200 pt-4 space-y-3 dark:border-zinc-800">
+      <div class="flex items-center justify-between gap-2 px-1">
+        <span class="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          专栏目录树
+        </span>
+        <button
+          id="series-collapse-all"
+          type="button"
+          class="font-mono text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100"
+        >
+          全部展开
+        </button>
+      </div>
+
+      <input
+        id="series-sidebar-filter"
+        type="search"
+        placeholder="筛选专栏或篇目…"
+        class="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-950 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100"
+      />
+
+      <nav aria-label="专栏目录树" class="space-y-2">
+        {
+          seriesGroups.map((group) => (
+            <details class="series-tree-group group">
+              <summary class="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 text-xs font-semibold text-zinc-900 hover:bg-white dark:text-zinc-100 dark:hover:bg-zinc-900">
+                <span class="flex items-center gap-1.5 min-w-0">
+                  <svg class="h-3 w-3 shrink-0 text-zinc-400 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m9 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <span class="truncate">{group.title}</span>
+                </span>
+                <span class="ml-2 shrink-0 font-mono text-[10.5px] text-zinc-400">{group.posts.length}</span>
+              </summary>
+              <ul class="mt-1 space-y-0.5 border-l border-zinc-200 pl-2 ml-2 dark:border-zinc-800">
+                {group.posts.map((p) => {
+                  const pTitle = getPostTitle(p);
+                  return (
+                    <li data-tree-item data-label={pTitle.toLowerCase()}>
+                      <a
+                        href={getPostUrl(p)}
+                        class="block truncate rounded-md px-2 py-1 text-xs text-zinc-600 transition-colors hover:bg-white hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+                        title={pTitle}
+                      >
+                        {pTitle}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </details>
+          ))
+        }
+      </nav>
+    </div>
+  </Fragment>
+
+  <Fragment slot="mobile-context">
+    <div class="border-t border-zinc-200 pt-3 space-y-1.5 dark:border-zinc-800">
+      <p class="px-2 font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500">
+        专栏快速跳转
+      </p>
+      {
+        seriesGroups.map((group) => (
+          <a
+            href={`#series-${encodeURIComponent(group.name)}`}
+            class="flex items-center justify-between rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-900"
+          >
+            <span class="truncate">{group.title}</span>
+            <span class="font-mono text-[10.5px] text-zinc-400">{group.posts.length}</span>
+          </a>
+        ))
+      }
+    </div>
+  </Fragment>
+
+  {/* Main Overview Area */}
+  <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10 space-y-10">
+    <header class="border-b border-zinc-200 pb-8 dark:border-zinc-800">
+      <p class="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+        Series & Knowledge Base · {seriesGroups.length} 个专栏 / {totalSeriesPosts} 篇
+      </p>
+      <h1 class="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">
+        系统化学习专栏
+      </h1>
+      <p class="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        将博客中的长系列笔记按章节逻辑重新编排。点击任一文章即可进入带左侧目录树与随动右侧大纲的阅读模式。
+      </p>
+
+      <div class="mt-5 flex flex-wrap gap-1.5">
+        {
+          seriesGroups.map((group) => (
+            <a
+              href={`#series-${encodeURIComponent(group.name)}`}
+              class="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+            >
+              {group.title} ({group.posts.length})
+            </a>
+          ))
+        }
+      </div>
+    </header>
+
+    <div class="space-y-12">
+      {
+        seriesGroups.map((group) => (
+          <section id={`series-${encodeURIComponent(group.name)}`} class="scroll-mt-16 lg:scroll-mt-8 space-y-4">
+            <div class="flex flex-wrap items-end justify-between gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-800">
+              <div>
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+                  {group.overline}
+                </p>
+                <h2 class="mt-0.5 font-serif text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                  {group.title}
+                </h2>
+                <p class="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                  {group.description}
+                </p>
+              </div>
+              <span class="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                共 {group.posts.length} 节
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+              {group.posts.map((p, idx) => {
+                const stats = estimateReadingStats(p.body ?? '');
+                const pTitle = getPostTitle(p);
+                return (
+                  <a
+                    href={getPostUrl(p)}
+                    class="group flex items-start justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700"
+                  >
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-2 font-mono text-[11px] text-zinc-400">
+                        <span class="font-semibold text-[var(--accent)]">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        <span>·</span>
+                        <span>{formatDateShort(p.data.date)}</span>
+                        <span>·</span>
+                        <span>{stats.wordCount} 字</span>
+                      </div>
+                      <h3 class="mt-1 truncate text-sm font-semibold text-zinc-950 group-hover:text-[var(--accent)] transition-colors dark:text-zinc-50">
+                        {pTitle}
+                      </h3>
+                    </div>
+                    <span class="mt-1 shrink-0 font-mono text-xs text-zinc-400 transition-transform group-hover:translate-x-0.5">
+                      →
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </main>
+
+  <script>
+    const collapseBtn = document.getElementById('series-collapse-all');
+    const filterInput = document.getElementById('series-sidebar-filter') as HTMLInputElement | null;
+    const groups = document.querySelectorAll<HTMLDetailsElement>('.series-tree-group');
+
+    let allCollapsed = true;
+    collapseBtn?.addEventListener('click', () => {
+      allCollapsed = !allCollapsed;
+      groups.forEach((g) => {
+        g.open = !allCollapsed;
+      });
+      collapseBtn.textContent = allCollapsed ? '全部展开' : '全部收起';
+    });
+
+    filterInput?.addEventListener('input', () => {
+      const q = filterInput.value.trim().toLowerCase();
+      groups.forEach((g) => {
+        const items = g.querySelectorAll<HTMLElement>('[data-tree-item]');
+        let anyVisible = false;
+        items.forEach((item) => {
+          const match = !q || (item.dataset.label || '').includes(q);
+          item.classList.toggle('hidden', !match);
+          if (match) anyVisible = true;
+        });
+        g.classList.toggle('hidden', !anyVisible);
+        if (q && anyVisible) g.open = true;
+        else if (!q) g.open = !allCollapsed;
+      });
+    });
+  </script>
+</BaseLayout>

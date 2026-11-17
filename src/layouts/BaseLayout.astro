@@ -1,0 +1,258 @@
+---
+import '@/styles/global.css';
+import 'katex/dist/katex.min.css';
+import 'photoswipe/style.css';
+import { SITE } from '@/config/site';
+import { loadHomePage } from '@/lib/yaml-content';
+import Sidebar from '@/components/Sidebar.astro';
+import Footer from '@/components/Footer.astro';
+import CommandPalette from '@/components/CommandPalette.astro';
+
+interface Props {
+  title?: string;
+  exactTitle?: string;
+  description?: string;
+}
+
+const homeConfig = await loadHomePage();
+const { title, exactTitle, description = homeConfig.seoDescription } = Astro.props;
+const pageTitle = exactTitle
+  ? exactTitle
+  : title
+    ? `${title} · ${homeConfig.siteTitle}`
+    : `${homeConfig.siteTitle} — ${homeConfig.siteSubtitle}`;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html
+  lang="zh-CN"
+  data-accent={SITE.appearance.defaultAccent}
+  data-font-size={SITE.appearance.defaultFontSize}
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/plane-icon-mixer.png" />
+    <link rel="alternate" type="application/rss+xml" title={homeConfig.siteTitle} href="/rss.xml" />
+    <title>{pageTitle}</title>
+
+    <!-- Google Fonts matching OpenAI / jpgrammar.ai.studio typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+JP:wght@500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Prevent theme / accent / font-size FOUC before first paint -->
+    <script is:inline define:vars={{ defaultTheme: SITE.appearance.defaultTheme, defaultAccent: SITE.appearance.defaultAccent, defaultFontSize: SITE.appearance.defaultFontSize }}>
+      (function () {
+        try {
+          var savedTheme = localStorage.getItem('blog_theme') || defaultTheme;
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = savedTheme === 'dark' || (savedTheme === 'system' && prefersDark);
+          document.documentElement.classList.toggle('dark', isDark);
+
+          var savedAccent = localStorage.getItem('blog_accent') || defaultAccent;
+          document.documentElement.setAttribute('data-accent', savedAccent);
+
+          var savedFont = localStorage.getItem('blog_fontsize') || defaultFontSize;
+          document.documentElement.setAttribute('data-font-size', savedFont);
+
+          var sidebarCollapsed = localStorage.getItem('blog_sidebar_collapsed') === 'true';
+          document.documentElement.setAttribute('data-sidebar-collapsed', sidebarCollapsed ? 'true' : 'false');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+
+  <body class="min-h-screen bg-white text-zinc-900 selection:bg-zinc-900 selection:text-white dark:bg-zinc-950 dark:text-zinc-100 dark:selection:bg-zinc-100 dark:selection:text-zinc-950">
+    <div class="min-h-screen lg:flex">
+      <Sidebar currentPath={currentPath} siteTitle={homeConfig.siteTitle} authorLabel={homeConfig.authorLabel}>
+        <slot name="sidebar-context" slot="sidebar-context" />
+        <slot name="mobile-context" slot="mobile-context" />
+      </Sidebar>
+
+      <div class="flex min-w-0 flex-1 flex-col min-h-screen">
+        <div class="flex-1 min-w-0">
+          <slot />
+        </div>
+        <Footer siteTitle={homeConfig.siteTitle} />
+      </div>
+    </div>
+
+    <CommandPalette />
+
+    <!-- Global UI Controls Script -->
+    <script>
+      const root = document.documentElement;
+      const mobileToggle = document.getElementById('mobile-menu-toggle');
+      const mobileClose = document.getElementById('mobile-menu-close');
+      const mobileDrawer = document.getElementById('mobile-nav-drawer');
+      const mobileBackdrop = document.getElementById('mobile-nav-backdrop');
+      const desktopSidebarToggle = document.getElementById('desktop-sidebar-toggle');
+      const sidebarBrandLink = document.getElementById('sidebar-brand-link');
+      const prefsTrigger = document.getElementById('prefs-trigger');
+      const prefsPopover = document.getElementById('prefs-popover');
+
+      function syncSidebarToggleBtn() {
+        const collapsed = root.getAttribute('data-sidebar-collapsed') === 'true';
+        desktopSidebarToggle?.setAttribute('aria-expanded', String(!collapsed));
+        desktopSidebarToggle?.setAttribute('aria-label', collapsed ? '展开左侧边栏' : '收起左侧边栏');
+        desktopSidebarToggle?.setAttribute('title', collapsed ? '展开左侧边栏' : '收起左侧边栏');
+        sidebarBrandLink?.setAttribute(
+          'title',
+          collapsed ? '点击展开左侧边栏' : sidebarBrandLink.dataset.siteTitle || '返回首页'
+        );
+      }
+
+      if (sidebarBrandLink && !sidebarBrandLink.dataset.siteTitle) {
+        sidebarBrandLink.dataset.siteTitle = sidebarBrandLink.getAttribute('title') || '';
+      }
+
+      function setSidebarCollapsed(nextCollapsed: boolean) {
+        root.setAttribute('data-sidebar-collapsed', nextCollapsed ? 'true' : 'false');
+        localStorage.setItem('blog_sidebar_collapsed', String(nextCollapsed));
+        syncSidebarToggleBtn();
+      }
+
+      desktopSidebarToggle?.addEventListener('click', () => {
+        const nextCollapsed = root.getAttribute('data-sidebar-collapsed') !== 'true';
+        setSidebarCollapsed(nextCollapsed);
+      });
+
+      sidebarBrandLink?.addEventListener('click', (e) => {
+        if (window.innerWidth >= 1024 && root.getAttribute('data-sidebar-collapsed') === 'true') {
+          e.preventDefault();
+          setSidebarCollapsed(false);
+        }
+      });
+
+      syncSidebarToggleBtn();
+
+      function setMobileDrawerOpen(open: boolean) {
+        mobileDrawer?.classList.toggle('hidden', !open);
+        mobileDrawer?.classList.toggle('flex', open);
+        mobileBackdrop?.classList.toggle('hidden', !open);
+        mobileToggle?.setAttribute('aria-expanded', String(open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
+
+      mobileToggle?.addEventListener('click', () => {
+        const isOpen = mobileDrawer?.classList.contains('flex');
+        setMobileDrawerOpen(!isOpen);
+      });
+      mobileClose?.addEventListener('click', () => setMobileDrawerOpen(false));
+      mobileBackdrop?.addEventListener('click', () => setMobileDrawerOpen(false));
+
+      document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const nextDark = !root.classList.contains('dark');
+          root.classList.toggle('dark', nextDark);
+          localStorage.setItem('blog_theme', nextDark ? 'dark' : 'light');
+          window.dispatchEvent(new CustomEvent('blog-theme-change', { detail: { isDark: nextDark } }));
+        });
+      });
+
+      function syncPreferenceButtons() {
+        const accent = root.getAttribute('data-accent') || 'rose';
+        const fontSize = root.getAttribute('data-font-size') || 'md';
+
+        document.querySelectorAll<HTMLElement>('[data-set-accent]').forEach((btn) => {
+          const active = btn.dataset.setAccent === accent;
+          btn.classList.toggle('border-zinc-950', active);
+          btn.classList.toggle('dark:border-zinc-200', active);
+          btn.classList.toggle('bg-zinc-50', active);
+          btn.classList.toggle('dark:bg-zinc-900', active);
+          btn.classList.toggle('font-semibold', active);
+        });
+
+        document.querySelectorAll<HTMLElement>('[data-set-fontsize]').forEach((btn) => {
+          const active = btn.dataset.setFontsize === fontSize;
+          btn.classList.toggle('bg-white', active);
+          btn.classList.toggle('dark:bg-zinc-800', active);
+          btn.classList.toggle('text-zinc-950', active);
+          btn.classList.toggle('dark:text-zinc-50', active);
+          btn.classList.toggle('shadow-xs', active);
+        });
+      }
+
+      function applyFontSize(val: string) {
+        root.setAttribute('data-font-size', val);
+        localStorage.setItem('blog_fontsize', val);
+        syncPreferenceButtons();
+        window.dispatchEvent(new CustomEvent('blog-fontsize-change', { detail: { size: val } }));
+      }
+
+      prefsTrigger?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !prefsPopover?.classList.contains('hidden');
+        prefsPopover?.classList.toggle('hidden', isOpen);
+        prefsTrigger.setAttribute('aria-expanded', String(!isOpen));
+        syncPreferenceButtons();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (prefsPopover && !prefsPopover.contains(e.target as Node) && !prefsTrigger?.contains(e.target as Node)) {
+          prefsPopover.classList.add('hidden');
+          prefsTrigger?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          setMobileDrawerOpen(false);
+          if (prefsPopover && !prefsPopover.classList.contains('hidden')) {
+            prefsPopover.classList.add('hidden');
+            prefsTrigger?.setAttribute('aria-expanded', 'false');
+          }
+        }
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-set-accent]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const val = btn.dataset.setAccent || 'rose';
+          root.setAttribute('data-accent', val);
+          localStorage.setItem('blog_accent', val);
+          syncPreferenceButtons();
+        });
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-set-fontsize]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          applyFontSize(btn.dataset.setFontsize || 'md');
+        });
+      });
+
+      window.addEventListener('blog-fontsize-change', syncPreferenceButtons);
+      syncPreferenceButtons();
+
+      function syncAppleMusicThemes() {
+        const themeParam = root.classList.contains('dark') ? 'dark' : 'light';
+        document
+          .querySelectorAll<HTMLIFrameElement>('iframe[data-embed-base], iframe[src*="embed.music.apple.com"]')
+          .forEach((frame) => {
+            const raw = frame.dataset.embedBase || frame.getAttribute('src');
+            if (!raw) return;
+            try {
+              const u = new URL(raw);
+              if (!u.searchParams.has('l')) {
+                u.searchParams.set('l', 'zh-Hans');
+              }
+              u.searchParams.set('theme', themeParam);
+              const targetSrc = u.toString();
+              if (frame.getAttribute('src') !== targetSrc) {
+                frame.setAttribute('src', targetSrc);
+              }
+            } catch {}
+          });
+      }
+
+      syncAppleMusicThemes();
+      window.addEventListener('blog-theme-change', syncAppleMusicThemes);
+    </script>
+  </body>
+</html>

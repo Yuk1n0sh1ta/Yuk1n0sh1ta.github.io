@@ -1,0 +1,318 @@
+---
+import type { AlbumDoc } from '@/lib/yaml-content';
+import { SITE } from '@/config/site';
+
+interface Props {
+  album: AlbumDoc;
+  eyebrow: string;
+  showSourceLinks?: boolean;
+  defaultColumns?: 2 | 3;
+}
+
+const {
+  album,
+  eyebrow,
+  showSourceLinks = false,
+  defaultColumns = SITE.appearance.defaultGalleryColumns,
+} = Astro.props;
+
+const totalCount = album.sections.reduce(
+  (sum, s) => sum + s.items.length + (s.featured ? 1 : 0),
+  0
+);
+---
+
+<main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+  <!-- Editorial Header -->
+  <header class="border-b border-zinc-200 pb-8 dark:border-zinc-800">
+    <p class="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+      {eyebrow} · {totalCount} Works
+    </p>
+    <div class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="font-serif text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">
+          {album.title}
+        </h1>
+        {(album.description || album.notice) && (
+          <p class="mt-2.5 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {album.description || album.notice}
+          </p>
+        )}
+      </div>
+
+      <!-- Layout & Column Density Controls (Gives user live control) -->
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <div
+          role="group"
+          aria-label="布局模式"
+          class="inline-flex rounded-lg bg-zinc-100 p-1 text-xs dark:bg-zinc-900"
+        >
+          <button
+            type="button"
+            data-gallery-layout="masonry"
+            class="gallery-layout-btn rounded-md px-2.5 py-1 font-medium transition-all"
+          >
+            瀑布流
+          </button>
+          <button
+            type="button"
+            data-gallery-layout="grid"
+            class="gallery-layout-btn rounded-md px-2.5 py-1 font-medium transition-all"
+          >
+            规整网格
+          </button>
+        </div>
+
+        <div
+          role="group"
+          aria-label="列数选择"
+          class="hidden sm:inline-flex rounded-lg bg-zinc-100 p-1 text-xs dark:bg-zinc-900"
+        >
+          <button
+            type="button"
+            data-gallery-cols="2"
+            class="gallery-cols-btn rounded-md px-2.5 py-1 font-mono transition-all"
+          >
+            2 列
+          </button>
+          <button
+            type="button"
+            data-gallery-cols="3"
+            class="gallery-cols-btn rounded-md px-2.5 py-1 font-mono transition-all"
+          >
+            3 列
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Filter Tabs -->
+    <div class="mt-6 flex flex-wrap items-center gap-1.5" role="tablist" aria-label="分组筛选">
+      <button
+        type="button"
+        data-section-filter="all"
+        data-active="true"
+        class="gallery-filter-btn rounded-md border px-3 py-1.5 text-xs font-medium transition-colors data-[active=true]:border-zinc-950 data-[active=true]:bg-zinc-950 data-[active=true]:text-white dark:data-[active=true]:border-zinc-100 dark:data-[active=true]:bg-zinc-100 dark:data-[active=true]:text-zinc-950 data-[active=false]:border-zinc-200 data-[active=false]:bg-white data-[active=false]:text-zinc-600 data-[active=false]:hover:border-zinc-300 data-[active=false]:hover:text-zinc-950 dark:data-[active=false]:border-zinc-800 dark:data-[active=false]:bg-zinc-950 dark:data-[active=false]:text-zinc-400 dark:data-[active=false]:hover:border-zinc-700 dark:data-[active=false]:hover:text-zinc-100"
+      >
+        全部 ({totalCount})
+      </button>
+      {
+        album.sections.map((sec) => {
+          const count = sec.items.length + (sec.featured ? 1 : 0);
+          return (
+            <button
+              type="button"
+              data-section-filter={sec.id}
+              data-active="false"
+              class="gallery-filter-btn rounded-md border px-3 py-1.5 text-xs font-medium transition-colors data-[active=true]:border-zinc-950 data-[active=true]:bg-zinc-950 data-[active=true]:text-white dark:data-[active=true]:border-zinc-100 dark:data-[active=true]:bg-zinc-100 dark:data-[active=true]:text-zinc-950 data-[active=false]:border-zinc-200 data-[active=false]:bg-white data-[active=false]:text-zinc-600 data-[active=false]:hover:border-zinc-300 data-[active=false]:hover:text-zinc-950 dark:data-[active=false]:border-zinc-800 dark:data-[active=false]:bg-zinc-950 dark:data-[active=false]:text-zinc-400 dark:data-[active=false]:hover:border-zinc-700 dark:data-[active=false]:hover:text-zinc-100"
+            >
+              {sec.title} ({count})
+            </button>
+          );
+        })
+      }
+    </div>
+  </header>
+
+  <!-- Gallery Sections -->
+  <div id="pswp-gallery-root" class="mt-10 space-y-14" data-default-layout={SITE.appearance.defaultGalleryLayout} data-default-cols={defaultColumns}>
+    {
+      album.sections.map((sec) => {
+        const secCount = sec.items.length + (sec.featured ? 1 : 0);
+        return (
+          <div class="gallery-section space-y-5" data-section-id={sec.id}>
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-800">
+              <div class="flex items-baseline gap-3">
+                <h2 class="font-serif text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                  {sec.title}
+                </h2>
+                {showSourceLinks && sec.sourceUrl && (
+                  <a
+                    href={sec.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="font-mono text-xs text-[var(--accent)] hover:underline"
+                  >
+                    {sec.handle || sec.sourceUrl} ↗
+                  </a>
+                )}
+              </div>
+              <span class="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                {secCount} 张
+              </span>
+            </div>
+
+            {/* Optional Hero Panorama Shot (full original resolution, zero crop or zoom) */}
+            {sec.featured && (
+              <figure class="group overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+                <a
+                  href={sec.featured.media.fullSrc}
+                  data-pswp-width={sec.featured.media.width}
+                  data-pswp-height={sec.featured.media.height}
+                  data-pswp-caption={sec.featured.caption || sec.title}
+                  class="pswp-photo-link block"
+                >
+                  <img
+                    src={sec.featured.media.fullSrc}
+                    alt={sec.featured.caption || sec.title}
+                    width={sec.featured.media.width}
+                    height={sec.featured.media.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="block h-auto w-full"
+                  />
+                </a>
+                {sec.featured.caption && (
+                  <figcaption class="flex items-center justify-between border-t border-zinc-200 px-4 py-2.5 font-mono text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+                    <span>{sec.featured.caption}</span>
+                    <span class="text-[11px] text-zinc-400">FEATURED</span>
+                  </figcaption>
+                )}
+              </figure>
+            )}
+
+            {/* Photo Grid / Masonry (original crisp images, zero crop or hover zoom) */}
+            <div class="gallery-items-container columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+              {sec.items.map((item) => (
+                <figure class="gallery-card group break-inside-avoid overflow-hidden rounded-xl border border-zinc-200 bg-white transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700">
+                  <a
+                    href={item.media.fullSrc}
+                    data-pswp-width={item.media.width}
+                    data-pswp-height={item.media.height}
+                    data-pswp-caption={item.caption || sec.title}
+                    class="pswp-photo-link block bg-zinc-100 dark:bg-zinc-900"
+                  >
+                    <img
+                      src={item.media.fullSrc}
+                      alt={item.caption || sec.title}
+                      width={item.media.width}
+                      height={item.media.height}
+                      loading="lazy"
+                      decoding="async"
+                      class="gallery-img block h-auto w-full"
+                    />
+                  </a>
+                  {item.caption && (
+                    <figcaption class="border-t border-zinc-100 px-3.5 py-2.5 font-mono text-[11.5px] leading-snug text-zinc-600 dark:border-zinc-800/80 dark:text-zinc-400">
+                      {item.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              ))}
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+</main>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+
+  const rootEl = document.getElementById('pswp-gallery-root');
+  if (rootEl) {
+    let currentLayout = localStorage.getItem('blog_gallery_layout') || rootEl.dataset.defaultLayout || 'masonry';
+    let currentCols = localStorage.getItem('blog_gallery_cols') || rootEl.dataset.defaultCols || '3';
+
+    function applyGalleryPreferences() {
+      const containers = rootEl!.querySelectorAll<HTMLElement>('.gallery-items-container');
+      containers.forEach((c) => {
+        c.className = 'gallery-items-container gap-4';
+        if (currentLayout === 'grid') {
+          c.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'items-start');
+          if (currentCols === '3') c.classList.add('lg:grid-cols-3');
+        } else {
+          c.classList.add('columns-1', 'sm:columns-2', 'space-y-4');
+          if (currentCols === '3') c.classList.add('lg:columns-3');
+        }
+      });
+
+      document.querySelectorAll<HTMLElement>('.gallery-layout-btn').forEach((btn) => {
+        const active = btn.dataset.galleryLayout === currentLayout;
+        btn.classList.toggle('bg-white', active);
+        btn.classList.toggle('dark:bg-zinc-800', active);
+        btn.classList.toggle('text-zinc-950', active);
+        btn.classList.toggle('dark:text-zinc-50', active);
+        btn.classList.toggle('shadow-xs', active);
+        btn.classList.toggle('text-zinc-500', !active);
+      });
+
+      document.querySelectorAll<HTMLElement>('.gallery-cols-btn').forEach((btn) => {
+        const active = btn.dataset.galleryCols === currentCols;
+        btn.classList.toggle('bg-white', active);
+        btn.classList.toggle('dark:bg-zinc-800', active);
+        btn.classList.toggle('text-zinc-950', active);
+        btn.classList.toggle('dark:text-zinc-50', active);
+        btn.classList.toggle('shadow-xs', active);
+        btn.classList.toggle('text-zinc-500', !active);
+      });
+    }
+
+    document.querySelectorAll<HTMLElement>('.gallery-layout-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        currentLayout = btn.dataset.galleryLayout || 'masonry';
+        localStorage.setItem('blog_gallery_layout', currentLayout);
+        applyGalleryPreferences();
+      });
+    });
+
+    document.querySelectorAll<HTMLElement>('.gallery-cols-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        currentCols = btn.dataset.galleryCols || '3';
+        localStorage.setItem('blog_gallery_cols', currentCols);
+        applyGalleryPreferences();
+      });
+    });
+
+    // Section filter buttons
+    const filterButtons = document.querySelectorAll<HTMLElement>('.gallery-filter-btn');
+    const sections = document.querySelectorAll<HTMLElement>('.gallery-section');
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.sectionFilter || 'all';
+        filterButtons.forEach((b) => {
+          b.dataset.active = String(b === btn);
+        });
+
+        sections.forEach((sec) => {
+          const show = target === 'all' || sec.dataset.sectionId === target;
+          sec.classList.toggle('hidden', !show);
+        });
+      });
+    });
+
+    applyGalleryPreferences();
+
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#pswp-gallery-root',
+      children: 'a.pswp-photo-link',
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 0.98,
+      padding: { top: 24, bottom: 48, left: 20, right: 20 },
+    });
+
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp?.ui?.registerElement({
+        name: 'custom-caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        html: '',
+        onInit: (el, pswp) => {
+          el.className =
+            'fixed bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/15 bg-zinc-950/80 px-4 py-1.5 font-mono text-xs text-zinc-100 backdrop-blur-md pointer-events-none';
+          pswp.on('change', () => {
+            const currEl = pswp.currSlide?.data?.element as HTMLElement | undefined;
+            const cap = currEl?.dataset.pswpCaption || '';
+            el.textContent = cap;
+            el.style.display = cap ? 'block' : 'none';
+          });
+        },
+      });
+    });
+
+    lightbox.init();
+  }
+</script>

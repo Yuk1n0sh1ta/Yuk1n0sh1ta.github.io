@@ -1,0 +1,147 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { buildAppleMusicEmbedSrc, loadMusicPage } from '@/lib/yaml-content';
+
+const music = await loadMusicPage();
+const totalAlbums = music.groups.reduce((sum, g) => sum + g.items.length, 0);
+---
+
+<BaseLayout title="频谱" description={music.description}>
+  <main class="mx-auto max-w-7xl px-2 py-8 sm:px-6 sm:py-10 lg:px-5 xl:px-8">
+    <header class="border-b border-zinc-200 pb-8 dark:border-zinc-800">
+      <p class="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+        {music.subtitle} · {totalAlbums} Picks
+      </p>
+      <div class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 class="font-serif text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">
+            {music.title}
+          </h1>
+          <p class="mt-2.5 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {music.description}
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5" role="tablist" aria-label="语种筛选">
+          <button
+            type="button"
+            data-music-filter="all"
+            data-active="true"
+            class="music-filter-btn rounded-md border px-3 py-1.5 text-xs font-medium transition-colors data-[active=true]:border-zinc-950 data-[active=true]:bg-zinc-950 data-[active=true]:text-white dark:data-[active=true]:border-zinc-100 dark:data-[active=true]:bg-zinc-100 dark:data-[active=true]:text-zinc-950 data-[active=false]:border-zinc-200 data-[active=false]:bg-white data-[active=false]:text-zinc-600 data-[active=false]:hover:border-zinc-300 data-[active=false]:hover:text-zinc-950 dark:data-[active=false]:border-zinc-800 dark:data-[active=false]:bg-zinc-950 dark:data-[active=false]:text-zinc-400 dark:data-[active=false]:hover:border-zinc-700 dark:data-[active=false]:hover:text-zinc-100"
+          >
+            全部 ({totalAlbums})
+          </button>
+          {
+            music.groups.map((g) => (
+              <button
+                type="button"
+                data-music-filter={g.id}
+                data-active="false"
+                class="music-filter-btn rounded-md border px-3 py-1.5 text-xs font-medium transition-colors data-[active=true]:border-zinc-950 data-[active=true]:bg-zinc-950 data-[active=true]:text-white dark:data-[active=true]:border-zinc-100 dark:data-[active=true]:bg-zinc-100 dark:data-[active=true]:text-zinc-950 data-[active=false]:border-zinc-200 data-[active=false]:bg-white data-[active=false]:text-zinc-600 data-[active=false]:hover:border-zinc-300 data-[active=false]:hover:text-zinc-950 dark:data-[active=false]:border-zinc-800 dark:data-[active=false]:bg-zinc-950 dark:data-[active=false]:text-zinc-400 dark:data-[active=false]:hover:border-zinc-700 dark:data-[active=false]:hover:text-zinc-100"
+              >
+                {g.title.split(' · ')[0]} ({g.items.length})
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </header>
+
+    <div class="mt-10 space-y-14">
+      {
+        music.groups.map((group) => {
+          const buckets = [
+            { label: null, items: group.items.filter((item) => !item.isSingle) },
+            { label: '单曲 · Singles', items: group.items.filter((item) => item.isSingle) },
+          ].filter((bucket) => bucket.items.length > 0);
+
+          return (
+            <section class="music-section space-y-6" data-music-group={group.id}>
+              <div class="border-b border-zinc-200 pb-3 dark:border-zinc-800">
+                <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+                  {group.overline}
+                </p>
+                <h2 class="mt-0.5 font-serif text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                  {group.title}
+                </h2>
+              </div>
+
+              {buckets.map((bucket) => (
+                <div class="space-y-3">
+                  {bucket.label && (
+                    <h3 class="font-mono text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                      {bucket.label}
+                    </h3>
+                  )}
+
+                  <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,450px),1fr))] gap-4 xl:gap-5">
+                    {bucket.items.map((item) => (
+                      <article class="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700">
+                        <div class="flex items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5 dark:border-zinc-800">
+                          <div class="min-w-0">
+                            <h4 class="truncate text-base font-semibold text-zinc-950 dark:text-zinc-50">
+                              {item.title}
+                            </h4>
+                            <p class="mt-0.5 truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                              {item.artist}
+                            </p>
+                          </div>
+                          <a
+                            href={item.appleMusicUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            class="shrink-0 rounded-md border border-zinc-200 px-2.5 py-1 font-mono text-[11px] text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+                          >
+                            Apple Music ↗
+                          </a>
+                        </div>
+
+                        <div class="w-full min-w-0 bg-[#f8f8fa] dark:bg-[#1c1c1e]">
+                          <iframe
+                            title={`${item.title} - ${item.artist}`}
+                            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                            frameborder="0"
+                            height={item.height}
+                            loading="lazy"
+                            scrolling="no"
+                            style={`width:100%;height:${item.height}px;display:block;overflow:hidden;border:0;`}
+                            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                            data-embed-base={item.embedBaseUrl}
+                            src={buildAppleMusicEmbedSrc(item.embedBaseUrl, 'light')}
+                            class="apple-music-frame"
+                          />
+                        </div>
+
+                        {item.note && (
+                          <p class="border-t border-zinc-100 px-4 py-3 text-xs leading-relaxed text-zinc-600 sm:px-5 dark:border-zinc-800 dark:text-zinc-400">
+                            {item.note}
+                          </p>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+          );
+        })
+      }
+    </div>
+  </main>
+
+  <script>
+    const filterBtns = document.querySelectorAll<HTMLElement>('.music-filter-btn');
+    const sections = document.querySelectorAll<HTMLElement>('.music-section');
+    filterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.musicFilter || 'all';
+        filterBtns.forEach((b) => {
+          b.dataset.active = String(b === btn);
+        });
+        sections.forEach((sec) => {
+          sec.classList.toggle('hidden', target !== 'all' && sec.dataset.musicGroup !== target);
+        });
+      });
+    });
+  </script>
+</BaseLayout>

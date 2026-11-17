@@ -1,0 +1,20 @@
+{
+  "autoConvertHtml": true,
+  "useMarkdownLinks": true,
+  "newLinkFormat": "relative",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "posts",
+  "attachmentFolderPath": "assets/attachments",
+  "readableLineLength": true,
+  "showLineNumber": true,
+  "strictLineBreaks": false,
+  "showUnsupportedFiles": true,
+  "spellcheckLanguages": [
+    "zh-CN",
+    "en-US",
+    "ja"
+  ],
+  "userIgnoreFilters": [
+    "templates/"
+  ]
+}

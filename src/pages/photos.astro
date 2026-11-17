@@ -1,0 +1,11 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PhotoGalleryWall from '@/components/PhotoGalleryWall.astro';
+import { loadAlbum } from '@/lib/yaml-content';
+
+const album = await loadAlbum('photos.yaml');
+---
+
+<BaseLayout title="光影" description={album.description}>
+  <PhotoGalleryWall album={album} eyebrow="Photography" />
+</BaseLayout>

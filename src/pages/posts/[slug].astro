@@ -1,0 +1,653 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleProseEnhancer from '@/components/ArticleProseEnhancer.astro';
+import { SITE } from '@/config/site';
+import {
+  estimateReadingStats,
+  extractExcerpt,
+  formatDateShort,
+  getAllPosts,
+  getPostSlug,
+  getPostTitle,
+  getPostUrl,
+  groupPostsBySeries,
+} from '@/lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
+    params: { slug: getPostSlug(post) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const allPosts = await getAllPosts();
+const seriesGroups = groupPostsBySeries(allPosts);
+const activeSeries = post.data.series
+  ? seriesGroups.find((g) => g.name === post.data.series)
+  : undefined;
+
+let prevPost: (typeof allPosts)[number] | undefined;
+let nextPost: (typeof allPosts)[number] | undefined;
+
+if (activeSeries) {
+  const idx = activeSeries.posts.findIndex((p) => p.id === post.id);
+  if (idx > 0) prevPost = activeSeries.posts[idx - 1];
+  if (idx >= 0 && idx < activeSeries.posts.length - 1) nextPost = activeSeries.posts[idx + 1];
+} else {
+  const idx = allPosts.findIndex((p) => p.id === post.id);
+  if (idx > 0) nextPost = allPosts[idx - 1]; // newer
+  if (idx >= 0 && idx < allPosts.length - 1) prevPost = allPosts[idx + 1]; // older
+}
+
+const stats = estimateReadingStats(post.body ?? '');
+const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
+const postTitle = getPostTitle(post);
+const description = extractExcerpt(post.body ?? '', post.data.summary);
+const currentSlug = getPostSlug(post);
+---
+
+<BaseLayout title={postTitle} description={description}>
+  {/* When reading a series post, embed collapsible (default-collapsed) chapter tree inside Left Sidebar */}
+  {
+    activeSeries && (
+      <Fragment slot="sidebar-context">
+        <div class="border-t border-zinc-200 pt-4 space-y-2 dark:border-zinc-800">
+          <div class="px-1">
+            <a
+              href="/series"
+              class="inline-flex items-center gap-1 font-mono text-[10.5px] text-zinc-500 transition-colors hover:text-[var(--accent)] dark:text-zinc-400"
+            >
+              ← 返回专栏总览
+            </a>
+          </div>
+
+          <details id="sidebar-series-details" class="group/series" open>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-white dark:hover:bg-zinc-900">
+              <div class="min-w-0">
+                <p class="font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--accent)]">
+                  {activeSeries.overline}
+                </p>
+                <p class="truncate font-serif text-xs font-semibold text-zinc-950 dark:text-zinc-50">
+                  {activeSeries.title} ({activeSeries.posts.length})
+                </p>
+              </div>
+              <svg class="h-3.5 w-3.5 shrink-0 text-zinc-400 transition-transform group-open/series:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m9 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+
+            <nav aria-label="专栏篇目导航" class="mt-1.5 space-y-0.5 border-l border-zinc-200 pl-2 ml-1 dark:border-zinc-800">
+              {activeSeries.posts.map((item, idx) => {
+                const isCurrent = getPostSlug(item) === currentSlug;
+                const itemTitle = getPostTitle(item);
+                return (
+                  <a
+                    href={getPostUrl(item)}
+                    data-current-chapter={isCurrent ? 'true' : undefined}
+                    title={itemTitle}
+                    class:list={[
+                      'flex items-baseline gap-2 rounded-md px-2 py-1 text-xs transition-colors',
+                      isCurrent
+                        ? 'bg-white font-semibold text-zinc-950 shadow-2xs dark:bg-zinc-900 dark:text-zinc-50'
+                        : 'text-zinc-600 hover:bg-white/70 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-100',
+                    ]}
+                  >
+                    <span class:list={['shrink-0 font-mono text-[10px]', isCurrent ? 'text-[var(--accent)]' : 'text-zinc-400']}>
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span class="truncate">{itemTitle}</span>
+                  </a>
+                );
+              })}
+            </nav>
+          </details>
+        </div>
+      </Fragment>
+    )
+  }
+
+  {
+    activeSeries && (
+      <Fragment slot="mobile-context">
+        <details class="group/series border-t border-zinc-200 pt-3 dark:border-zinc-800" open>
+          <summary class="flex cursor-pointer list-none items-center justify-between rounded-md px-2 py-1 text-xs font-semibold text-[var(--accent)]">
+            <span class="truncate">{activeSeries.title} ({activeSeries.posts.length})</span>
+            <svg class="h-3.5 w-3.5 shrink-0 transition-transform group-open/series:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <div class="mt-1.5 space-y-0.5 border-l border-zinc-200 pl-2 ml-2 dark:border-zinc-800">
+            {activeSeries.posts.map((item, idx) => {
+              const isCurrent = getPostSlug(item) === currentSlug;
+              const itemTitle = getPostTitle(item);
+              return (
+                <a
+                  href={getPostUrl(item)}
+                  class:list={[
+                    'block truncate rounded px-2 py-1 text-xs',
+                    isCurrent
+                      ? 'bg-zinc-100 font-semibold text-zinc-950 dark:bg-zinc-900 dark:text-zinc-50'
+                      : 'text-zinc-600 dark:text-zinc-400',
+                  ]}
+                >
+                  {idx + 1}. {itemTitle}
+                </a>
+              );
+            })}
+          </div>
+        </details>
+      </Fragment>
+    )
+  }
+
+  <div class="mx-auto max-w-[1160px] px-4 sm:px-8 lg:px-10 xl:flex xl:gap-10">
+    {/* Center Reading Column */}
+    <main class="min-w-0 flex-1 py-6 sm:py-8 lg:py-10">
+      {/* Sticky Floating Reading Toolbar for Mobile & < xl Viewports (Outline + Font Size follow scroll) */}
+      <div
+        data-pagefind-ignore
+        class="sticky top-14 lg:top-0 z-20 -mx-4 sm:-mx-8 mb-6 border-b border-zinc-200 bg-white/95 px-4 sm:px-8 py-2 backdrop-blur-md xl:hidden dark:border-zinc-800 dark:bg-zinc-950/95"
+      >
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex min-w-0 items-center gap-1.5">
+            {
+              tocHeadings.length > 0 && (
+                <button
+                  id="sticky-toc-toggle"
+                  type="button"
+                  aria-expanded="false"
+                  class="inline-flex min-w-0 max-w-[48vw] items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-700 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+                >
+                  <svg class="h-3.5 w-3.5 shrink-0 text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h10M4 18h14" stroke-linecap="round" />
+                  </svg>
+                  <span id="sticky-toc-current" class="truncate font-medium">
+                    大纲 ({tocHeadings.length})
+                  </span>
+                </button>
+              )
+            }
+
+            {
+              activeSeries && (
+                <button
+                  id="mobile-series-drawer-btn"
+                  type="button"
+                  aria-expanded="false"
+                  class="inline-flex shrink-0 items-center gap-1 rounded-md border border-zinc-200 px-2 py-1 font-mono text-[11px] text-zinc-600 dark:border-zinc-800 dark:text-zinc-400"
+                >
+                  <span>目录 ({activeSeries.posts.length})</span>
+                </button>
+              )
+            }
+          </div>
+
+          <div class="flex shrink-0 items-center gap-1.5">
+            <div class="inline-flex rounded-lg bg-zinc-100 p-0.5 text-[11px] dark:bg-zinc-900" role="group" aria-label="正文字号">
+              <button type="button" data-read-font="sm" class="read-font-btn rounded-md px-2 py-1 font-medium">小</button>
+              <button type="button" data-read-font="md" class="read-font-btn rounded-md px-2 py-1 font-medium">中</button>
+              <button type="button" data-read-font="lg" class="read-font-btn rounded-md px-2 py-1 font-medium">大</button>
+            </div>
+            <button
+              type="button"
+              data-scroll-top
+              aria-label="回到顶部"
+              title="回到顶部"
+              class="inline-flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-white font-mono text-xs text-zinc-600 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+            >
+              ↑
+            </button>
+          </div>
+        </div>
+
+        {/* Dropdown Sticky Outline Drawer (< xl) */}
+        {
+          tocHeadings.length > 0 && (
+            <div
+              id="sticky-toc-drawer"
+              class="hidden mt-2.5 max-h-64 overflow-y-auto rounded-xl border border-zinc-200 bg-white p-2.5 shadow-md thin-scrollbar dark:border-zinc-800 dark:bg-zinc-950"
+            >
+              <p class="px-2 pb-1.5 font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-400">
+                本文大纲 · Outline ({tocHeadings.length})
+              </p>
+              <nav aria-label="移动端文章大纲" class="space-y-0.5">
+                {tocHeadings.map((h) => (
+                  <a
+                    href={`#${h.slug}`}
+                    data-toc-link
+                    data-heading-slug={h.slug}
+                    data-heading-text={h.text}
+                    style={`padding-left: ${0.5 + (h.depth - 1) * 0.75}rem`}
+                    class="sticky-toc-link block truncate rounded-md border-l-2 border-transparent py-1 pr-2 text-xs text-zinc-600 transition-colors hover:text-[var(--accent)] data-[active=true]:border-[var(--accent)] data-[active=true]:bg-zinc-50 data-[active=true]:font-semibold data-[active=true]:text-[var(--accent)] dark:text-zinc-400 dark:data-[active=true]:bg-zinc-900"
+                  >
+                    {h.text}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          )
+        }
+
+        {/* Dropdown Series Chapters Drawer (< xl) */}
+        {
+          activeSeries && (
+            <div
+              id="mobile-series-drawer"
+              class="hidden mt-2.5 max-h-64 overflow-y-auto rounded-xl border border-zinc-200 bg-white p-3 shadow-md thin-scrollbar dark:border-zinc-800 dark:bg-zinc-950"
+            >
+              <p class="mb-2 font-mono text-xs font-semibold text-[var(--accent)]">
+                {activeSeries.title} · 全部章节
+              </p>
+              <div class="space-y-1">
+                {activeSeries.posts.map((item, idx) => {
+                  const itemTitle = getPostTitle(item);
+                  return (
+                    <a
+                      href={getPostUrl(item)}
+                      class:list={[
+                        'block truncate rounded px-2 py-1 text-xs',
+                        getPostSlug(item) === currentSlug
+                          ? 'bg-zinc-100 font-semibold text-zinc-950 dark:bg-zinc-800 dark:text-zinc-50'
+                          : 'text-zinc-600 dark:text-zinc-400',
+                      ]}
+                    >
+                      {idx + 1}. {itemTitle}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )
+        }
+      </div>
+
+      <article class="mx-auto max-w-3xl" data-pagefind-body>
+        {/* Top Breadcrumb */}
+        <nav data-pagefind-ignore aria-label="面包屑" class="flex flex-wrap items-center gap-1.5 border-b border-zinc-200 pb-3.5 font-mono text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+          <a href="/" class="hover:text-zinc-950 dark:hover:text-zinc-100">首页</a>
+          <span>/</span>
+          {
+            activeSeries ? (
+              <a href={`/series#series-${encodeURIComponent(activeSeries.name)}`} class="hover:text-zinc-950 dark:hover:text-zinc-100">
+                {activeSeries.title}
+              </a>
+            ) : (
+              <a href={`/posts?category=${encodeURIComponent(post.data.category)}`} class="hover:text-zinc-950 dark:hover:text-zinc-100">
+                {post.data.category}
+              </a>
+            )
+          }
+        </nav>
+
+        {/* Article Header */}
+        <header class="mt-6 space-y-3">
+          <div data-pagefind-ignore class="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-zinc-500 dark:text-zinc-400">
+            <span class="font-semibold text-[var(--accent)]">{post.data.category}</span>
+            <span>·</span>
+            <time data-pagefind-meta="date">{formatDateShort(post.data.date)}</time>
+            <span>·</span>
+            <span>{stats.wordCount} 字</span>
+            <span>·</span>
+            <span>约 {stats.minutes} 分钟</span>
+          </div>
+
+          <h1
+            data-pagefind-meta="title"
+            class="font-serif text-2xl font-semibold tracking-tight text-zinc-950 sm:text-3xl lg:text-[34px] lg:leading-[1.22] dark:text-zinc-50"
+          >
+            {postTitle}
+          </h1>
+
+          {
+            post.data.tags.length > 0 && (
+              <div data-pagefind-ignore class="flex flex-wrap gap-1.5 pt-1">
+                {post.data.tags.map((tag) => (
+                  <a
+                    href={`/posts?tag=${encodeURIComponent(tag)}`}
+                    class="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 font-mono text-[11px] text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+                  >
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            )
+          }
+        </header>
+
+        {/* Article Body */}
+        <div class="editorial-prose mt-8">
+          <Content />
+        </div>
+
+        {/* Bottom Prev / Next Navigation Cards */}
+        {
+          (prevPost || nextPost) && (
+            <nav
+              data-pagefind-ignore
+              aria-label="上下篇导航"
+              class="mt-14 grid grid-cols-1 gap-4 border-t border-zinc-200 pt-8 sm:grid-cols-2 dark:border-zinc-800"
+            >
+              {prevPost ? (
+                <a
+                  href={getPostUrl(prevPost)}
+                  class="group rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700"
+                >
+                  <span class="font-mono text-[11px] text-zinc-400">
+                    ← {activeSeries ? '上一节' : '上一篇'}
+                  </span>
+                  <p class="mt-1 truncate text-sm font-semibold text-zinc-900 group-hover:text-[var(--accent)] transition-colors dark:text-zinc-100">
+                    {getPostTitle(prevPost)}
+                  </p>
+                </a>
+              ) : (
+                <div />
+              )}
+
+              {nextPost ? (
+                <a
+                  href={getPostUrl(nextPost)}
+                  class="group rounded-xl border border-zinc-200 bg-white p-4 text-right transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700"
+                >
+                  <span class="font-mono text-[11px] text-zinc-400">
+                    {activeSeries ? '下一节' : '下一篇'} →
+                  </span>
+                  <p class="mt-1 truncate text-sm font-semibold text-zinc-900 group-hover:text-[var(--accent)] transition-colors dark:text-zinc-100">
+                    {getPostTitle(nextPost)}
+                  </p>
+                </a>
+              ) : (
+                <div />
+              )}
+            </nav>
+          )
+        }
+
+        {/* Optional Giscus Comments (enabled via src/config/site.ts) */}
+        {
+          SITE.comments.enabled && SITE.comments.repoId && (
+            <section class="mt-12 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+              <div id="giscus-container" />
+              <script
+                is:inline
+                define:vars={{
+                  repo: SITE.comments.repo,
+                  repoId: SITE.comments.repoId,
+                  category: SITE.comments.category,
+                  categoryId: SITE.comments.categoryId,
+                  mapping: SITE.comments.mapping,
+                  lang: SITE.comments.lang,
+                }}
+              >
+                (function () {
+                  var container = document.getElementById('giscus-container');
+                  if (!container) return;
+                  var isDark = document.documentElement.classList.contains('dark');
+                  var s = document.createElement('script');
+                  s.src = 'https://giscus.app/client.js';
+                  s.setAttribute('data-repo', repo);
+                  s.setAttribute('data-repo-id', repoId);
+                  s.setAttribute('data-category', category);
+                  s.setAttribute('data-category-id', categoryId);
+                  s.setAttribute('data-mapping', mapping);
+                  s.setAttribute('data-strict', '0');
+                  s.setAttribute('data-reactions-enabled', '1');
+                  s.setAttribute('data-emit-metadata', '0');
+                  s.setAttribute('data-input-position', 'top');
+                  s.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                  s.setAttribute('data-lang', lang);
+                  s.crossOrigin = 'anonymous';
+                  s.async = true;
+                  container.appendChild(s);
+                })();
+              </script>
+            </section>
+          )
+        }
+      </article>
+    </main>
+
+    {/* Desktop Right Sticky Rail: Moving Reading Controls + Scroll-Spy Outline */}
+    <aside
+      data-pagefind-ignore
+      aria-label="文章导航与阅读控制"
+      class="hidden xl:flex xl:sticky xl:top-8 xl:self-start w-60 2xl:w-64 shrink-0 max-h-[calc(100vh-4rem)] mt-10 flex-col gap-4"
+    >
+        {/* Sticky Reading Settings Card */}
+        <div class="shrink-0 rounded-xl border border-zinc-200 bg-zinc-50/70 p-3.5 space-y-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              正文字号 · Size
+            </span>
+            <span id="read-progress-pct" class="font-mono text-[10.5px] text-zinc-400 tabular-nums">
+              0%
+            </span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1 rounded-lg bg-zinc-200/70 p-1 text-xs dark:bg-zinc-950" role="group" aria-label="随动正文字号调整">
+            <button type="button" data-read-font="sm" class="read-font-btn rounded-md py-1 font-medium transition-colors">小</button>
+            <button type="button" data-read-font="md" class="read-font-btn rounded-md py-1 font-medium transition-colors">中</button>
+            <button type="button" data-read-font="lg" class="read-font-btn rounded-md py-1 font-medium transition-colors">大</button>
+          </div>
+
+          <div class="flex items-center justify-between gap-2 pt-0.5 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+            <button
+              type="button"
+              data-theme-toggle
+              class="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+            >
+              <span class="dark:hidden">☾ 夜间</span>
+              <span class="hidden dark:inline">☀ 浅色</span>
+            </button>
+            <button
+              type="button"
+              data-scroll-top
+              class="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300"
+            >
+              ↑ 顶部
+            </button>
+          </div>
+        </div>
+
+        {/* Sticky Scroll-Spy Outline Card */}
+        {
+          tocHeadings.length > 0 && (
+            <div class="min-h-0 flex flex-1 flex-col rounded-xl border border-zinc-200 bg-white/80 p-3.5 dark:border-zinc-800 dark:bg-zinc-950/80">
+              <div class="mb-2.5 flex shrink-0 items-center justify-between">
+                <span class="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                  本文大纲 · Outline
+                </span>
+                <span class="font-mono text-[10.5px] text-zinc-400">
+                  {tocHeadings.length}
+                </span>
+              </div>
+              <nav
+                id="desktop-toc-nav"
+                aria-label="文章大纲"
+                class="min-h-0 flex-1 overflow-y-auto space-y-0.5 border-l border-zinc-200 pr-1 thin-scrollbar dark:border-zinc-800"
+              >
+                {tocHeadings.map((h) => (
+                  <a
+                    href={`#${h.slug}`}
+                    data-toc-link
+                    data-heading-slug={h.slug}
+                    data-heading-text={h.text}
+                    style={`padding-left: ${0.65 + (h.depth - 1) * 0.7}rem`}
+                    class="desktop-toc-link -ml-[1px] block truncate border-l-2 border-transparent py-1 pr-2 text-xs text-zinc-600 transition-colors hover:text-[var(--accent)] data-[active=true]:border-[var(--accent)] data-[active=true]:font-semibold data-[active=true]:text-[var(--accent)] dark:text-zinc-400"
+                    title={h.text}
+                  >
+                    {h.text}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          )
+        }
+    </aside>
+  </div>
+
+  <ArticleProseEnhancer />
+
+  <script>
+    const root = document.documentElement;
+    const mobileSeriesBtn = document.getElementById('mobile-series-drawer-btn');
+    const mobileSeriesDrawer = document.getElementById('mobile-series-drawer');
+    const stickyTocBtn = document.getElementById('sticky-toc-toggle');
+    const stickyTocDrawer = document.getElementById('sticky-toc-drawer');
+    const stickyTocCurrent = document.getElementById('sticky-toc-current');
+    const progressEl = document.getElementById('read-progress-pct');
+    const desktopTocNav = document.getElementById('desktop-toc-nav');
+
+    // Keep current series chapter visible inside left sidebar scroll box when opened
+    function scrollCurrentChapterIntoView() {
+      const currentChapterEl = document.querySelector<HTMLElement>('[data-current-chapter="true"]');
+      const sidebarScrollBox = currentChapterEl?.closest('.overflow-y-auto') as HTMLElement | null;
+      if (currentChapterEl && sidebarScrollBox) {
+        const targetTop = currentChapterEl.offsetTop - sidebarScrollBox.clientHeight / 2;
+        if (targetTop > 0) sidebarScrollBox.scrollTop = targetTop;
+      }
+    }
+    const sidebarSeriesDetails = document.getElementById('sidebar-series-details') as HTMLDetailsElement | null;
+    sidebarSeriesDetails?.addEventListener('toggle', () => {
+      if (sidebarSeriesDetails.open) scrollCurrentChapterIntoView();
+    });
+    if (sidebarSeriesDetails?.open) scrollCurrentChapterIntoView();
+
+    mobileSeriesBtn?.addEventListener('click', () => {
+      stickyTocDrawer?.classList.add('hidden');
+      stickyTocBtn?.setAttribute('aria-expanded', 'false');
+      const isOpen = !mobileSeriesDrawer?.classList.contains('hidden');
+      mobileSeriesDrawer?.classList.toggle('hidden', isOpen);
+      mobileSeriesBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    stickyTocBtn?.addEventListener('click', () => {
+      mobileSeriesDrawer?.classList.add('hidden');
+      mobileSeriesBtn?.setAttribute('aria-expanded', 'false');
+      const isOpen = !stickyTocDrawer?.classList.contains('hidden');
+      stickyTocDrawer?.classList.toggle('hidden', isOpen);
+      stickyTocBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.querySelectorAll('.sticky-toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        stickyTocDrawer?.classList.add('hidden');
+        stickyTocBtn?.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-scroll-top]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    function syncReadFontBtns() {
+      const size = root.getAttribute('data-font-size') || 'md';
+      document.querySelectorAll<HTMLElement>('.read-font-btn').forEach((btn) => {
+        const active = btn.dataset.readFont === size;
+        btn.classList.toggle('bg-white', active);
+        btn.classList.toggle('dark:bg-zinc-800', active);
+        btn.classList.toggle('text-zinc-950', active);
+        btn.classList.toggle('dark:text-zinc-50', active);
+        btn.classList.toggle('shadow-xs', active);
+        btn.classList.toggle('text-zinc-500', !active);
+      });
+    }
+
+    document.querySelectorAll<HTMLElement>('.read-font-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const size = btn.dataset.readFont || 'md';
+        root.setAttribute('data-font-size', size);
+        localStorage.setItem('blog_fontsize', size);
+        syncReadFontBtns();
+        window.dispatchEvent(new CustomEvent('blog-fontsize-change', { detail: { size } }));
+      });
+    });
+
+    window.addEventListener('blog-fontsize-change', syncReadFontBtns);
+    syncReadFontBtns();
+
+    // Scroll-spy for Outline & reading progress percentage
+    const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+    const articleBody = document.querySelector('.editorial-prose');
+    const headingElements = Array.from(
+      document.querySelectorAll<HTMLElement>('.editorial-prose h1[id], .editorial-prose h2[id], .editorial-prose h3[id]')
+    );
+
+    let lastActiveSlug = '';
+    let rafPending = false;
+
+    function updateReadingState() {
+      rafPending = false;
+
+      // 1. Progress %
+      if (progressEl && articleBody) {
+        const rect = articleBody.getBoundingClientRect();
+        const totalScrollable = Math.max(1, articleBody.scrollHeight - window.innerHeight * 0.5);
+        const passed = Math.max(0, -rect.top + window.innerHeight * 0.25);
+        const pct = Math.min(100, Math.max(0, Math.round((passed / totalScrollable) * 100)));
+        progressEl.textContent = `${pct}%`;
+      }
+
+      if (headingElements.length === 0 || tocLinks.length === 0) return;
+
+      // 2. Determine active heading based on viewport position
+      const threshold = window.innerWidth >= 1280 ? 110 : 160;
+      let active = headingElements[0];
+
+      const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 24;
+      if (atBottom) {
+        active = headingElements[headingElements.length - 1];
+      } else {
+        for (const h of headingElements) {
+          if (h.getBoundingClientRect().top <= threshold) {
+            active = h;
+          } else {
+            break;
+          }
+        }
+      }
+
+      const activeSlug = active.id;
+      if (activeSlug === lastActiveSlug) return;
+      lastActiveSlug = activeSlug;
+
+      let activeTitle = '';
+      tocLinks.forEach((link) => {
+        const isCurrent = link.dataset.headingSlug === activeSlug;
+        link.setAttribute('data-active', String(isCurrent));
+        if (isCurrent) {
+          activeTitle = link.dataset.headingText || link.textContent?.trim() || '';
+          if (desktopTocNav && link.classList.contains('desktop-toc-link')) {
+            const linkTop = link.offsetTop - desktopTocNav.offsetTop;
+            const viewTop = desktopTocNav.scrollTop;
+            const viewBottom = viewTop + desktopTocNav.clientHeight;
+            if (linkTop < viewTop + 16 || linkTop > viewBottom - 36) {
+              desktopTocNav.scrollTop = Math.max(0, linkTop - desktopTocNav.clientHeight / 3);
+            }
+          }
+        }
+      });
+
+      if (stickyTocCurrent && activeTitle) {
+        stickyTocCurrent.textContent = activeTitle;
+      }
+    }
+
+    function scheduleUpdate() {
+      if (!rafPending) {
+        rafPending = true;
+        window.requestAnimationFrame(updateReadingState);
+      }
+    }
+
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate, { passive: true });
+    updateReadingState();
+  </script>
+</BaseLayout>

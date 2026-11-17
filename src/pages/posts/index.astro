@@ -1,0 +1,359 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/config/site';
+import {
+  estimateReadingStats,
+  extractExcerpt,
+  formatDateShort,
+  getAllPosts,
+  getPostTitle,
+  getPostUrl,
+} from '@/lib/posts';
+
+const posts = await getAllPosts();
+
+const categoryMap = new Map<string, number>();
+const tagMap = new Map<string, number>();
+const yearMap = new Map<string, number>();
+
+const enriched = posts.map((post) => {
+  const cat = post.data.category || '未分类';
+  categoryMap.set(cat, (categoryMap.get(cat) ?? 0) + 1);
+  const year = String(post.data.date.getUTCFullYear());
+  yearMap.set(year, (yearMap.get(year) ?? 0) + 1);
+  for (const t of post.data.tags) {
+    tagMap.set(t, (tagMap.get(t) ?? 0) + 1);
+  }
+  return {
+    title: getPostTitle(post),
+    url: getPostUrl(post),
+    date: formatDateShort(post.data.date),
+    year,
+    category: cat,
+    series: post.data.series ?? '',
+    tags: post.data.tags,
+    excerpt: extractExcerpt(post.body ?? '', post.data.summary),
+    stats: estimateReadingStats(post.body ?? ''),
+  };
+});
+
+const categories = Array.from(categoryMap.entries()).sort((a, b) => b[1] - a[1]);
+const tags = Array.from(tagMap.entries()).sort((a, b) => b[1] - a[1]);
+const years = Array.from(yearMap.entries()).sort((a, b) => Number(b[0]) - Number(a[0]));
+---
+
+<BaseLayout title="文章归档" description="按时间、分类与标签浏览全部文章与学习笔记。">
+  <main class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+    <header class="border-b border-zinc-200 pb-8 dark:border-zinc-800">
+      <p class="font-mono text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
+        Archive · {posts.length} Articles
+      </p>
+      <div class="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 class="font-serif text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-zinc-50">
+            全部文章
+          </h1>
+          <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            支持按分类、年份、标签与关键词实时筛选，或切换为紧凑目录视图浏览。
+          </p>
+        </div>
+
+        <div class="inline-flex self-start rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900">
+          <button type="button" data-archive-view="cards" class="archive-view-btn rounded-md px-2.5 py-1 text-xs font-medium">
+            摘要卡片
+          </button>
+          <button type="button" data-archive-view="compact" class="archive-view-btn rounded-md px-2.5 py-1 text-xs font-medium">
+            紧凑目录
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="mt-6 space-y-3">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input
+            id="archive-filter-input"
+            type="search"
+            placeholder="在当前页面筛选标题、专栏或标签…"
+            class="w-full sm:max-w-xs rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-950 placeholder:text-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-600"
+          />
+
+          <!-- Category chips -->
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-filter-cat="all" class="archive-cat-btn rounded-md border px-2.5 py-1 text-xs font-medium">
+              全部分类
+            </button>
+            {
+              categories.map(([c, count]) => (
+                <button type="button" data-filter-cat={c} class="archive-cat-btn rounded-md border px-2.5 py-1 text-xs font-medium">
+                  {c} ({count})
+                </button>
+              ))
+            }
+          </div>
+
+          <!-- Year select -->
+          <select
+            id="archive-year-select"
+            aria-label="按年份筛选"
+            class="rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 font-mono text-xs text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
+          >
+            <option value="all">全部年份</option>
+            {years.map(([y, count]) => <option value={y}>{y} ({count})</option>)}
+          </select>
+        </div>
+
+        <!-- Tag pills -->
+        {
+          tags.length > 0 && (
+            <div class="flex flex-wrap items-center gap-1.5 pt-1">
+              <span class="font-mono text-[11px] text-zinc-400 mr-1">标签:</span>
+              <button type="button" data-filter-tag="all" class="archive-tag-btn rounded-md border px-2 py-0.5 font-mono text-[11px]">
+                全部
+              </button>
+              {tags.map(([t, count]) => (
+                <button type="button" data-filter-tag={t} class="archive-tag-btn rounded-md border px-2 py-0.5 font-mono text-[11px]">
+                  #{t} ({count})
+                </button>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="mt-4 flex items-center justify-between font-mono text-xs text-zinc-500 dark:text-zinc-400">
+      <span id="archive-count-label">显示 {posts.length} 篇文章</span>
+      <button id="archive-reset-btn" type="button" class="hidden text-[var(--accent)] hover:underline">
+        清除筛选条件
+      </button>
+    </div>
+
+    <!-- Cards Container -->
+    <div id="archive-cards" data-default-view={SITE.appearance.defaultListView} class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+      {
+        enriched.map((post) => (
+          <article
+            data-archive-item
+            data-title={post.title.toLowerCase()}
+            data-cat={post.category}
+            data-year={post.year}
+            data-series={post.series.toLowerCase()}
+            data-tags={post.tags.join(',').toLowerCase()}
+            class="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900/40 dark:hover:border-zinc-700"
+          >
+            <div>
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+                <span class="font-semibold text-[var(--accent)]">{post.category}</span>
+                <span>·</span>
+                <time>{post.date}</time>
+                <span>·</span>
+                <span>{post.stats.wordCount} 字</span>
+                {post.series && (
+                  <>
+                    <span>·</span>
+                    <span class="text-zinc-700 dark:text-zinc-300">{post.series}</span>
+                  </>
+                )}
+              </div>
+              <h2 class="mt-2 text-[17px] font-semibold tracking-tight text-zinc-950 dark:text-zinc-50">
+                <a href={post.url} class="hover:text-[var(--accent)] transition-colors">
+                  {post.title}
+                </a>
+              </h2>
+              {post.excerpt && (
+                <p class="mt-2 line-clamp-2 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  {post.excerpt}
+                </p>
+              )}
+            </div>
+
+            {post.tags.length > 0 && (
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                {post.tags.map((t) => (
+                  <button
+                    type="button"
+                    data-quick-tag={t}
+                    class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-[11px] text-zinc-600 hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+                  >
+                    #{t}
+                  </button>
+                ))}
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- Compact List Container -->
+    <div
+      id="archive-compact"
+      class="hidden mt-5 overflow-hidden rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/40 dark:divide-zinc-800/80"
+    >
+      {
+        enriched.map((post) => (
+          <a
+            href={post.url}
+            data-archive-row
+            data-title={post.title.toLowerCase()}
+            data-cat={post.category}
+            data-year={post.year}
+            data-series={post.series.toLowerCase()}
+            data-tags={post.tags.join(',').toLowerCase()}
+            class="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-zinc-50 sm:flex-row sm:items-center sm:justify-between sm:gap-4 dark:hover:bg-zinc-900/80"
+          >
+            <div class="flex min-w-0 items-baseline gap-3">
+              <span class="shrink-0 font-mono text-xs text-zinc-400 tabular-nums">{post.date}</span>
+              <span class="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{post.title}</span>
+            </div>
+            <div class="flex shrink-0 items-center gap-2 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+              <span class="text-[var(--accent)]">{post.category}</span>
+              {post.series && <span class="hidden md:inline rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-800">{post.series}</span>}
+              <span class="tabular-nums">{post.stats.minutes}m</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </main>
+
+  <script>
+    const cardsWrap = document.getElementById('archive-cards');
+    const compactWrap = document.getElementById('archive-compact');
+    const searchInput = document.getElementById('archive-filter-input') as HTMLInputElement | null;
+    const yearSelect = document.getElementById('archive-year-select') as HTMLSelectElement | null;
+    const countLabel = document.getElementById('archive-count-label');
+    const resetBtn = document.getElementById('archive-reset-btn');
+
+    if (cardsWrap && compactWrap) {
+      const params = new URLSearchParams(window.location.search);
+      let activeCat = params.get('category') || 'all';
+      let activeTag = params.get('tag') || 'all';
+      let activeYear = params.get('year') || 'all';
+      let queryText = params.get('q') || '';
+      let viewMode = localStorage.getItem('blog_archive_view') || cardsWrap.dataset.defaultView || 'cards';
+
+      if (searchInput && queryText) searchInput.value = queryText;
+      if (yearSelect && activeYear) yearSelect.value = activeYear;
+
+      function styleButton(btn: HTMLElement, active: boolean) {
+        btn.classList.toggle('border-zinc-950', active);
+        btn.classList.toggle('bg-zinc-950', active);
+        btn.classList.toggle('text-white', active);
+        btn.classList.toggle('dark:border-zinc-100', active);
+        btn.classList.toggle('dark:bg-zinc-100', active);
+        btn.classList.toggle('dark:text-zinc-950', active);
+        btn.classList.toggle('border-zinc-200', !active);
+        btn.classList.toggle('bg-white', !active);
+        btn.classList.toggle('text-zinc-600', !active);
+        btn.classList.toggle('dark:border-zinc-800', !active);
+        btn.classList.toggle('dark:bg-zinc-950', !active);
+        btn.classList.toggle('dark:text-zinc-400', !active);
+      }
+
+      function applyFilters() {
+        const q = queryText.trim().toLowerCase();
+        const tagLower = activeTag.toLowerCase();
+
+        document.querySelectorAll<HTMLElement>('.archive-cat-btn').forEach((b) => {
+          styleButton(b, b.dataset.filterCat === activeCat);
+        });
+        document.querySelectorAll<HTMLElement>('.archive-tag-btn').forEach((b) => {
+          styleButton(b, b.dataset.filterTag === activeTag);
+        });
+        document.querySelectorAll<HTMLElement>('.archive-view-btn').forEach((b) => {
+          const active = b.dataset.archiveView === viewMode;
+          b.classList.toggle('bg-white', active);
+          b.classList.toggle('dark:bg-zinc-800', active);
+          b.classList.toggle('text-zinc-950', active);
+          b.classList.toggle('dark:text-zinc-50', active);
+          b.classList.toggle('shadow-xs', active);
+          b.classList.toggle('text-zinc-500', !active);
+        });
+
+        cardsWrap!.classList.toggle('hidden', viewMode !== 'cards');
+        compactWrap!.classList.toggle('hidden', viewMode !== 'compact');
+
+        const matches = (el: HTMLElement) => {
+          const catOk = activeCat === 'all' || el.dataset.cat === activeCat;
+          const yearOk = activeYear === 'all' || el.dataset.year === activeYear;
+          const tags = (el.dataset.tags || '').split(',').filter(Boolean);
+          const tagOk = activeTag === 'all' || tags.includes(tagLower);
+          const qOk =
+            !q ||
+            (el.dataset.title || '').includes(q) ||
+            (el.dataset.series || '').includes(q) ||
+            (el.dataset.tags || '').includes(q);
+          return catOk && yearOk && tagOk && qOk;
+        };
+
+        let visibleCount = 0;
+        cardsWrap!.querySelectorAll<HTMLElement>('[data-archive-item]').forEach((card) => {
+          const ok = matches(card);
+          if (ok) visibleCount++;
+          card.classList.toggle('hidden', !ok);
+        });
+        compactWrap!.querySelectorAll<HTMLElement>('[data-archive-row]').forEach((row) => {
+          row.classList.toggle('hidden', !matches(row));
+        });
+
+        if (countLabel) countLabel.textContent = `显示 ${visibleCount} 篇文章`;
+        const hasFilter = activeCat !== 'all' || activeTag !== 'all' || activeYear !== 'all' || q.length > 0;
+        resetBtn?.classList.toggle('hidden', !hasFilter);
+      }
+
+      document.querySelectorAll<HTMLElement>('.archive-cat-btn').forEach((b) => {
+        b.addEventListener('click', () => {
+          activeCat = b.dataset.filterCat || 'all';
+          applyFilters();
+        });
+      });
+
+      document.querySelectorAll<HTMLElement>('.archive-tag-btn').forEach((b) => {
+        b.addEventListener('click', () => {
+          activeTag = b.dataset.filterTag || 'all';
+          applyFilters();
+        });
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-quick-tag]').forEach((b) => {
+        b.addEventListener('click', () => {
+          activeTag = b.dataset.quickTag || 'all';
+          applyFilters();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      document.querySelectorAll<HTMLElement>('.archive-view-btn').forEach((b) => {
+        b.addEventListener('click', () => {
+          viewMode = b.dataset.archiveView || 'cards';
+          localStorage.setItem('blog_archive_view', viewMode);
+          applyFilters();
+        });
+      });
+
+      yearSelect?.addEventListener('change', () => {
+        activeYear = yearSelect.value;
+        applyFilters();
+      });
+
+      searchInput?.addEventListener('input', () => {
+        queryText = searchInput.value;
+        applyFilters();
+      });
+
+      resetBtn?.addEventListener('click', () => {
+        activeCat = 'all';
+        activeTag = 'all';
+        activeYear = 'all';
+        queryText = '';
+        if (searchInput) searchInput.value = '';
+        if (yearSelect) yearSelect.value = 'all';
+        applyFilters();
+      });
+
+      applyFilters();
+    }
+  </script>
+</BaseLayout>

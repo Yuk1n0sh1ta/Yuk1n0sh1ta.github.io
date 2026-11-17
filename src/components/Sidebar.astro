@@ -1,0 +1,470 @@
+---
+import { SITE } from '@/config/site';
+
+interface Props {
+  currentPath: string;
+  siteTitle?: string;
+  authorLabel?: string;
+}
+
+const {
+  currentPath,
+  siteTitle = SITE.title,
+  authorLabel = `${SITE.author} · Digital Garden`,
+} = Astro.props;
+const navItems = SITE.nav.filter((item) => item.enabled);
+
+function isActive(href: string, matchPrefix?: string) {
+  if (href === '/') return currentPath === '/' || currentPath === '';
+  const target = matchPrefix ?? href;
+  return currentPath === target || currentPath.startsWith(target + '/');
+}
+
+const ICONS: Record<string, string> = {
+  '/': '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5.5v-6.5h-5V21H4a1 1 0 0 1-1-1v-9.5Z" />',
+  '/posts': '<path d="M5 4.5h14M5 9.5h14M5 14.5h9M5 19.5h6" stroke-linecap="round" />',
+  '/series': '<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13ZM13 4h5.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13V4Z" />',
+  '/photos': '<rect x="3" y="5" width="18" height="14" rx="2" /><circle cx="8.5" cy="10" r="1.5" /><path d="m21 16-5-5-4 4-2-2-7 6" stroke-linecap="round" stroke-linejoin="round" />',
+  '/gallery': '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.9 1.6-1.9-.2-.8.4-1.6 1.2-1.6h2A4.2 4.2 0 0 0 21 13.3C21 7.6 17 3 12 3Z" /><circle cx="7.5" cy="10.5" r="1" fill="currentColor" /><circle cx="10.5" cy="7.5" r="1" fill="currentColor" /><circle cx="14.5" cy="7.5" r="1" fill="currentColor" />',
+  '/music': '<path d="M9 18V6l11-2v12" stroke-linecap="round" stroke-linejoin="round" /><circle cx="6.5" cy="18" r="2.5" /><circle cx="17.5" cy="16" r="2.5" />',
+  '/about': '<circle cx="12" cy="8" r="3.5" /><path d="M5 20a7 7 0 0 1 14 0" stroke-linecap="round" />',
+};
+
+const SOCIAL_ICONS: Record<string, string> = {
+  github: '<path fill="currentColor" stroke="none" d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.38-3.37-1.38-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.85.09-.66.35-1.12.63-1.37-2.22-.26-4.56-1.14-4.56-5.08 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.7.12 2.5.35 1.91-1.32 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.64 1.03 2.76 0 3.95-2.34 4.82-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z" />',
+  bilibili: '<path d="m7.5 4 2.5 2.5m6.5-2.5L14 6.5M5 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke-linecap="round" stroke-linejoin="round" /><path d="M9 11.5v2M15 11.5v2" stroke-linecap="round" />',
+  rss: '<path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke-linecap="round" /><circle cx="5.5" cy="18.5" r="1.5" fill="currentColor" stroke="none" />',
+};
+---
+
+<!-- Mobile Top Utility Bar (< lg only; desktop uses Left Sidebar with zero top navbar) -->
+<header class="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-zinc-200 bg-white/95 px-4 backdrop-blur-md lg:hidden dark:border-zinc-800 dark:bg-zinc-950/95">
+  <div class="flex items-center gap-2.5 min-w-0">
+    <button
+      id="mobile-menu-toggle"
+      type="button"
+      aria-label="打开导航侧栏"
+      aria-expanded="false"
+      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-zinc-200 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900"
+    >
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+      </svg>
+    </button>
+
+    <a href="/" class="flex items-center gap-2 min-w-0 text-zinc-950 dark:text-zinc-50">
+      <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-zinc-900 bg-black p-1 dark:border-zinc-700">
+        <img
+          src={SITE.brandIcon}
+          alt={SITE.shortTitle}
+          width="24"
+          height="24"
+          class="h-full w-full object-contain"
+        />
+      </span>
+      <span class="truncate text-sm font-semibold tracking-tight">{siteTitle}</span>
+    </a>
+  </div>
+
+  <div class="flex items-center gap-1.5 shrink-0">
+    <button
+      type="button"
+      data-cmdk-open
+      aria-label="全局搜索"
+      class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50 text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+    >
+      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" stroke-linecap="round" />
+      </svg>
+    </button>
+    <button
+      type="button"
+      data-theme-toggle
+      aria-label="切换浅色或深色主题"
+      class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-white text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+    >
+      <svg class="hidden h-4 w-4 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round" />
+      </svg>
+      <svg class="block h-4 w-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile Slide-Over Sidebar Drawer -->
+<div
+  id="mobile-nav-backdrop"
+  class="fixed inset-0 z-40 hidden bg-zinc-950/45 backdrop-blur-xs lg:hidden"
+  aria-hidden="true"
+/>
+<aside
+  id="mobile-nav-drawer"
+  aria-label="移动端侧边栏导航"
+  class="fixed inset-y-0 left-0 z-50 hidden w-72 max-w-[85vw] flex-col border-r border-zinc-200 bg-white lg:hidden dark:border-zinc-800 dark:bg-zinc-950"
+>
+  <div class="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
+    <a href="/" class="flex items-center gap-2.5 text-zinc-950 dark:text-zinc-50">
+      <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-zinc-900 bg-black p-1 dark:border-zinc-700">
+        <img src={SITE.brandIcon} alt={SITE.shortTitle} width="24" height="24" class="h-full w-full object-contain" />
+      </span>
+      <span class="text-sm font-semibold tracking-tight">{siteTitle}</span>
+    </a>
+    <button
+      id="mobile-menu-close"
+      type="button"
+      aria-label="关闭导航侧栏"
+      class="inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+    >
+      ×
+    </button>
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-y-auto px-3 py-3 space-y-5 thin-scrollbar">
+    <div class="grid grid-cols-3 gap-1.5">
+      {
+        SITE.social.map((s) => (
+          <a
+            href={s.href}
+            target={s.href.startsWith('http') ? '_blank' : undefined}
+            rel={s.href.startsWith('http') ? 'noreferrer' : undefined}
+            class="flex items-center justify-center gap-1 rounded-md border border-zinc-200 bg-white px-2 py-1 text-[11px] font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+          >
+            <svg class="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" set:html={SOCIAL_ICONS[s.id] || SOCIAL_ICONS.rss} />
+            <span>{s.label}</span>
+          </a>
+        ))
+      }
+    </div>
+
+    <button
+      type="button"
+      data-cmdk-open
+      class="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+    >
+      <span class="flex items-center gap-2">
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" stroke-linecap="round" />
+        </svg>
+        <span>搜索文章与笔记…</span>
+      </span>
+      <kbd class="rounded border border-zinc-200 bg-white px-1 font-mono text-[10px] dark:border-zinc-700 dark:bg-zinc-800">⌘K</kbd>
+    </button>
+
+    <nav aria-label="移动端主导航" class="space-y-0.5">
+      {
+        navItems.map((item) => {
+          const active = isActive(item.href, item.matchPrefix);
+          const iconPath = ICONS[item.href] || ICONS['/posts'];
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
+                active
+                  ? 'bg-zinc-100 text-zinc-950 font-semibold dark:bg-zinc-900 dark:text-zinc-50'
+                  : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-100',
+              ]}
+            >
+              <svg
+                class:list={['h-4 w-4 shrink-0', active ? 'text-[var(--accent)]' : 'text-zinc-400 dark:text-zinc-500']}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                set:html={iconPath}
+              />
+              <span>{item.label}</span>
+            </a>
+          );
+        })
+      }
+    </nav>
+
+    <slot name="mobile-context" />
+  </div>
+
+  {
+    SITE.appearance.allowAccentSwitch && (
+      <div class="shrink-0 border-t border-zinc-200 p-3 space-y-2.5 dark:border-zinc-800">
+        <div class="grid grid-cols-2 gap-1.5">
+          <button type="button" data-set-accent="rose" class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-[11px] text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
+            <span class="h-2 w-2 rounded-full bg-rose-700 dark:bg-rose-400" />
+            <span>和纸绛红</span>
+          </button>
+          <button type="button" data-set-accent="monochrome" class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-[11px] text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
+            <span class="h-2 w-2 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+            <span>极简黑白</span>
+          </button>
+          <button type="button" data-set-accent="indigo" class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-[11px] text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
+            <span class="h-2 w-2 rounded-full bg-indigo-600 dark:bg-blue-400" />
+            <span>学术靛蓝</span>
+          </button>
+          <button type="button" data-set-accent="sage" class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1 text-[11px] text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
+            <span class="h-2 w-2 rounded-full bg-emerald-700 dark:bg-emerald-400" />
+            <span>青黛抹茶</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-3 gap-1 rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-900">
+          <button type="button" data-set-fontsize="sm" class="pref-font-btn rounded-md py-1 text-[11px] font-medium text-zinc-600 dark:text-zinc-400">小</button>
+          <button type="button" data-set-fontsize="md" class="pref-font-btn rounded-md py-1 text-[11px] font-medium text-zinc-600 dark:text-zinc-400">中</button>
+          <button type="button" data-set-fontsize="lg" class="pref-font-btn rounded-md py-1 text-[11px] font-medium text-zinc-600 dark:text-zinc-400">大</button>
+        </div>
+      </div>
+    )
+  }
+</aside>
+
+<!-- Desktop Persistent Left Sidebar Shell (OpenAI × jpgrammar.ai.studio Editorial Rail, collapsible) -->
+<aside
+  id="desktop-sidebar"
+  aria-label="桌面端侧边栏"
+  class="hidden lg:flex lg:w-64 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen lg:flex-col border-r border-zinc-200 bg-zinc-50/45 transition-[width] duration-200 ease-out dark:border-zinc-800 dark:bg-zinc-950"
+>
+  <!-- Top-Left Brand Lockup + Social Links + Collapse Toggle + Search Trigger -->
+  <div class="sidebar-header-controls shrink-0 pt-4 pb-2.5 space-y-3">
+    <div class="sidebar-header-row flex h-[50px] items-start gap-2.5 pl-3 pr-2.5">
+      <a id="sidebar-brand-link" href="/" title={siteTitle} class="group mt-[5px] flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-900 bg-black p-1.5 shadow-2xs transition-transform group-hover:scale-95 dark:border-zinc-700">
+        <img
+          src={SITE.brandIcon}
+          alt={SITE.shortTitle}
+          width="28"
+          height="28"
+          class="h-full w-full object-contain [image-rendering:pixelated]"
+        />
+      </a>
+
+      <div class="sidebar-expanded-only min-w-0 flex-1">
+        <div class="flex h-6 items-center justify-between gap-1">
+          <a
+            href="/"
+            class="truncate text-[14.5px] font-semibold tracking-tight leading-tight text-zinc-950 transition-colors hover:text-[var(--accent)] dark:text-zinc-50"
+          >
+            {siteTitle}
+          </a>
+          <button
+            id="desktop-sidebar-toggle"
+            type="button"
+            aria-label="收起左侧边栏"
+            aria-expanded="true"
+            title="收起左侧边栏"
+            class="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-transparent text-zinc-400 transition-colors hover:border-zinc-200 hover:bg-white hover:text-zinc-800 dark:text-zinc-500 dark:hover:border-zinc-800 dark:hover:bg-zinc-900 dark:hover:text-zinc-200"
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M9 4v16" />
+              <path d="m15 10-2 2 2 2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="mt-1 flex items-center gap-1">
+          {
+            SITE.social.map((s) => (
+              <a
+                href={s.href}
+                target={s.href.startsWith('http') ? '_blank' : undefined}
+                rel={s.href.startsWith('http') ? 'noreferrer' : undefined}
+                title={s.label}
+                aria-label={s.label}
+                class="inline-flex h-[22px] items-center gap-1 whitespace-nowrap rounded-md border border-zinc-200 bg-white px-1.5 text-[10.5px] leading-none font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+              >
+                <svg
+                  class="h-[11px] w-[11px] shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  set:html={SOCIAL_ICONS[s.id] || SOCIAL_ICONS.rss}
+                />
+                <span>{s.label}</span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-search-wrap px-2">
+      <button
+        id="cmdk-trigger"
+        type="button"
+        data-cmdk-open
+        aria-label="全局搜索"
+        title="搜索文章 (⌘K)"
+        class="flex h-8 w-full items-center gap-2.5 rounded-lg border border-zinc-200 bg-white pl-[15px] pr-2.5 text-xs text-zinc-500 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+      >
+        <span class="flex h-4 w-4 shrink-0 items-center justify-center">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="sidebar-expanded-only flex-1 truncate text-left">搜索文章…</span>
+        <kbd class="sidebar-expanded-only shrink-0 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800">
+          ⌘K
+        </kbd>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scrollable Main Nav + Contextual Sidebar Content (e.g., Series Tree) -->
+  <div class="sidebar-nav-area min-h-0 flex-1 overflow-y-auto px-2 py-2 space-y-4 thin-scrollbar">
+    <nav aria-label="主导航" class="space-y-1">
+      {
+        navItems.map((item) => {
+          const active = isActive(item.href, item.matchPrefix);
+          const iconPath = ICONS[item.href] || ICONS['/posts'];
+          return (
+            <a
+              href={item.href}
+              title={item.label}
+              class:list={[
+                'sidebar-nav-link group relative flex h-8 w-full items-center gap-2.5 rounded-lg border pl-[15px] pr-2.5 text-[13.5px] font-medium transition-colors',
+                active
+                  ? 'bg-white text-zinc-950 font-semibold border-zinc-200/80 shadow-2xs dark:bg-zinc-900 dark:text-zinc-50 dark:border-zinc-800'
+                  : 'border-transparent text-zinc-600 hover:bg-white/70 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-100',
+              ]}
+            >
+              {active && (
+                <span
+                  aria-hidden="true"
+                  class="absolute top-1.5 bottom-1.5 left-0.5 w-[2px] rounded-full bg-[var(--accent)]"
+                />
+              )}
+              <svg
+                class:list={[
+                  'h-4 w-4 shrink-0 transition-colors',
+                  active ? 'text-[var(--accent)]' : 'text-zinc-400 group-hover:text-zinc-700 dark:text-zinc-500 dark:group-hover:text-zinc-300',
+                ]}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                set:html={iconPath}
+              />
+              <span class="sidebar-expanded-only truncate">{item.label}</span>
+            </a>
+          );
+        })
+      }
+    </nav>
+
+    <div id="sidebar-context-wrap">
+      <slot name="sidebar-context" />
+    </div>
+  </div>
+
+  <!-- Bottom Pinned Controls (Theme + Appearance Popover) -->
+  <div class="sidebar-footer relative shrink-0 border-t border-zinc-200 px-2 py-2.5 dark:border-zinc-800">
+    {
+      SITE.appearance.allowAccentSwitch && (
+        <div
+          id="prefs-popover"
+          class="hidden absolute right-3 bottom-full left-3 mb-2 z-50 rounded-xl border border-zinc-200 bg-white p-3.5 shadow-lg dark:border-zinc-800 dark:bg-zinc-950"
+        >
+          <div class="space-y-3.5">
+            <div>
+              <p class="mb-1.5 font-mono text-[10.5px] font-medium uppercase tracking-wider text-zinc-500">
+                强调色调 · Accent
+              </p>
+              <div class="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  data-set-accent="rose"
+                  class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1.5 text-left text-[11.5px] text-zinc-700 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-300"
+                >
+                  <span class="h-2 w-2 rounded-full bg-rose-700 dark:bg-rose-400" />
+                  <span>和纸绛红</span>
+                </button>
+                <button
+                  type="button"
+                  data-set-accent="monochrome"
+                  class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1.5 text-left text-[11.5px] text-zinc-700 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-300"
+                >
+                  <span class="h-2 w-2 rounded-full bg-zinc-900 dark:bg-zinc-100" />
+                  <span>极简黑白</span>
+                </button>
+                <button
+                  type="button"
+                  data-set-accent="indigo"
+                  class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1.5 text-left text-[11.5px] text-zinc-700 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-300"
+                >
+                  <span class="h-2 w-2 rounded-full bg-indigo-600 dark:bg-blue-400" />
+                  <span>学术靛蓝</span>
+                </button>
+                <button
+                  type="button"
+                  data-set-accent="sage"
+                  class="pref-accent-btn flex items-center gap-1.5 rounded-md border border-zinc-200 px-2 py-1.5 text-left text-[11.5px] text-zinc-700 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-300"
+                >
+                  <span class="h-2 w-2 rounded-full bg-emerald-700 dark:bg-emerald-400" />
+                  <span>青黛抹茶</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-1.5 font-mono text-[10.5px] font-medium uppercase tracking-wider text-zinc-500">
+                正文字号 · Font Size
+              </p>
+              <div class="grid grid-cols-3 gap-1 rounded-lg bg-zinc-100 p-1 dark:bg-zinc-900">
+                <button type="button" data-set-fontsize="sm" class="pref-font-btn rounded-md py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">小</button>
+                <button type="button" data-set-fontsize="md" class="pref-font-btn rounded-md py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">中</button>
+                <button type="button" data-set-fontsize="lg" class="pref-font-btn rounded-md py-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">大</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="sidebar-footer-actions flex flex-col gap-1">
+      <button
+        id="theme-toggle-btn"
+        type="button"
+        data-theme-toggle
+        aria-label="切换浅色或深色主题"
+        title="切换浅色和纸 / 深色墨夜"
+        class="flex h-8 w-full items-center gap-2.5 rounded-lg border border-zinc-200 bg-white pl-[15px] pr-2.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+      >
+        <svg class="hidden h-4 w-4 shrink-0 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round" />
+        </svg>
+        <svg class="block h-4 w-4 shrink-0 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="sidebar-expanded-only truncate dark:hidden">浅色模式</span>
+        <span class="sidebar-expanded-only hidden truncate dark:inline">深色模式</span>
+      </button>
+
+      {
+        SITE.appearance.allowAccentSwitch && (
+          <button
+            id="prefs-trigger"
+            type="button"
+            aria-label="外观与排版偏好"
+            aria-expanded="false"
+            title="外观与排版设置"
+            class="flex h-8 w-full items-center gap-2.5 rounded-lg border border-zinc-200 bg-white pl-[15px] pr-2.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+          >
+            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" x2="20" y1="6" y2="6" stroke-linecap="round" />
+              <line x1="4" x2="20" y1="12" y2="12" stroke-linecap="round" />
+              <line x1="4" x2="20" y1="18" y2="18" stroke-linecap="round" />
+              <circle cx="9" cy="6" r="2" fill="currentColor" />
+              <circle cx="15" cy="12" r="2" fill="currentColor" />
+              <circle cx="11" cy="18" r="2" fill="currentColor" />
+            </svg>
+            <span class="sidebar-expanded-only truncate">外观设置</span>
+          </button>
+        )
+      }
+    </div>
+  </div>
+</aside>

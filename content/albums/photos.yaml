@@ -1,0 +1,178 @@
+title: 光影
+subtitle: Photography & Travel Memories
+description: 旅途与日常瞬间，按地点整理归档。
+sections:
+  - id: 北京
+    title: 北京
+    featured: null
+    items:
+      - src: photos/DSCF3659.jpg
+        caption: 摄于北京市家中
+      - src: photos/DSCF3692.jpg
+        caption: 摄于北京市景山公园
+      - src: photos/DSCF3695.jpg
+        caption: 摄于北京市景山公园
+      - src: photos/DSCF3702.jpg
+        caption: 摄于北京市西北角楼
+      - src: photos/DSCF3769.jpg
+        caption: 摄于北京市护城河
+      - src: photos/DSCF3880.jpg
+        caption: 摄于北京市花乡奥特莱斯
+      - src: photos/DSCF4005.jpg
+        caption: 摄于北京市首钢工业园
+      - src: photos/DSCF4271.jpg
+        caption: 摄于北京市护城河
+      - src: photos/DSCF4564.jpg
+        caption: 摄于北京市雍和宫
+      - src: photos/DSCF4586.jpg
+        caption: 摄于北京市南锣鼓巷
+      - src: photos/DSCF4637.jpg
+        caption: 摄于北京市什刹海
+      - src: photos/DSCF3671.jpg
+        caption: 摄于北京市家中
+      - src: photos/DSCF3693.jpg
+        caption: 摄于北京市景山公园
+      - src: photos/DSCF3697.jpg
+        caption: 摄于北京市景山公园
+      - src: photos/DSCF3901.jpg
+        caption: 摄于北京市凉水河
+      - src: photos/DSCF3784.jpg
+        caption: 摄于北京市护城河
+      - src: photos/DSCF3944.jpg
+        caption: 摄于北京市前门某星巴克
+      - src: photos/DSCF3966.jpg
+        caption: 摄于北京市杨梅竹斜街
+      - src: photos/DSCF4338.jpg
+        caption: 摄于北京市某司
+      - src: photos/DSCF4410.jpg
+        caption: 摄于北京市三里屯soho
+      - src: photos/DSCF4570.jpg
+        caption: 摄于北京市某厕所
+      - src: photos/DSCF4599.jpg
+        caption: 摄于北京市南锣鼓巷
+  - id: 福冈
+    title: 福冈
+    featured:
+      src: photos/DSCF2035.jpg
+      caption: 摄于北九州市门司港海滨
+    items:
+      - src: photos/DSCF0374.jpg
+        caption: 摄于福冈市太宰府站
+      - src: photos/DSCF0503.jpg
+        caption: 摄于福冈市太宰府天满宫
+      - src: photos/DSCF0513.jpg
+        caption: 摄于福冈市太宰府天满宫
+      - src: photos/DSCF1867.jpg
+        caption: 摄于福冈市博多站
+      - src: photos/DSCF2088.jpg
+        caption: 摄于福冈市博多站
+      - src: photos/DSCF3529.jpg
+        caption: 摄于福冈市海滨公园
+      - src: photos/DSCF3576.jpg
+        caption: 摄于福冈市福冈塔展望台
+      - src: photos/DSCF0049.jpg
+        caption: 摄于北九州市某Yamada电器
+      - src: photos/DSCF0219.jpg
+        caption: 摄于北九州市皿仓山登山路
+      - src: photos/DSCF0236.jpg
+        caption: 摄于北九州市皿仓山展望台
+      - src: photos/DSCF1901.jpg
+        caption: 摄于北九州市门司港轮渡码头
+      - src: photos/DSCF2058.jpg
+        caption: 摄于北九州市门司港站
+  - id: 北海道
+    title: 北海道
+    featured:
+      src: photos/DSCF1416.jpg
+      caption: 摄于函馆市函馆山展望台
+    items:
+      - src: photos/DSCF0592.jpg
+        caption: 摄于札幌市大通公园
+      - src: photos/DSCF0596.jpg
+        caption: 摄于札幌市某星巴克
+      - src: photos/DSCF0713.jpg
+        caption: 摄于札幌市藻岩山展望台
+      - src: photos/DSCF0723.jpg
+        caption: 摄于札幌市藻岩山展望台
+      - src: photos/DSCF0741.jpg
+        caption: 摄于札幌市藻岩山展望台
+      - src: photos/DSCF0764.jpg
+        caption: 摄于札幌市藻岩山展望台
+      - src: photos/DSCF0807.jpg
+        caption: 摄于札幌市白色恋人公园
+      - src: photos/DSCF0847.jpg
+        caption: 摄于札幌市白色恋人公园
+      - src: photos/DSCF0921.jpg
+        caption: 摄于小樽市小樽运河
+      - src: photos/DSCF0998.jpg
+        caption: 摄于小樽市小樽运河
+      - src: photos/DSCF1062.jpg
+        caption: 摄于小樽市小樽港北滨
+      - src: photos/DSCF1107.jpg
+        caption: 摄于小樽市手宫线铁路遗址
+      - src: photos/DSCF1399.jpg
+        caption: 摄于函馆市函馆山展望台
+      - src: photos/DSCF1373.jpg
+        caption: 摄于函馆市函馆山展望台
+      - src: photos/DSCF1561.jpg
+        caption: 摄于函馆市函馆山展望台
+      - src: photos/DSCF1662.jpg
+        caption: 摄于函馆市五棱郭公园
+      - src: photos/DSCF1696.jpg
+        caption: 摄于函馆市五棱郭公园
+      - src: photos/DSCF1856.jpg
+        caption: 摄于函馆市函馆站
+  - id: 鹿儿岛
+    title: 鹿儿岛
+    featured:
+      src: photos/DSCF2674.jpg
+      caption: 摄于鹿儿岛市矶海水浴场
+    items:
+      - src: photos/DSCF2694.jpg
+        caption: 摄于鹿儿岛市鹿儿岛站
+      - src: photos/DSCF2712.jpg
+        caption: 摄于鹿儿岛市鹿儿岛中央站
+      - src: photos/DSCF2787.jpg
+        caption: 摄于鹿儿岛市鹿儿岛中央站
+      - src: photos/DSCF2811.jpg
+        caption: 摄于鹿儿岛市城山展望台
+  - id: 熊本
+    title: 熊本
+    featured:
+      src: photos/DSCF2375.jpg
+      caption: 摄于阿苏市草千里展望台
+    items:
+      - src: photos/DSCF2129.jpg
+        caption: 摄于熊本市熊本站
+      - src: photos/DSCF2177.jpg
+        caption: 摄于阿苏市阿苏站
+      - src: photos/DSCF2185.jpg
+        caption: 摄于阿苏市阿苏山登山路
+      - src: photos/DSCF2251.jpg
+        caption: 摄于阿苏市草千里
+      - src: photos/DSCF2326.jpg
+        caption: 摄于阿苏市草千里
+      - src: photos/DSCF2418.jpg
+        caption: 摄于阿苏市阿苏山火山口
+      - src: photos/DSCF2420.jpg
+        caption: 摄于阿苏市阿苏山火山口
+      - src: photos/DSCF2571.jpg
+        caption: 摄于熊本市熊本城
+  - id: 长崎
+    title: 长崎
+    featured:
+      src: photos/DSCF3022.jpg
+      caption: 摄于长崎市长崎县美术馆展望台
+    items:
+      - src: photos/DSCF3120.jpg
+        caption: 摄于长崎市长崎新地中华街
+      - src: photos/DSCF3124.jpg
+        caption: 摄于长崎市某十字路口
+      - src: photos/DSCF3159.jpg
+        caption: 摄于长崎市某海滨
+      - src: photos/DSCF3363.jpg
+        caption: 摄于长崎市稻佐山展望台
+      - src: photos/DSCF3390.jpg
+        caption: 摄于长崎市稻佐山展望台
+      - src: photos/DSCF3422.jpg
+        caption: 摄于长崎市稻佐山展望台

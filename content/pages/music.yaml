@@ -1,0 +1,161 @@
+# /music 歌单配置（Apple Music 中国区官方嵌入）
+# 添加方法：直接填入 Apple Music 专辑或单曲分享链接（music.apple.com/cn/...），站点会自动转换为自适应浅/深模式的中文版官方播放器。
+title: 频谱
+subtitle: Listening Archive · Apple Music
+description: 平时循环最多的华语、粤语与日语专辑。点击曲目可试听或跳转 Apple Music 播放。
+
+groups:
+  - id: jp
+    title: 日语 · Japanese
+    overline: J-Pop & Anime Soundtracks
+    items:
+      - title: BEST SELECTION "noir"
+        artist: Aimer
+        note: 收录〈StarRingChild〉、〈Brave Shine〉、〈RE:I AM〉、〈ninelie〉等作品
+        appleMusicUrl: https://music.apple.com/cn/album/best-selection-noir/1538259694
+        height: 450
+      - title: BEST SELECTION "blanc"
+        artist: Aimer
+        note: 收录〈蝶々結び〉、〈六等星の夜〉、〈カタオモイ〉等抒情代表作
+        appleMusicUrl: https://music.apple.com/cn/album/best-selection-blanc/1538259424
+        height: 450
+      - title: Sun Dance
+        artist: Aimer
+        note: 温暖清亮的一面，收录〈ONE〉、〈花びらたちのマーチ〉
+        appleMusicUrl: https://music.apple.com/cn/album/sun-dance/1538260864
+        height: 450
+      - title: Penny Rain
+        artist: Aimer
+        note: 阴雨深沉的一面，收录〈I beg you〉、〈Ref:rain〉、〈花の唄〉
+        appleMusicUrl: https://music.apple.com/cn/album/penny-rain/1538261074
+        height: 450
+      - title: LiSA BEST -Way-
+        artist: LiSA
+        note: 精选代表作〈Rising Hope〉、〈oath sign〉、〈Catch the Moment〉
+        appleMusicUrl: https://music.apple.com/cn/album/lisa-best-way/1538286187
+        height: 450
+      - title: LiSA BEST -Day-
+        artist: LiSA
+        note: 精选代表作〈crossing field〉、〈シルエット〉、〈だってアタシのヒーロー。〉
+        appleMusicUrl: https://music.apple.com/cn/album/lisa-best-day/1538285853
+        height: 450
+      - title: LEO-NiNE
+        artist: LiSA
+        note: 收录〈紅蓮華〉、〈ADAMAS〉、〈unlasting〉
+        appleMusicUrl: https://music.apple.com/cn/album/leo-nine/1529543131
+        height: 450
+      - title: オリオンブルー (Special Edition)
+        artist: Uru
+        note: 温柔治愈声线，收录〈プロローグ〉、〈remember〉、〈あなたがいることで〉
+        appleMusicUrl: https://music.apple.com/cn/album/%E3%82%AA%E3%83%AA%E3%82%AA%E3%83%B3%E3%83%96%E3%83%AB%E3%83%BC-special-edition/1538110016
+        height: 450
+      - title: ハルカカナタヘ
+        artist: 福原遥
+        note: 完整收录〈未完成な光たち〉、〈箱庭のサマー〉、〈モノクローム〉、〈透明クリア〉、〈風に吹かれて〉
+        appleMusicUrl: https://music.apple.com/cn/album/%E3%83%8F%E3%83%AB%E3%82%AB%E3%82%AB%E3%83%8A%E3%82%BF%E3%83%98/1624429681
+        height: 450
+
+  - id: cantopop
+    title: 粤语 · Cantopop
+    overline: Hong Kong Classics
+    items:
+      - title: the album and the end of it
+        artist: 麦浚龙 & 谢安琪
+        note: 完整的概念故事专辑，浦铭心与董折的最终章
+        appleMusicUrl: https://music.apple.com/cn/album/the-album-and-the-end-of-it/1543851560
+        height: 450
+      - title: Addendum - EP
+        artist: 麦浚龙
+        note: 收录〈罗生门〉、〈念念不忘〉、〈瑕疵〉
+        appleMusicUrl: https://music.apple.com/cn/album/addendum-ep/1038836286
+        height: 450
+      - title: Binary
+        artist: 谢安琪
+        note: 收录〈年度之歌〉、〈祝英台〉、〈喜帖街〉同期经典作品
+        appleMusicUrl: https://music.apple.com/cn/album/binary/1443655393
+        height: 450
+      - title: Slowness
+        artist: 谢安琪
+        note: 慢活主题概念粤语大碟，收录〈活着〉、〈雨过天阴〉
+        appleMusicUrl: https://music.apple.com/cn/album/slowness/1443755343
+        height: 450
+      - title: What's Going On...?
+        artist: 陈奕迅
+        note: 收录〈富士山下〉、〈不如不见〉、〈裙下之臣〉
+        appleMusicUrl: https://music.apple.com/cn/album/whats-going-on/1443345687
+        height: 450
+      - title: U 87
+        artist: 陈奕迅
+        note: 收录〈浮夸〉、〈葡萄成熟时〉、〈夕阳无限好〉
+        appleMusicUrl: https://music.apple.com/cn/album/u-87/1443374875
+        height: 450
+      - title: H3M (Remastered 2019)
+        artist: 陈奕迅
+        note: 收录〈沙龙〉、〈七百年后〉、〈于心有愧〉
+        appleMusicUrl: https://music.apple.com/cn/album/h3m-remastered-2019/1490822198
+        height: 450
+      - title: 陈奕迅2010 Duo演唱会
+        artist: 陈奕迅
+        note: 2010 DUO 红馆演唱会现场录音全集
+        appleMusicUrl: https://music.apple.com/cn/album/%E9%99%B3%E5%A5%95%E8%BF%852010-duo%E6%BC%94%E5%94%B1%E6%9C%83/1442966677
+        height: 450
+      - title: Tenacious
+        artist: 薛凯琪
+        note: 收录〈周末画报〉、〈Contagious〉、〈宫若梅〉
+        appleMusicUrl: https://music.apple.com/cn/album/tenacious/774883244
+        height: 450
+      - title: Tonight
+        artist: 薛凯琪
+        note: 收录〈弗洛蒙〉、〈最后最后〉、〈一直一直〉
+        appleMusicUrl: https://music.apple.com/cn/album/tonight/922444348
+        height: 450
+      - title: 所有下雨天 (Single)
+        artist: 薛凯琪
+        note: 细腻清澈的粤语单曲
+        appleMusicUrl: https://music.apple.com/cn/album/%E6%89%80%E6%9C%89%E4%B8%8B%E9%9B%A8%E5%A4%A9-single/994444058?i=994444059
+        height: 175
+      - title: 十年后的我 (Single)
+        artist: 薛凯琪
+        note: 给十年后自己的温柔自白
+        appleMusicUrl: https://music.apple.com/cn/album/%E5%8D%81%E5%B9%B4%E5%BE%8C%E7%9A%84%E6%88%91-single/1150376685?i=1150376689
+        height: 175
+      - title: 哥本哈根的另一个我 (Single)
+        artist: 薛凯琪
+        note: 平行宇宙般的粤语独白曲
+        appleMusicUrl: https://music.apple.com/cn/album/%E5%93%A5%E6%9C%AC%E5%93%88%E6%A0%B9%E7%9A%84%E5%8F%A6%E4%B8%80%E5%80%8B%E6%88%91-single/1545604325?i=1545604446
+        height: 175
+
+  - id: mandarin
+    title: 国语 · Mandarin
+    overline: Mandopop & Live
+    items:
+      - title: 谢—安琪
+        artist: 谢安琪
+        note: 首张个人国语专辑，收录〈眼泪的名字〉、〈我们都被忘了〉
+        appleMusicUrl: https://music.apple.com/cn/album/%E8%AC%9D-%E5%AE%89%E7%90%AA/1022750789
+        height: 450
+      - title: 认了吧 (台湾版)
+        artist: 陈奕迅
+        note: 收录〈淘汰〉、〈爱情转移〉、〈好久不见〉
+        appleMusicUrl: https://music.apple.com/cn/album/%E8%AA%8D%E4%BA%86%E5%90%A7-%E5%8F%B0%E7%81%A3%E7%89%88/1443352354
+        height: 450
+      - title: rice & shine
+        artist: 陈奕迅
+        note: 收录〈娱乐天空〉、〈可以了〉、〈你给我听好〉、〈阴天快乐〉
+        appleMusicUrl: https://music.apple.com/cn/album/rice-shine/1422694136
+        height: 450
+      - title: '李宗盛爱情论Ⅰ: 爱的代价'
+        artist: 李宗盛
+        note: 滚石经典创作与演绎精选，收录〈爱的代价〉、〈鬼迷心窍〉
+        appleMusicUrl: https://music.apple.com/cn/album/%E6%9D%8E%E5%AE%97%E7%9B%9B%E6%84%9B%E6%83%85%E8%AB%96-%E6%84%9B%E7%9A%84%E4%BB%A3%E5%83%B9/379603800
+        height: 450
+      - title: 李宗盛的理性与感性作品音乐会
+        artist: 李宗盛
+        note: 现场编曲与岁月感俱佳的双碟演唱会录音
+        appleMusicUrl: https://music.apple.com/cn/album/%E6%9D%8E%E5%AE%97%E7%9B%9B%E7%9A%84%E7%90%86%E6%80%A7%E8%88%87%E6%84%9F%E6%80%A7%E4%BD%9C%E5%93%81%E9%9F%B3%E6%A8%82%E6%9C%83/1329432176
+        height: 450
+      - title: 山丘 (Single)
+        artist: 李宗盛
+        note: 越过山丘，才发现无人等候
+        appleMusicUrl: https://music.apple.com/cn/album/%E5%B1%B1%E4%B8%98-single/1087283784?i=1087283788
+        height: 175

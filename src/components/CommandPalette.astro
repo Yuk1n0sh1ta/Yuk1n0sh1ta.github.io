@@ -1,0 +1,269 @@
+<!-- Global Command Palette Search Modal (⌘K / Ctrl+K) -->
+<div
+  id="cmdk-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-label="全站检索"
+  class="fixed inset-0 z-50 hidden items-start justify-center bg-zinc-950/55 px-4 pt-[12vh] backdrop-blur-xs"
+>
+  <div
+    id="cmdk-panel"
+    class="w-full max-w-xl overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
+  >
+    <div class="flex items-center gap-2.5 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+      <svg class="h-4 w-4 shrink-0 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" stroke-linecap="round" />
+      </svg>
+      <input
+        id="cmdk-input"
+        type="search"
+        placeholder="检索文章标题、专栏、标签或正文关键词..."
+        autocomplete="off"
+        class="w-full bg-transparent text-sm text-zinc-950 placeholder:text-zinc-400 focus:outline-none dark:text-zinc-50"
+      />
+      <button
+        id="cmdk-close"
+        type="button"
+        class="rounded border border-zinc-200 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500 hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      >
+        ESC
+      </button>
+    </div>
+
+    <div id="cmdk-results" class="max-h-[60vh] overflow-y-auto p-2">
+      <div class="px-3 py-8 text-center text-xs text-zinc-500">
+        输入关键词开始检索（支持标题、日语语法、算法概念、标签）
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-4 py-2 font-mono text-[11px] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400">
+      <span>↑↓ 选择 · ↵ 打开</span>
+      <span id="cmdk-engine-label">Static Index</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface SearchItem {
+    title: string;
+    url: string;
+    date?: string;
+    category?: string;
+    series?: string;
+    tags?: string[];
+    excerpt?: string;
+  }
+
+  const modal = document.getElementById('cmdk-modal');
+  const panel = document.getElementById('cmdk-panel');
+  const input = document.getElementById('cmdk-input') as HTMLInputElement | null;
+  const resultsEl = document.getElementById('cmdk-results');
+  const engineLabel = document.getElementById('cmdk-engine-label');
+  const triggerBtns = document.querySelectorAll<HTMLElement>('[data-cmdk-open], #cmdk-trigger');
+  const closeBtn = document.getElementById('cmdk-close');
+
+  let pagefind: any = null;
+  let pagefindPromise: Promise<void> | null = null;
+  let jsonIndex: SearchItem[] | null = null;
+  let jsonPromise: Promise<void> | null = null;
+  let activeIdx = 0;
+
+  async function ensureSearchEngine() {
+    if (pagefind) {
+      if (engineLabel) engineLabel.textContent = 'Pagefind Full-Text';
+      return;
+    }
+    if (!pagefindPromise) {
+      pagefindPromise = (async () => {
+        try {
+          const pfPath = '/pagefind/pagefind.js';
+          pagefind = await import(/* @vite-ignore */ pfPath);
+          await pagefind.init();
+          if (engineLabel) engineLabel.textContent = 'Pagefind Full-Text';
+        } catch {
+          pagefind = null;
+        }
+      })();
+    }
+    await pagefindPromise;
+    if (pagefind) return;
+
+    if (!jsonPromise) {
+      jsonPromise = (async () => {
+        try {
+          const res = await fetch('/search-index.json');
+          if (res.ok) jsonIndex = await res.json();
+          if (engineLabel) engineLabel.textContent = 'Instant Index';
+        } catch {
+          jsonIndex = [];
+        }
+      })();
+    }
+    await jsonPromise;
+  }
+
+  async function ensureJsonFallback() {
+    if (jsonIndex) return;
+    if (!jsonPromise) {
+      jsonPromise = (async () => {
+        try {
+          const res = await fetch('/search-index.json');
+          if (res.ok) jsonIndex = await res.json();
+        } catch {
+          jsonIndex = [];
+        }
+      })();
+    }
+    await jsonPromise;
+  }
+
+  function renderResults(items: Array<{ title: string; url: string; meta?: string; snippet?: string }>) {
+    if (!resultsEl) return;
+    activeIdx = 0;
+    if (items.length === 0) {
+      resultsEl.innerHTML =
+        '<div class="px-3 py-8 text-center text-xs text-zinc-500">没有匹配的文章，换个关键词试试？</div>';
+      return;
+    }
+    resultsEl.innerHTML = items
+      .slice(0, 14)
+      .map(
+        (item, idx) => `
+      <a href="${item.url}" data-cmdk-item data-idx="${idx}"
+         class="block rounded-lg px-3 py-2.5 transition-colors ${idx === 0 ? 'bg-zinc-100 dark:bg-zinc-900' : 'hover:bg-zinc-50 dark:hover:bg-zinc-900/60'}">
+        <div class="flex items-center justify-between gap-2">
+          <span class="truncate text-sm font-medium text-zinc-950 dark:text-zinc-50">${item.title}</span>
+          ${item.meta ? `<span class="shrink-0 font-mono text-[11px] text-zinc-400">${item.meta}</span>` : ''}
+        </div>
+        ${item.snippet ? `<p class="mt-0.5 line-clamp-1 text-xs text-zinc-500 dark:text-zinc-400">${item.snippet}</p>` : ''}
+      </a>`
+      )
+      .join('');
+  }
+
+  function highlightActive(newIdx: number) {
+    if (!resultsEl) return;
+    const links = Array.from(resultsEl.querySelectorAll<HTMLAnchorElement>('[data-cmdk-item]'));
+    if (!links.length) return;
+    activeIdx = (newIdx + links.length) % links.length;
+    links.forEach((el, idx) => {
+      el.classList.toggle('bg-zinc-100', idx === activeIdx);
+      el.classList.toggle('dark:bg-zinc-900', idx === activeIdx);
+      if (idx === activeIdx) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  async function runSearch(query: string) {
+    await ensureSearchEngine();
+    const q = query.trim();
+    if (!q) {
+      await ensureJsonFallback();
+      if (jsonIndex && jsonIndex.length) {
+        renderResults(
+          jsonIndex.slice(0, 8).map((x) => ({
+            title: x.title,
+            url: x.url,
+            meta: `${x.category ?? ''} · ${x.date ?? ''}`,
+            snippet: x.excerpt,
+          }))
+        );
+      } else if (resultsEl) {
+        resultsEl.innerHTML =
+          '<div class="px-3 py-8 text-center text-xs text-zinc-500">输入关键词开始检索（支持标题、日语语法、算法概念、标签）</div>';
+      }
+      return;
+    }
+
+    if (pagefind) {
+      const search = await pagefind.search(q);
+      const top = await Promise.all(search.results.slice(0, 12).map((r: any) => r.data()));
+      if (top.length > 0) {
+        renderResults(
+          top.map((d: any) => ({
+            title: d.meta?.title || '未命名文章',
+            url: d.url,
+            meta: d.meta?.date || '',
+            snippet: d.excerpt || '',
+          }))
+        );
+        return;
+      }
+    }
+
+    if (!jsonIndex) {
+      const res = await fetch('/search-index.json');
+      if (res.ok) jsonIndex = await res.json();
+    }
+
+    const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    const matched = (jsonIndex ?? []).filter((item) => {
+      const hay = `${item.title} ${item.category ?? ''} ${item.series ?? ''} ${(item.tags ?? []).join(' ')} ${item.excerpt ?? ''}`.toLowerCase();
+      return terms.every((t) => hay.includes(t));
+    });
+    renderResults(
+      matched.map((x) => ({
+        title: x.title,
+        url: x.url,
+        meta: `${x.category ?? ''} · ${x.date ?? ''}`,
+        snippet: x.excerpt,
+      }))
+    );
+  }
+
+  function openModal() {
+    if (!modal || !input) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    input.focus();
+    runSearch(input.value);
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  triggerBtns.forEach((btn) => btn.addEventListener('click', openModal));
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Expose custom event so Hero CTA buttons can also trigger search
+  window.addEventListener('open-cmdk', openModal);
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (modal?.classList.contains('hidden')) openModal();
+      else closeModal();
+      return;
+    }
+    if (!modal || modal.classList.contains('hidden')) return;
+    if (e.key === 'Escape') {
+      closeModal();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      highlightActive(activeIdx + 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      highlightActive(activeIdx - 1);
+    } else if (e.key === 'Enter') {
+      const active = resultsEl?.querySelectorAll<HTMLAnchorElement>('[data-cmdk-item]')?.[activeIdx];
+      if (active) {
+        e.preventDefault();
+        window.location.href = active.href;
+      }
+    }
+  });
+
+  let debounceTimer: number | undefined;
+  input?.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = window.setTimeout(() => runSearch(input.value), 120);
+  });
+</script>
