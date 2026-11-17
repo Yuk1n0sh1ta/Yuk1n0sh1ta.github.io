@@ -30,6 +30,7 @@ const shareImageUrl = new URL('/apple-touch-icon.png', siteBase).href;
 <!doctype html>
 <html
   lang="zh-CN"
+  class:list={[{ dark: SITE.appearance.defaultTheme === 'dark' }]}
   data-accent={SITE.appearance.defaultAccent}
   data-font-size={SITE.appearance.defaultFontSize}
 >
@@ -174,7 +175,7 @@ const shareImageUrl = new URL('/apple-touch-icon.png', siteBase).href;
       });
 
       function syncPreferenceButtons() {
-        const accent = root.getAttribute('data-accent') || 'rose';
+        const accent = root.getAttribute('data-accent') || 'indigo';
         const fontSize = root.getAttribute('data-font-size') || 'md';
 
         document.querySelectorAll<HTMLElement>('[data-set-accent]').forEach((btn) => {

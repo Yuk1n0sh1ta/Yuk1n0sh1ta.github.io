@@ -36,8 +36,8 @@ export const SITE = {
 
   // 2. 视觉与排版预设（也支持在页面顶部/阅读条实时切换；可选 'light' | 'dark' | 'system'）
   appearance: {
-    defaultTheme: 'light' as ThemeMode,
-    defaultAccent: 'rose' as AccentPreset, // 'rose' (jpgrammar) | 'monochrome' (OpenAI) | 'indigo' (Google) | 'sage'
+    defaultTheme: 'dark' as ThemeMode,
+    defaultAccent: 'indigo' as AccentPreset, // 'rose' (jpgrammar) | 'monochrome' (OpenAI) | 'indigo' (Google) | 'sage'
     allowAccentSwitch: true, // 允许访客/作者在前端外观菜单切换 4 套克制色调
     defaultFontSize: 'md' as FontSizePreset,
     defaultListView: 'cards' as ListViewPreset,
