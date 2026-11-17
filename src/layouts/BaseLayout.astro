@@ -22,6 +22,9 @@ const pageTitle = exactTitle
     ? `${title} · ${homeConfig.siteTitle}`
     : `${homeConfig.siteTitle} — ${homeConfig.siteSubtitle}`;
 const currentPath = Astro.url.pathname;
+const siteBase = Astro.site ?? new URL(SITE.url);
+const canonicalUrl = new URL(currentPath, siteBase).href;
+const shareImageUrl = new URL('/apple-touch-icon.png', siteBase).href;
 ---
 
 <!doctype html>
@@ -35,8 +38,21 @@ const currentPath = Astro.url.pathname;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/plane-icon-mixer.png" />
+    <link rel="apple-touch-icon" sizes="300x300" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={homeConfig.siteTitle} href="/rss.xml" />
+    <meta itemprop="name" content={pageTitle} />
+    <meta itemprop="description" content={description} />
+    <meta itemprop="image" content={shareImageUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={homeConfig.siteTitle} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={shareImageUrl} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={shareImageUrl} />
     <title>{pageTitle}</title>
 
     <!-- Google Fonts matching OpenAI / jpgrammar.ai.studio typography -->

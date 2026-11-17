@@ -31,7 +31,7 @@ export const SITE = {
   subtitle: 'Notes on NLP, Japanese, Engineering & Photography',
   description: 'Yuk1n0 的个人博客 —— 记录深度学习、自然语言处理、日语语法精炼笔记与旅途摄影。',
   author: 'Yuk1n0',
-  url: 'https://yuk1n0.pages.dev', // 部署到 Cloudflare Pages 或绑定自定义域名后可修改此处
+  url: 'https://yuk1n0-5b3.pages.dev', // 部署到 Cloudflare Pages 或绑定自定义域名后可修改此处
   foundedYear: 2019,
 
   // 2. 视觉与排版预设（也支持在页面顶部/阅读条实时切换；可选 'light' | 'dark' | 'system'）
